@@ -550,6 +550,7 @@ class MyFrame(wx.Frame):
         self.show_enabled_checkbox.Bind(wx.EVT_CHECKBOX,self.show_only_enabled)
         
         #self.top_panel_sizer.Add()
+        self.Show()
         self.top_panel.SetSizer(self.top_panel_sizer)
 
         # Add a notebook so that this is one page.
@@ -592,7 +593,7 @@ class MyFrame(wx.Frame):
         #self.key_ui_dict['cell_struc_xyz_red'].set_values([['A',0,0,0],['B',1.0,1.0,1.0]])
 
         self.splitter_window0.SplitHorizontally(self.top_panel,self.main_notebook,int(screenHeight/8))
-        splitter_window1.SplitVertically(panel1,panel2,0)
+        splitter_window1.SplitVertically(panel1,panel2,int(screenWidth/2))
         #splitter_window2.SplitVertically(panel3,panel4,0)
         self.Bind(wx.EVT_CLOSE,self.onExit)
 
