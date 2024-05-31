@@ -38,6 +38,16 @@ class key_ui_elem():
         self.keyword = keyword
         self.min_size = min_size
         self.key_dict = key_dict
+        # Get the number of required fields and lines
+        n_line = 0
+        self.n_required_fields = []
+        for kind_line in self.key_dict['kinds']:
+            n_line += n_line
+            n_field = 0
+            for kind in kind_line:
+                n_field += 1
+            self.n_required_fields = self.n_required_fields + [n_field]
+
         self.panel1 = panel1
         self.panel2 = panel2
         self.panel1_sizer = panel1.GetSizer()
@@ -238,19 +248,80 @@ class key_ui_elem():
             inp_elem.SetMinSize(min_size2)
 
         return inp_elem
+   
     
+    def validate_key_values(self,evt=None): 
+        # Compare number of non-empty fields with required number of fields 
+        # for each line. 
+        #    1. If element is field expandable, we can have empty
+        #       fields beyond the last required field.
+        #    2. If element is line expandable, we can have empty
+        #       lines beyond the last required line, but lines cannot
+        #       be partially empty.
+        if not self.enable_checkbox.GetValue():
+            return True, ''
+
+        values = []
+        nrf = []
+        message = "Unfilled required fields found in input for this keyword.\n" \
+                + "Please disable this keyword or fill the empty fields."
+        i_line_max = len(self.n_required_fields) - 1
+        for ui_line in self.ui_elems:
+            val_line = []
+            n_fields = 0
+            for elem in ui_line:
+                v = elem.GetValue()
+                # Empty strings will not be included in the output.
+                # Need to add a "validate keyword" that checks that all
+                # required fields are filled.
+                if str(v):
+                    val_line = val_line + [v]
+                    n_fields = n_fields + 1
+                else:
+                    break # ignore any fields past the first empty one.
+
+            if val_line:
+                values = values + [val_line]
+                nrf = nrf + [n_fields]
+                ind = min(len(self.n_required_fields)-1,len(nrf)-1)
+                if self.key_dict['fexpandable']:
+                    if n_fields < self.n_required_fields[ind]:
+                        return False,message
+                else:
+                    if n_fields != self.n_required_fields[ind]:
+                        return False,message
+            else:
+                break # ignore any lines past the first empty one
+
+        # Check that number of lines is same as number of required lines,
+        # or >= if keyword_ui is line expandable.
+        print(nrf,self.n_required_fields)
+        if self.key_dict['lexpandable']:
+            if len(nrf) < len(self.n_required_fields):
+               return False,message
+        else:
+            if len(nrf) != len(self.n_required_fields):
+               return False,message
+
+        return True, ''
+
     def get_values(self):
-        # This is easy. We can assume that the number of lines and fields is correct.
+        # This is easy. We can assume that the types of non-empty fields is
+        # correct, but need to validate that no required fields are empty.
         # No need to validate anything.
         values = []
         for ui_line in self.ui_elems:
             val_line = []
             for elem in ui_line:
                 v = elem.GetValue()
-                if v:
+                # Empty strings will not be included in the output.
+                # Need to add a "validate keyword" that checks that all
+                # required fields are filled.
+                if str(v):
                     val_line = val_line + [v]
             if val_line:
                 values = values + [val_line]
+
         return values
     
     def set_values(self,values):
@@ -369,9 +440,9 @@ class key_ui_elem():
         obj = evt.GetEventObject()
         keyword = obj.GetName()
         val = obj.GetValue()
-        
+
         self.enable_keyword_elements(val)
-        
+
 
     def ToggleButtonLabel(self,evt):
         obj = evt.GetEventObject()
@@ -379,15 +450,15 @@ class key_ui_elem():
             label = "True"
         else:
             label = "False"
-        obj.SetLabel(label)  
+        obj.SetLabel(label)
 
     def validate_float(self,evt,range=None):
         #print('validating float')
         obj = evt.GetEventObject()
         val=obj.GetValue()
+        ie.error = False
         inp_fl = inp_float(str(val))
-        
-        if inp_fl is None:
+        if ie.error:
             obj.SetForegroundColour(wx.RED)
             obj.SetFocus
             evt.Skip()
@@ -626,6 +697,14 @@ class MyFrame(wx.Frame):
     def on_press_panel1_sizer(self,event):
         # Get the toggle that was pressed.
         obj = event.GetEventObject()
+        # Validate that the currently viewed key_ui is valid.
+        if hasattr(self,"current_key_ui"):
+            is_valid,message = self.current_key_ui.validate_key_values()
+            if not is_valid:
+                md = wx.MessageDialog(self,message)
+                md.ShowModal()
+                obj.SetValue(False)
+                return None
         # Get the keyword from the button text.
         keyword = obj.GetLabelText()
         obj.SetValue(True)
@@ -633,15 +712,15 @@ class MyFrame(wx.Frame):
             if key_ui_elem.keyword == keyword:
                 #print(keyword,key_ui_elem.keyword)
                 key_ui_elem.ShowItems(True)
-                this_key_ui = key_ui_elem
+                self.current_key_ui = key_ui_elem
             else:
                 key_ui_elem.key_toggle.SetValue(False)
                 key_ui_elem.ShowItems(False)
 
-        splitter_window = this_key_ui.panel1.GetParent()
-        this_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
-        this_key_ui.panel2.SetVirtualSize(this_key_ui.panel2_sizer.GetMinSize())
-        this_key_ui.panel2.Layout()
+        splitter_window = self.current_key_ui.panel1.GetParent()
+        self.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
+        self.current_key_ui.panel2.SetVirtualSize(self.current_key_ui.panel2_sizer.GetMinSize())
+        self.current_key_ui.panel2.Layout()
 
     """
     on_press_panel2

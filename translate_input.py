@@ -184,6 +184,7 @@ def write_corvus_input(values_dict,file):
          inp_file.write(key)
          inp_file.write('{\n')
          for line in lines:
-            inp_file.write(' '.join(line)+'\n')
+            str_line = ' '.join([str(v) for v in line])
+            inp_file.write(str_line + '\n')
 
          inp_file.write('}\n') 

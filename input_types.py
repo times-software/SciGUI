@@ -84,11 +84,15 @@ class inp_float(float):
             return None
 
     def validate(self,range=None):
+        #print('validating float:')
+        #print('range: ',range)
+        #print('self: ',self)
+        ie.error = False
         if self is None:
             ie.error = True
             ie.error_message = 'Invalid value for float type input: ' + str(self)
             #print('self is None.')
-            return not ie.error_message
+            return not ie.error
         if range is not None:
             r = range.split(',')
             if not r[0]: # first part is empty, only has max val
