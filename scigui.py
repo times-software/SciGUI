@@ -7,27 +7,161 @@ import input_keys_dict
 import translate_input
 from input_types import *
 
+""" Make general scigui classes for each gui element: Frame, panel, notbook, 
+    split panel, sizer, text control, spin control, combo box, file chooser. 
+    Inside, have possibility to use wx, tk, ...
+"""
+__ui_type = 'wx'
+class toggle_button():
+    def __init__(self,panel,label,style,ui_type):
+        if __ui_type == 'wx':
+            self.toggle_button = wx.ToggleButton(self.panel1, lbel=keyword, style=wx.ALIGN_RIGHT)
+
+    def Show(self):
+        if __ui_type == 'wx':
+            self.toggle_button.Show()
+
+    def GetValue(self):
+        if ui_type == 'wx':
+            return self.toggle_button.GetValue()
+        pass
+
+
+    def SetValue(self,val):
+        if ui_type == 'wx':
+            self.toggle_button.SetValue(val)
+
+    def Bind(self,evt,handler):
+        if ui_type == 'wx':
+            self.Bind(evt,handler) 
+
+    def Add(self, sizer, proportion=0, flag=0, border=0, userData=None):
+        if ui_type == 'wx':
+            pass
+            # How do we do this?          
+        
+
+#class static_text():
+#    pass
+
+#class 
+
+
 """
 TO DO: 
-1. Make the split_window with keywords on left and input widgets on right
-   a new class. What to call it? input_window or something like that.
 2. Add notebook tabs for each category of input (to be added to config file).
    Categories:
       Structure (or maybe system)
       computational (MPI, multiprocessing, etc)
       code_specific (one for each code)
       DFT?
-3. Add dynamic wrapping of text to help.
-4. Add a new "file" type to the configuration. Other types?
-5. Create input file reader.
-7. Add importance: Required, important, useful, advanced.
-8. Add ranges, possible values, etc. to configuration file to set input widgets. 
 
 Questions:
 Default values - How should they propagate to codes? What if they should be different for different
                  codes? I think if there are code specific defaults, there should be no generic default.
 
 """
+""" input_page is a class that consists of one page with a split panel. The left side holds keywords, and the right
+    side holds the options for each keyword on the left side. 
+    input:
+        inp_dict - dictionary that holds all information about keywords to add to the input_page.
+        parent - parent window of the input page."""
+        
+class input_page():
+    def __init__(self,parent,inp_dict):
+        # This makes an input page with 
+        # Make everything below this into a function InputPage
+        self.splitter_window = wx.SplitterWindow(parent)
+        # Give it a sizer so that it can resize with the main frame.
+        #main_sizer = wx.BoxSizer(wx.HORIZONTAL) # Don't need this
+
+        # Add scroll panels inside each of the sides of the split window. 
+        self.panel1 = wx.lib.scrolledpanel.ScrolledPanel(self.splitter_window, -1, style=wx.SIMPLE_BORDER)
+        self.panel1.SetupScrolling()
+        self.panel2 = wx.lib.scrolledpanel.ScrolledPanel(self.splitter_window, -1, style=wx.SIMPLE_BORDER)
+        self.panel2.SetupScrolling()
+
+        # Add sizers for each of the scrolled panels.
+        self.panel1_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.panel2_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        #Set the sizers for each panel.
+        #main_panel.SetSizer(main_sizer)
+        self.panel1.SetSizer(self.panel1_sizer)
+        self.panel2.SetSizer(self.panel2_sizer)
+
+        # Below we will loop over the input keywords
+        # Hold index of the sizer that holds input fields for each keyword.
+        i_key = 0
+        text_size = wx.TextCtrl().GetTextExtent("W")
+        min_size = (text_size[0]*10, text_size[1]*2)
+        
+        
+        self.key_ui_dict = {}
+        for inpkey in sorted(inp_dict.keys()):
+            # Special keyword to indicate what type of input data this is.
+            # Ignore.
+            if inpkey ==  '_input_type': continue
+
+            self.key_ui_dict[inpkey] = key_ui_elem(inpkey,inp_dict[inpkey],self.panel1, self.panel2,min_size)
+            self.key_ui_dict[inpkey].ShowItems(False)
+            i_key += 1
+    
+
+        # Bind events (maybe this should be done above show?)
+        self.panel1.Bind(wx.EVT_TOGGLEBUTTON, self.on_press_panel1_sizer)
+        #self.panel2.Bind(wx.EVT_CHECKBOX, self.update_required)
+        #panel2.Bind(wx.EVT_BUTTON, self.on_press_panel2)
+        #self.main_notebook.AddPage(splitter_window,category)
+        
+        
+        #return splitter_window, panel1, panel2
+    
+    def on_press_panel1_sizer(self,event):
+        # Get the toggle that was pressed.
+        obj = event.GetEventObject()
+        # Validate that the currently viewed key_ui is valid.
+        if hasattr(self,"current_key_ui"):
+            is_valid,message = self.current_key_ui.validate_key_values()
+            if not is_valid:
+                md = wx.MessageDialog(self.splitter_window,message)
+                md.ShowModal()
+                obj.SetValue(False)
+                return None
+        # Get the keyword from the button text.
+        keyword = obj.GetLabelText()
+        obj.SetValue(True)
+        for key,key_ui_elem in self.key_ui_dict.items():
+            if key_ui_elem.keyword == keyword:
+                #print(keyword,key_ui_elem.keyword)
+                key_ui_elem.ShowItems(True)
+                self.current_key_ui = key_ui_elem
+            else:
+                key_ui_elem.key_toggle.SetValue(False)
+                key_ui_elem.ShowItems(False)
+
+        splitter_window = self.current_key_ui.panel1.GetParent()
+        self.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
+        self.current_key_ui.panel2.SetVirtualSize(self.current_key_ui.panel2_sizer.GetMinSize())
+        self.current_key_ui.panel2.Layout()
+
+    def show_keywords(self,keys):
+        for key,key_ui in self.key_ui_dict.items():
+            key_ui.ShowItems(False)
+            key_ui.key_toggle.Show(False)
+
+        for key in keys:
+            self.key_ui_dict[key].key_toggle.Show(True)
+        if self.current_key_ui.keyword in keys:
+            self.current_key_ui.ShowItems(True)
+        else:
+            # Show first keyword in required keys.
+            self.key_ui_dict[keys[0]].ShowItems(True)
+
+        self.panel1.Layout()
+        self.panel2.Layout()
+        self.splitter_window.Layout()
+
 """key_ui_elem is an object that holds all ui elements associated with a single keyword.
     Each keyword has a toggle button, and option widgets. The option widgets will be shown if
     the toggle button is pressed. 
@@ -38,6 +172,7 @@ class key_ui_elem():
         self.keyword = keyword
         self.min_size = min_size
         self.key_dict = key_dict
+        self.required = key_dict['required']
         # Get the number of required fields and lines
         n_line = 0
         self.n_required_fields = []
@@ -50,6 +185,8 @@ class key_ui_elem():
 
         self.panel1 = panel1
         self.panel2 = panel2
+        self.help_text = keyword.strip() + ':' + '\n' + key_dict['help']
+
         self.panel1_sizer = panel1.GetSizer()
         self.panel2_sizer = panel2.GetSizer()
         self.key_toggle = wx.ToggleButton(self.panel1, label=keyword, style=wx.ALIGN_RIGHT)
@@ -61,7 +198,6 @@ class key_ui_elem():
         self.panel2_sizer.Add(self.key_sizer,wx.ALL|wx.EXPAND,0)
         
         # Add the help text to the key_sizer next.
-        self.help_text = keyword.strip() + ':' + '\n' + key_dict['help']
         self.help_text_ui = wx.StaticText(panel2, label =self.help_text,style=wx.ALIGN_LEFT)
 
         # Make the text wrap at the edge of the right side panel. 
@@ -246,6 +382,7 @@ class key_ui_elem():
     
         if min_size2 is not None:
             inp_elem.SetMinSize(min_size2)
+            
 
         return inp_elem
    
@@ -361,6 +498,7 @@ class key_ui_elem():
     
     def ShowItems(self,val):
         self.key_sizer.ShowItems(val)
+        self.panel2_sizer.Layout()
 
 
     ################################################################################
@@ -443,7 +581,6 @@ class key_ui_elem():
 
         self.enable_keyword_elements(val)
 
-
     def ToggleButtonLabel(self,evt):
         obj = evt.GetEventObject()
         if obj.GetValue():
@@ -517,6 +654,19 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         
+        # Initialize the input definition
+        self.inp_def = input_keys_dict.input_definition_dict('corvus')
+        self.inpdict = self.inp_def.inp_def_dict
+        self.input_type = self.inpdict['_input_type']
+        del self.inpdict['_input_type'] # For now delete this. Might need it in the future?
+        # Get categories:
+        
+        self.categories = ['all'] + sorted(set(','.join([v['category'].lower() for v in self.inpdict.values()]).split(',')))
+        self.codes = ['all'] + sorted(set([v['code'].lower() for v in self.inpdict.values()]))
+        
+        #print(self.categories)
+        #print(self.codes)
+
         # Initialize the main window
         #First retrieve the screen size of the device
         screenSize = wx.DisplaySize()
@@ -542,13 +692,24 @@ class MyFrame(wx.Frame):
         self.splitter_window0 = wx.SplitterWindow(self)
         self.top_panel = wx.Panel(self.splitter_window0)
         self.top_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        #self.top_panel_hsizer1 = wx.BoxSizer(wx.HORIZONTAL)
         self.writeInputButton = wx.Button(self.top_panel,label="Write Input File")
         self.top_panel_sizer.Add(self.writeInputButton,1,wx.ALL,5)
         self.writeInputButton.Bind(wx.EVT_BUTTON,self.write_input_file)
         self.show_enabled_checkbox = wx.CheckBox(self.top_panel,label='Show only enabled input')
         self.top_panel_sizer.Add(self.show_enabled_checkbox,1,wx.ALL,5)
-        self.show_enabled_checkbox.Bind(wx.EVT_CHECKBOX,self.show_only_enabled)
-        
+        self.show_enabled_checkbox.Bind(wx.EVT_CHECKBOX,self.filter_keywords)
+        self.category_choice = wx.Choice(self.top_panel,name = "category", choices = self.categories)
+        self.category_choice.SetSelection(self.category_choice.FindString('category: property, code: general'))
+        self.top_panel_sizer.Add(self.category_choice,1,wx.ALL,5)
+        self.category_choice.Bind(wx.EVT_CHOICE,self.filter_keywords)
+        self.code_choice = wx.Choice(self.top_panel,name = "code", choices = self.codes)
+        self.code_choice.SetSelection(self.code_choice.FindString('general'))
+        self.top_panel_sizer.Add(self.code_choice,1,wx.ALL,5)
+        self.code_choice.Bind(wx.EVT_CHOICE,self.filter_keywords) 
+        #wx.CallAfter(self.code_choice.SetLabel, 'code')
+        #wx.CallAfter(print("label ",self.code_choice.GetLabel()))
+
         #self.top_panel_sizer.Add()
         self.Show()
         self.top_panel.SetSizer(self.top_panel_sizer)
@@ -571,17 +732,27 @@ class MyFrame(wx.Frame):
         # defaults - default values if any.
         # Will want to add more later, i.e., names, importance, category, and anything else 
         # necessary or convenient.
-        # The ui_elem_dict will hold the ui elements associated with each keyword. 
-        self.ui_elem_dict = dict()
+        
         #self.inpdict = readconfig.read_config_file()
-        self.inpdict = input_keys_dict.input_definition_dict('corvus')
-        del self.inpdict['_input_type'] # For now delete this. Might need it in the future?
-
+     
+        #exit()
         self.values_dict = dict()
       
         # Make a split window. Left side will show all keywords (cards), right side will
         # show the input fields of the currently selected keyword.
-        splitter_window1, panel1, panel2 = self.MakeInputPage("All Keywords")
+        # The ui_elem_dict will hold the ui elements associated with each keyword. 
+        self.ui_elem_dict = dict()
+        self.inp_page = input_page(self.main_notebook,self.inpdict)
+        self.main_notebook.AddPage(self.inp_page.splitter_window,"category: property, code: general")
+
+        self.showNextButton = wx.Button(self.top_panel,label="Next")
+        self.top_panel_sizer.Add(self.showNextButton,1,wx.ALL,5)
+        self.showNextButton.Bind(wx.EVT_BUTTON,self.show_next_required)
+
+        self.showAllRequired = wx.CheckBox(self.top_panel,label="Show all required")
+        self.top_panel_sizer.Add(self.showAllRequired,1,wx.ALL,5)
+        self.showAllRequired.Bind(wx.EVT_CHECKBOX,self.show_all_required)
+        #splitter_window1, panel1, panel2 = self.MakeInputPage("All Keywords")
         #splitter_window2, panel3, panel4 = self.MakeInputPage("Copy of All Keywords")
         # Put the two panels inside the split window.
         # This needs to happen after self.Show(). How should this be done?
@@ -593,72 +764,24 @@ class MyFrame(wx.Frame):
         #self.key_ui_dict['cell_struc_xyz_red'].set_values([['A',0,0,0],['B',1.0,1.0,1.0]])
 
         self.splitter_window0.SplitHorizontally(self.top_panel,self.main_notebook,int(screenHeight/8))
-        splitter_window1.SplitVertically(panel1,panel2,int(screenWidth/2))
+        self.inp_page.splitter_window.SplitVertically(self.inp_page.panel1,self.inp_page.panel2,int(screenWidth/3))
         #splitter_window2.SplitVertically(panel3,panel4,0)
         self.Bind(wx.EVT_CLOSE,self.onExit)
 
         self.Layout()
-        
-        
-
-
-    def MakeInputPage(self,category):
-        # Make everything below this into a function InputPage
-        splitter_window = wx.SplitterWindow(self.main_notebook)
-        # Give it a sizer so that it can resize with the main frame.
-        #main_sizer = wx.BoxSizer(wx.HORIZONTAL) # Don't need this
-
-        # Add scroll panels inside each of the sides of the split window. 
-        panel1 = wx.lib.scrolledpanel.ScrolledPanel(splitter_window, -1, style=wx.SIMPLE_BORDER)
-        panel1.SetupScrolling()
-        panel2 = wx.lib.scrolledpanel.ScrolledPanel(splitter_window, -1, style=wx.SIMPLE_BORDER)
-        panel2.SetupScrolling()
-
-        # Add sizers for each of the scrolled panels.
-        panel1_sizer = wx.BoxSizer(wx.VERTICAL)
-        panel2_sizer = wx.BoxSizer(wx.VERTICAL)
-
-        #Set the sizers for each panel.
-        #main_panel.SetSizer(main_sizer)
-        panel1.SetSizer(panel1_sizer)
-        panel2.SetSizer(panel2_sizer)
-
-        # Below we will loop over the input keywords
-        # Hold index of the sizer that holds input fields for each keyword.
-        i_key = 0
-        min_size = (int(self.GetSize().width/10),int(self.GetSize().height/20))
-        
-        self.key_ui_dict = {}
-        for inpkey in sorted(self.inpdict.keys()):
-            # Special keyword to indicate what type of input data this is.
-            # Ignore.
-            if inpkey ==  '_input_type': continue
-
-            self.key_ui_dict[inpkey] = key_ui_elem(inpkey,self.inpdict[inpkey],panel1, panel2,min_size)
-            self.key_ui_dict[inpkey].ShowItems(False)
-            i_key += 1
-    
-
-        # Bind events (maybe this should be done above show?)
-        panel1.Bind(wx.EVT_TOGGLEBUTTON, self.on_press_panel1_sizer)
-        #panel2.Bind(wx.EVT_BUTTON, self.on_press_panel2) 
-        self.main_notebook.AddPage(splitter_window,category) 
-        
-        
-        return splitter_window, panel1, panel2
-        
-        
-
+        self.required = ['target_list']
+        self.show_required(self.required[0])
+        print('required at initialization',self.required)
 
     def get_values_dict(self):
         self.values_dict = {}
-        for key,key_ui in self.key_ui_dict.items():
+        for key,key_ui in self.inp_page.key_ui_dict.items():
             if key_ui.enable_checkbox.GetValue(): self.values_dict[key] = key_ui.get_values()
         
     def set_values(self,values_dict):
         for key,val in values_dict.items():
-            self.key_ui_dict[key].set_values(val)
-            self.key_ui_dict[key].ShowItems(False)
+            self.inp_page.key_ui_dict[key].set_values(val)
+            self.inp_page.key_ui_dict[key].ShowItems(False)
         
 
 
@@ -668,27 +791,194 @@ class MyFrame(wx.Frame):
     #####################################################################
     # Event handlers
     #####################################################################
-    # Show only the keyword toggle buttons that the user has enabled.
-    def show_only_enabled(self,evt):
-        obj = evt.GetEventObject()
-        val = obj.GetValue()
-        for key,key_ui in self.key_ui_dict.items():
-            if val:
-                # Check enabled checkbox is true/false
-                enabled = key_ui.enable_checkbox.GetValue()
-                if not enabled: 
-                    show = False
+
+    # Show only the kewords selected by the filter choices.
+    #def show_only_required_keywords(self):
+
+    def show_next_required(self,evt):
+        # Validate current key.
+        if self.required:
+            # Get the current reuirement.
+            req = self.required[0]
+            if req in self.categories:
+                # This is an entire category of keywords. Need to check if at least one of them is valid.
+                is_valid = True
+                keys = [key for key in self.inpdict if req in self.inpdict[key]['category']]
+                
+                # Check if current keyword is part of keys. If it is, set req to current keyword and continue.
+                if not hasattr(self.inp_page,"current_key_ui"):
+                    is_valid = False
+                    message = 'Requirement not met. One of the current keywords in the category ' + req + \
+                        ' must be filled out. Please select a keyword from the left panel and fill it out.'
+                    md = wx.MessageDialog(self.inp_page.splitter_window,message)
+                    md.ShowModal()
+                    return
+                if self.inp_page.current_key_ui.keyword not in keys:
+                    is_valid = False
+                    message = 'Requirement not met. One of the current keywords in the category ' + req + \
+                        ' must be filled out. Please select a keyword from the left panel and fill it out.'
+                    md = wx.MessageDialog(self.inp_page.splitter_window,message)
+                    md.ShowModal()
+                    return
                 else:
-                    show = True
+                    # The current keyword is an element of the category. We will want to add it's required keys to the list.
+                    req = self.inp_page.current_key_ui.keyword
 
-                key_ui.key_toggle.Show(show)
+            
+            # Now check that the currently selected keyword is 
+            if hasattr(self.inp_page,"current_key_ui"):
+                is_valid,message = self.inp_page.current_key_ui.validate_key_values()
+                if not is_valid:
+                    md = wx.MessageDialog(self.inp_page.splitter_window,message)
+                    md.ShowModal()
+                    return
+                else:
+                    # Delete the first requirement and move to next.
+                    self.required.pop(0)
+                    if req in self.inpdict: self.update_required(req)
+                    #print('required inside show_next: ', self.required,req)
+                    
+                    # If this was the last requirement, disable the button.
+                    if not self.required:
+                        # Disable next button
+                        self.showNextButton.Disable()
+                        return
+                    self.show_required(self.required[0])
             else:
-                key_ui.key_toggle.Show(True)
+                message = "Something is wrong in show_next_required. current_key_ui not set."
+                md = wx.MessageDialog(self.inp_page.splitter_window,message)
+                md.ShowModal()    
+        else:
+            message = "Something is wrong in show_next_required. self.required is empty."
+            md = wx.MessageDialog(self.inp_page.splitter_window,message)
+            md.ShowModal()
 
+    def show_required(self,req):
+        # Required can be a specific keyword, or it could be an entire category,
+        # such as "structure".
+        if req in self.inp_page.key_ui_dict:
+            self.show_and_enable_keyword(req)
+        elif req in self.categories:
+            self.category_choice.SetSelection(self.category_choice.FindString(req))
+            self.show_filtered()
+
+    def show_all_required(self,evt):
+        # Get required of current ui_key.
+        if self.showAllRequired.GetValue():
+            if self.required:
+                self.show_filtered(all_enabled = True)
+                # Get all required keys.
+                keys = [key for key in self.required if key in self.inpdict]
+                # Get all required categories.
+                categories = [c for c in self.required if c in self.categories]
+                # Get all keys from each category
+                ckeys = []
+                for c in categories:
+                    ckeys = ckeys + [key for key in self.inpdict if c in self.inpdict[key]['category']]
+                keys = keys + ckeys 
+                print('required inside show_all_required:')
+                print(keys)
+                self.inp_page.show_keywords(keys)
+                self.inp_page.panel1_sizer.Layout()
+                self.inp_page.panel2.Layout()
+                
+                
+    def update_required(self,key):
+        # Get new required keys/categories from this key.
+        print('start of update_required')
+        print(self.required)
+        if 'required' not in self.inpdict[key]: return
+        
+        if self.inpdict[key]['required'] is None:
+            return
+        else:
+            # If there is only one element of the "required"
+            # dictionary, update with this value.
+            if len(self.inpdict[key]['required']) == 1:
+                self.required = self.inpdict[key]['required'] + self.required
+            else:
+                # Now the "required" dictionary holds one list 
+                # for each possible value of the option of the keyword, 
+                # and there could be multiple values associated with a single keyword.
+                vals = self.inp_page.key_ui_dict[key].get_values()
+                new_reqs = []
+                for val_line in vals:
+                    for val in val_line:                
+                        # Get the value of the associated choice ui element
+                        if str(val) in self.inpdict[key]['required']:
+                            #print(str(val),self.inpdict[key]['required'][str(val)])
+                            new_reqs = new_reqs + self.inpdict[key]['required'][str(val)]
+
+                self.required = new_reqs + self.required                
+            
+            # Get rid of duplicates 
+            req = []
+            [req.append(x) for x in self.required if x not in req]
+            self.required = req
+    
+    def show_and_enable_keyword(self,keyword):
+        for key,key_ui_elem in self.inp_page.key_ui_dict.items():
+            if key_ui_elem.keyword == keyword:
+                #print(keyword,key_ui_elem.keyword)
+                key_ui_elem.ShowItems(True)
+                key_ui_elem.enable_checkbox.SetValue(True)
+                key_ui_elem.key_toggle.SetValue(True)
+                key_ui_elem.key_toggle.Show(True)
+                self.inp_page.current_key_ui = key_ui_elem
+                key_ui_elem.enable_keyword_elements(True)
+            else:
+                key_ui_elem.key_toggle.SetValue(False)
+                key_ui_elem.key_toggle.Show(False)
+                key_ui_elem.ShowItems(False)
+
+        splitter_window = self.inp_page.current_key_ui.panel1.GetParent()
+        self.inp_page.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
+        self.inp_page.current_key_ui.panel2.SetVirtualSize(self.inp_page.current_key_ui.panel2_sizer.GetMinSize())
+        self.inp_page.current_key_ui.panel2.Layout()
+        self.inp_page.panel1_sizer.Layout()
+            
+    def filter_keywords(self,evt):
+        self.show_filtered()
+        #print('show_filtered triggered: ',evt)
+
+    def show_filtered(self,all_enabled=False):
+        # Filter keywords by code, category, and enabled if show_enabled_only is checkted.
+        # Get current selections.
+        if all_enabled:
+            self.show_enabled_checkbox.SetValue(True)
+            self.category_choice.SetSelection(self.category_choice.FindString('all'))
+            self.code_choice.SetSelection(self.category_choice.FindString('all'))
+            
+        show_only_enabled = self.show_enabled_checkbox.GetValue()
+        category = self.category_choice.GetString(self.category_choice.GetSelection())
+        code = self.code_choice.GetString(self.code_choice.GetSelection())
+        self.main_notebook.SetPageText(0,'category: ' + category + ', code: ' + code)
+        
+        
+
+        for key,key_ui in self.inp_page.key_ui_dict.items():
+            enabled = key_ui.enable_checkbox.GetValue()
+            in_category = category in self.inpdict[key]['category'].lower() or (category == 'all')
+            in_code = code in self.inpdict[key]['code'].lower() or (code == 'all')
+            #print('show_only_enabled, enabled, in_category, in_code')
+            #print(show_only_enabled, enabled, in_category, in_code)
+            if show_only_enabled and not enabled:
+                show = False
+            else:
+                # Now filter by category and code.
+                if in_category and in_code:
+                    show = True
+                else:
+                    show = False
+
+            key_ui.key_toggle.Show(show)
             panel1_sizer = key_ui.panel1_sizer
-
-        panel1_sizer.Layout()
-
+            panel1_sizer.Layout()
+            self.inp_page.panel1.Layout()
+            self.inp_page.splitter_window.Layout()
+            self.inp_page.panel1.FitInside()
+            self.inp_page.panel2.Layout()
+            self.inp_page.panel2.FitInside()
 
     """
     on_press_panel1_sizer
@@ -824,6 +1114,11 @@ class MyFrame(wx.Frame):
                     return
 
                 self.set_values(self.values_dict)
+                # Set the filter and code to all, and set show only enabled.
+                
+                self.show_filtered(all_enabled = True)
+                self.inp_page.current_key_ui.ShowItem(True)
+                
 
                 
         elif evt.GetId() == wx.ID_ABOUT:

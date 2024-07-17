@@ -22,7 +22,7 @@ class input_dict(dict):
             print('Error: \'_input_type\' not defined in input definition dictionary.')
             exit()
 
-        inp_def_dict = corvus_keys_dict.input_definition_dict('corvus')
+        #inp_def = corvus_keys_dict.input_definition_dict('corvus')
         reader_function = read_corvus_input
         inp_dict, is_valid, error_message = reader_function(infile)
         self.update(inp_dict)
@@ -71,7 +71,7 @@ def read_corvus_input(file):
    while ik < len(key_list):
       key = key_list[ik].replace('\n','')
       #print(inp_def[key]['kinds'][0][0].__name__)
-      if inp_def[key]['kinds'][0][0].__name__ == 'inp_paragraph':
+      if inp_def.inp_def_dict[key]['kinds'][0][0].__name__ == 'inp_paragraph':
          # If this is a paragraph type, we need a list of lists. Each inner list
          # is a single string holding an entire line of text.
          inp_dict[key] = [list(filter(None,key_list[ik+1].split('\n')))]
@@ -79,7 +79,7 @@ def read_corvus_input(file):
          # This is not a paragraph, interpret each separate word as a field.
          inp_key_vals = [v.split() for v in list(filter(None,key_list[ik+1].split('\n')))]
          print('inp_key_vals',inp_key_vals)
-         inp_dict[key],is_valid,message = cast_input_key_vals(inp_key_vals,key,inp_def)
+         inp_dict[key],is_valid,message = cast_input_key_vals(inp_key_vals,key,inp_def.inp_def_dict)
          if not is_valid:
             return inp_dict, is_valid, message
          #print(inp_dict[key])
@@ -89,7 +89,7 @@ def read_corvus_input(file):
 
 # Cast string values to the correct types, validating as we go.
 # returns - new_values, is_valid, error_message
-def cast_input_key_vals(vals,key,inp_def):
+def cast_input_key_vals(vals,key,inp_dict):
    #print('##############')
    #print(key,val)
    #print('##############')
@@ -106,7 +106,7 @@ def cast_input_key_vals(vals,key,inp_def):
          return new_vals, False, message
 
    # First check that key exists in input definition dictionary.
-   if key not in inp_def:
+   if key not in inp_dict:
          message='Unrecognized keyword in input:' + key
          new_vals = vals 
          return new_vals, False, message
@@ -114,47 +114,47 @@ def cast_input_key_vals(vals,key,inp_def):
    # Now check that each value in this set has the correct kind and ranges.
    il = 0
    for val_line in vals:
-         if il > len(inp_def[key]['kinds'])-1:
-            if not inp_def[key]['lexpandable']:
+         if il > len(inp_dict[key]['kinds'])-1:
+            if not inp_dict[key]['lexpandable']:
                message = ('Too many lines defined in input for keyword: ' + key + 
-               '. Should be ' + str(len(inp_def[key]['kinds'])) + ' lines of input.')
+               '. Should be ' + str(len(inp_dict[key]['kinds'])) + ' lines of input.')
                return vals, False, message
             
          # If this is line expandable, we want to use the last line of kinds defined.
-         iline = min(il,len(inp_def[key]['kinds'])-1)
+         iline = min(il,len(inp_dict[key]['kinds'])-1)
 
          # Now loop over the fields
          iv = 0
          new_val_line = []
          for v in val_line:
             # Check if there are more fields than those defined.
-            if iv > len(inp_def[key]['kinds'][iline]):
-               if not inp_def[key]['fexpandable']:
+            if iv > len(inp_dict[key]['kinds'][iline]):
+               if not inp_dict[key]['fexpandable']:
                      message = ('Too many fields defined in input for keyword: ' + key +
-                     '. Should be ' + str(len(inp_def[key]['kinds'][iline])) + ' fields.')
+                     '. Should be ' + str(len(inp_dict[key]['kinds'][iline])) + ' fields.')
                      return vals, False, message
 
             # If this is an expandable number of fields, we want to use the last kind defined.
-            ival = min(iv,len(inp_def[key]['kinds'][iline])-1)
+            ival = min(iv,len(inp_dict[key]['kinds'][iline])-1)
 
             # Cast the string to the correct input type, then validate it.
-            print(key,inp_def[key]['kinds'][iline][ival])
-            new_val = inp_def[key]['kinds'][iline][ival](v)
+            print(key,inp_dict[key]['kinds'][iline][ival])
+            new_val = inp_dict[key]['kinds'][iline][ival](v)
             if input_errors.error: 
                message = input_errors.error_message
                input_errors.error_message = 'Incorrect type in field #' + str(iv+1) + ' of keyword: ' + key + \
                                    '. ' + message
             
-            print(key,inp_def[key]['ranges'])
+            print(key,inp_dict[key]['ranges'])
             print('new_val=',new_val,v)
-            if inp_def[key]['ranges'] is not None:
-               print(key,inp_def[key]['ranges'])
+            if inp_dict[key]['ranges'] is not None:
+               print(key,inp_dict[key]['ranges'])
                # If ranges exist for this keyword, check that input value is in range.
                # List of ranges can be shorter than list of fields or list of kinds. Use
                # last defined ranges element to check ranges.
-               iliner = min(il,len(inp_def[key]['ranges'])-1)
-               ivalr = min(iv,len(inp_def[key]['ranges'][iliner])-1)
-               is_valid = new_val.validate(inp_def[key]['ranges'][iliner][ivalr])
+               iliner = min(il,len(inp_dict[key]['ranges'])-1)
+               ivalr = min(iv,len(inp_dict[key]['ranges'][iliner])-1)
+               is_valid = new_val.validate(inp_dict[key]['ranges'][iliner][ivalr])
                if not is_valid:
                      message = ('Incorrect type or range for field #' + str(iv+1) + ' associated with the ' +
                      'keyword: ' + key + '. ' + input_errors.error_message)
