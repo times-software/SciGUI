@@ -1,0 +1,45 @@
+data_LFSO
+_symmetry_space_group_name_H-M P1
+_cell_length_a 5.174783
+_cell_length_b 8.946505
+_cell_length_c 5.167839
+_cell_angle_alpha 90
+_cell_angle_beta 109.65775
+_cell_angle_gamma 90
+_cell_volume 225.307577
+loop_
+	_symmetry_equiv_pos_as_xyz
+	 'x, y, z'
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_site_symmetry_multiplicity
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_B_iso_or_equiv
+Li1 Li+1   1 0 0 0 1 0.22
+Li2 Li+1   1 0 0.333 0 1 0.22
+Li3 Li+1   1 0 0.666 0 1 0.22
+Li1_1 Li+1   1 0.5 0.5 0 1 0.22
+Li2_1 Li+1   1 0.5 0.833 0 1 0.22
+Li3_1 Li+1   1 0.5 0.166 0 1 0.22
+Li4 Li+1   1 0.5 0 0.5 1 0.22
+Fe1 Fe+3   1 0.5 0.333 0.5 1 0.22
+Sb1 Sb+5   1 0.5 0.666 0.5 1 0.22
+Li4_1 Li+1   1 0 0.5 0.5 1 0.22
+Fe1_1 Fe+3   1 0 0.833 0.5 1 0.22
+Sb1_1 Sb+5   1 0 0.166 0.5 1 0.22
+O1 O-2   1 0.77195 0 0.2647 1 0.24
+O2 O-2   1 0.23611 0.32984 0.7353 1 0.24
+O3 O-2   1 0.25775 0.17201 0.2647 1 0.24
+O1_1 O-2   1 0.27195 0.5 0.2647 1 0.24
+O2_1 O-2   1 0.73611 0.82984 0.7353 1 0.24
+O3_1 O-2   1 0.75775 0.67201 0.2647 1 0.24
+O1_2 O-2   1 0.22805 0 0.7353 1 0.24
+O2_2 O-2   1 0.26389 0.82984 0.2647 1 0.24
+O3_2 O-2   1 0.74225 0.17201 0.7353 1 0.24
+O1_3 O-2   1 0.72805 0.5 0.7353 1 0.24
+O2_3 O-2   1 0.76389 0.32984 0.2647 1 0.24
+O3_3 O-2   1 0.24225 0.67201 0.7353 1 0.24
