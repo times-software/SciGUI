@@ -1,5 +1,5 @@
 import re
-import input_keys_dict
+import input_definition
 import input_errors
 
 
@@ -42,7 +42,7 @@ class input_dict(dict):
 # Reads a corvus input file and returns a dictionary: keyword -> list(list())
 def read_corvus_input(file):
    # Get the input_definition dictionary.
-   inp_def = input_keys_dict.input_definition_dict('corvus')
+   inp_def = input_definition.input_definition_dict('corvus')
    # Get full string of file text.
    with open(file) as f:
       lines = f.readlines()

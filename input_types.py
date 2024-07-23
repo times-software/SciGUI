@@ -124,13 +124,15 @@ class inp_int(int):
         if range is not None:
             r = range.split(',')
             if not r[0]: # first part is empty, only has max val
-                ie.error = int(r[1]) <= self
-                ie.error_message = 'Value must be >= ' + r[1]
+                ie.error = (int(r[1]) >= self)
+                ie.error_message = 'Value must be <= ' + r[1]
             elif not r[1]:
-                ie.error = int(r[0]) >= self
-                ie.error_message = 'Value must be <= ' + r[0]
+                
+                
+                ie.error = not (int(r[0]) <= self)
+                ie.error_message = 'Value must be >= ' + r[0]
             else:
-                ie.error = (int(r[0]) <= self) and (self <= int(r[1]))
+                ie.error = not (int(r[0]) <= self) and (self <= int(r[1]))
                 ie.error_message = 'Value must be in range (' + r[0] + ',' + r[1] + ')'
 
         return not ie.error

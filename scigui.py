@@ -3,50 +3,173 @@ import wx.lib.scrolledpanel
 import input_errors as ie
 #import os, sys, subprocess, shutil #, resource
 #import readconfig
-import input_keys_dict
+import input_definition
 import translate_input
 from input_types import *
+import os
+import pathlib
 
 """ Make general scigui classes for each gui element: Frame, panel, notbook, 
     split panel, sizer, text control, spin control, combo box, file chooser. 
     Inside, have possibility to use wx, tk, ...
 """
 __ui_type = 'wx'
-class toggle_button():
-    def __init__(self,panel,label,style,ui_type):
-        if __ui_type == 'wx':
-            self.toggle_button = wx.ToggleButton(self.panel1, lbel=keyword, style=wx.ALIGN_RIGHT)
 
-    def Show(self):
-        if __ui_type == 'wx':
-            self.toggle_button.Show()
+class input_element():
+    def __init__(self,parent, kind, name_lbl = None, label = None, min_size = None, default = None, range = None):
+        # Make a vertical sizer
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        # If label exists, create a label to go above the input_widget
+        if label is None: 
+            lbl = ' '
+        else:
+            lbl = label
+
+        #print('label=',lbl)
+        self.label_text = wx.StaticText(parent, label = lbl,style=wx.ALIGN_LEFT)
+        self.sizer.Add(self.label_text,1,wx.TOP,2)
+    
+        min_size2 = min_size
+        if kind.__name__ == 'inp_float':
+            # Float input
+            
+            if default is not None:
+                try:
+                    val = float(default)
+                except:
+                    print('Wrong default or kind for keyword: ', name_lbl, ' in config file.')
+                    print('Should be float.')
+                self.widget = wx.TextCtrl(parent,value=default,name=name_lbl)
+                #inp_elem = wx.lib.agw.floatspin.FloatTextCtrl(panel,name=name_lbl)
+            else:
+                self.widget = wx.TextCtrl(parent,name=name_lbl)
+                #inp_elem = wx.lib.agw.floatspin.FloatTextCtrl(panel,name=name_lbl)
+            #inp_elem.Bind(wx.EVT_KILL_FOCUS,self.validate_float)
+            self.widget.Bind(wx.EVT_KEY_UP, lambda event: self.validate_float(event, range))
+            self.widget.Bind(wx.EVT_CHAR,self.validate_float_chars)
+        elif kind.__name__ == 'inp_int':
+            # Integer input. Add spin control
+            if default is not None:
+                try:
+                    val = int(default)
+                except:
+                    print('Wrong default or kind for keyword: ', name_lbl, ' in config file.')
+                    print('Should be integer.')
+                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=val,name=name_lbl)
+            else:
+                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=0,name=name_lbl)
+        elif kind.__name__ == 'inp_bool':
+            # Logical input
+            if default is not None:
+                if default == "True":
+                    val = True
+                elif default == "False":
+                    val = False
+                else:
+                    print('Wrong default or kind for keyword: ', name_lbl, ' in config file.')
+                    print('Should be integer.')
+                    exit()
+            else:
+                val = False
+            
+            if val:
+                lbl = "True"
+            else:
+                lbl = "False"
+
+            self.widget = wx.ToggleButton(parent,label=lbl,name=name_lbl)
+            self.widget.SetValue(val)
+            self.widget.Bind(wx.EVT_TOGGLEBUTTON, self.ToggleButtonLabel)
+            
+        elif kind.__name__ == 'inp_str': 
+            # String input
+            if default is not None:
+                self.widget = wx.TextCtrl(parent,value=default,name=name_lbl)
+            else:
+                self.widget = wx.TextCtrl(parent,name=name_lbl)
+        elif kind.__name__ == 'inp_paragraph':
+            # Paragraph?
+            if default is not None:
+                self.widget = wx.TextCtrl(parent,value=default,name=name_lbl,style=wx.TE_MULTILINE|wx.HSCROLL)
+            else:
+                self.widget = wx.TextCtrl(parent,name=name_lbl,style=wx.TE_MULTILINE|wx.HSCROLL)
+        elif kind.__name__ == 'inp_file_name':
+            self.widget = wx.FilePickerCtrl(parent, name = name_lbl)
+            min_size2 = (min_size[0]*2,min_size[1])
+        elif kind.__name__ == 'inp_choice':
+            #print('range=',range)
+            #exit()
+            self.widget = wx.Choice(parent,name = name_lbl, choices = [''] + range.split(','))
+        else:
+            ie.error_message = 'Invalid type in input_types.py: ' + kind.__name__
+            ie.input_error = True
+            ie.error_type = 'fatal'
+    
+        if min_size2 is not None:
+            self.widget.SetMinSize(min_size2)
+            
+        self.sizer.Add(self.widget,1,wx.TOP,2)
+
+    def Show(self,val):
+        self.label_text.Show(False)
+        self.widget.Show(False)
+
+    def Enable(self,val):
+        self.widget.Enable(val)
+
+    def ToggleButtonLabel(self,evt):
+        obj = evt.GetEventObject()
+        if obj.GetValue():
+            label = "True"
+        else:
+            label = "False"
+        obj.SetLabel(label)
 
     def GetValue(self):
-        if ui_type == 'wx':
-            return self.toggle_button.GetValue()
-        pass
-
-
+        return self.widget.GetValue()
+    
     def SetValue(self,val):
-        if ui_type == 'wx':
-            self.toggle_button.SetValue(val)
+        self.widget.SetValue(val)
 
-    def Bind(self,evt,handler):
-        if ui_type == 'wx':
-            self.Bind(evt,handler) 
+    def validate_float(self,evt,range=None):
+        #print('validating float')
+        obj = evt.GetEventObject()
+        val=obj.GetValue()
+        ie.error = False
+        inp_fl = inp_float(str(val))
+        if ie.error:
+            obj.SetForegroundColour(wx.RED)
+            obj.SetFocus
+            #evt.Skip()
+            return
 
-    def Add(self, sizer, proportion=0, flag=0, border=0, userData=None):
-        if ui_type == 'wx':
-            pass
-            # How do we do this?          
+        if inp_fl.validate(range):
+            val=float(obj.GetValue())
+            obj.SetForegroundColour(wx.BLACK)
+        else:
+            obj.SetForegroundColour(wx.RED)
+            #floatErrorDialog = wx.MessageDialog(self,"ERROR: Input requires float.",style=wx.ICON_NONE)
+            #if floatErrorDialog.ShowModal() == wx.ID_OK:
+            #floatErrorDialog.Destroy()
+
+            obj.SetFocus()
+
+        #evt.Skip()
+        return
+
+    def validate_float_chars(self,evt):
+        key = evt.GetKeyCode()
+
+        if key < wx.WXK_SPACE or key == wx.WXK_DELETE or key > 255:
+            evt.Skip()
+            return
+
+        if chr(key) in "0123456789-.eE":
+            evt.Skip()
+            return
         
-
-#class static_text():
-#    pass
-
-#class 
-
-
+        return
+        
 """
 TO DO: 
 2. Add notebook tabs for each category of input (to be added to config file).
@@ -68,8 +191,8 @@ Default values - How should they propagate to codes? What if they should be diff
         parent - parent window of the input page."""
         
 class input_page():
-    def __init__(self,parent,inp_dict):
-        # This makes an input page with 
+    def __init__(self,parent,inp_def):
+        self.inp_dict = inp_def.inp_def_dict
         # Make everything below this into a function InputPage
         self.splitter_window = wx.SplitterWindow(parent)
         # Give it a sizer so that it can resize with the main frame.
@@ -98,12 +221,26 @@ class input_page():
         
         
         self.key_ui_dict = {}
-        for inpkey in sorted(inp_dict.keys()):
+        if hasattr(inp_def,'first_keys'): 
+            # First show the "first_keys", then show rest in alphabetical order.
+            first_keys = inp_def.first_keys
+            for inpkey in first_keys:
+                # Special keyword to indicate what type of input data this is.
+                # Ignore.
+                if inpkey ==  '_input_type': continue
+
+                self.key_ui_dict[inpkey] = key_ui_elem(inpkey,self.inp_dict[inpkey],self.panel1, self.panel2,min_size)
+                self.key_ui_dict[inpkey].ShowItems(False)
+                i_key += 1
+        else:
+            first_keys = []
+
+        for inpkey in sorted(self.inp_dict.keys()):
             # Special keyword to indicate what type of input data this is.
             # Ignore.
-            if inpkey ==  '_input_type': continue
+            if inpkey ==  '_input_type' or inpkey in first_keys: continue
 
-            self.key_ui_dict[inpkey] = key_ui_elem(inpkey,inp_dict[inpkey],self.panel1, self.panel2,min_size)
+            self.key_ui_dict[inpkey] = key_ui_elem(inpkey,self.inp_dict[inpkey],self.panel1, self.panel2,min_size)
             self.key_ui_dict[inpkey].ShowItems(False)
             i_key += 1
     
@@ -142,13 +279,15 @@ class input_page():
 
         splitter_window = self.current_key_ui.panel1.GetParent()
         self.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
-        self.current_key_ui.panel2.SetVirtualSize(self.current_key_ui.panel2_sizer.GetMinSize())
-        self.current_key_ui.panel2.Layout()
+        # self.panel2.SetVirtualSize(self.current_key_ui.panel2_sizer.GetMinSize())
+        # self.panel2.Layout()
+        # self.panel2.FitInside()
+        do_layout(self.panel2)
 
     def show_keywords(self,keys):
         for key,key_ui in self.key_ui_dict.items():
             key_ui.ShowItems(False)
-            key_ui.key_toggle.Show(False)
+            key_ui.key_toggle.Show(False) 
 
         for key in keys:
             self.key_ui_dict[key].key_toggle.Show(True)
@@ -157,10 +296,13 @@ class input_page():
         else:
             # Show first keyword in required keys.
             self.key_ui_dict[keys[0]].ShowItems(True)
+            self.current_key_ui = self.key_ui_dict[keys[0]]
+            self.current_key_ui.key_toggle.SetValue(True)
 
-        self.panel1.Layout()
-        self.panel2.Layout()
-        self.splitter_window.Layout()
+        # self.panel1.Layout()
+        # self.panel2.Layout()
+        # self.splitter_window.Layout()
+        do_layout((self.panel1,self.panel2,self.splitter_window))
 
 """key_ui_elem is an object that holds all ui elements associated with a single keyword.
     Each keyword has a toggle button, and option widgets. The option widgets will be shown if
@@ -185,7 +327,7 @@ class key_ui_elem():
 
         self.panel1 = panel1
         self.panel2 = panel2
-        self.help_text = keyword.strip() + ':' + '\n' + key_dict['help']
+        self.help_text = keyword.strip() + ':' + '\n' + '\n'.join(key_dict['help'])
 
         self.panel1_sizer = panel1.GetSizer()
         self.panel2_sizer = panel2.GetSizer()
@@ -206,9 +348,11 @@ class key_ui_elem():
 
         # Make a checkbox to use this input:
         self.enable_checkbox = wx.CheckBox(panel2, label="Enable:",name=keyword)
-        self.key_sizer.Add(self.enable_checkbox,0,wx.LEFT|wx.ALIGN_LEFT,15)
+        self.key_sizer.Add(self.enable_checkbox,0,wx.LEFT|wx.TOP|wx.ALIGN_LEFT,15)
         self.enable_checkbox.Bind(wx.EVT_CHECKBOX,self.enable_keyword)
         
+        # Get labels for this keyword.
+        labels = key_dict['field_labels']
 
         # Loop over different kinds of input for this keyword for each line (row).
         # kinds is a list of lis
@@ -218,7 +362,27 @@ class key_ui_elem():
         self.kinds = []
         self.par_sizers = []
         #print('key_ranges=',key_dict['ranges'])
+
         for kind_line in key_dict["kinds"]:
+            # label_sizer = None
+            # # Set the labels for this line. 
+            # labels = self.set_labels(i_line,key_dict)
+            # if labels is not None:
+            #     label_sizer = wx.BoxSizer(wx.HORIZONTAL)
+            #     # Now add a static text for each label
+            #     if len(labels) > 1:
+            #         for label in labels:
+            #             if label is not None:
+            #                 lbl = wx.StaticText(panel2, label = label,style=wx.ALIGN_LEFT)
+            #                 label_sizer.Add(lbl,1,wx.LEFT,20)
+            #     else:
+            #         # Use same label for all elements
+            #         if labels[0] is not None:
+            #             for i,k in enumerate(kind_line):
+            #               lbl = wx.StaticText(panel2, label =labels[0],style=wx.ALIGN_LEFT)
+                
+            #     if label_sizer is not None: self.key_sizer.Add(label_sizer,0,wx.ALL|wx.EXPAND,10)
+
             # Get the ranges if any.
             if key_dict['ranges'] is not None:
                 # Gets the last defined line of ranges
@@ -231,11 +395,26 @@ class key_ui_elem():
                 default_line = key_dict["defaults"][i_line]
             else:
                 default_line = None
-            
+
+            if labels is None:
+                if i_line == 0:
+                    label_line = [' ']
+                else:
+                    label_line = None
+            elif len(labels) == 1:
+                # Only one line. 
+                if i_line == 0:
+                    label_line = labels[0]
+                else:
+                    label_line = None
+            else:
+                # Multiple lines.
+                label_line = labels[i_line]
+
             # Set the input handlers to use for this line of kinds (data types).
             par_sz,ui_elems = self.get_input_handler_row(kind_line,default_line,keyword,
-                                                         ranges = range_line,min_size = min_size)
-            self.key_sizer.Add(par_sz,0,wx.ALL|wx.EXPAND,10)
+                                                         ranges = range_line,min_size = min_size, labels = label_line)
+            self.key_sizer.Add(par_sz,0,wx.ALL|wx.EXPAND,2)
             self.par_sizers = self.par_sizers + [par_sz]
             self.ui_elems = self.ui_elems + [ui_elems]
             self.kinds = self.kinds + [kind_line]
@@ -265,11 +444,28 @@ class key_ui_elem():
         # At start, no keyword options are shown.
         #self.panel2_sizer.Hide(self.key_sizer)
 
-    def get_input_handler_row(self,kind_line,default_line,name_lbl,ranges = None, min_size=None):
+    def set_labels(self,iline,key_dict):
+        if key_dict['field_labels'] is None: return None
+        # Get the number of lines in the field_labels list.
+        nlines = len(key_dict['field_labels'])
+        if nlines == 1:
+            if iline == 0:
+                labels = key_dict['field_labels'][0]
+            else:
+                labels = None
+        else:
+            labels = key_dict['field_labels'][iline]
+
+        return labels
+                 
+    
+    def get_input_handler_row(self,kind_line,default_line,name_lbl,ranges = None, min_size=None,labels = None):
         # Make a new sizer for this row.
         par_sz = wx.BoxSizer(wx.HORIZONTAL)
         #print('ranges=',ranges)
-
+        #print(self.keyword)
+        #print('outside labels=',labels)
+        #print(kind_line)
         # Loop over data types (kinds) in this line and add a widget for each.
         i_field = 0
         #print(default_line,kind_line,len(kind_line),name_lbl)
@@ -287,9 +483,20 @@ class key_ui_elem():
             else:
                 rng = None
 
-            inp_elem = self.get_input_handler_field(kind,default,name_lbl,range = rng,min_size = min_size)
+            if labels is None:
+                label = ' '
+            elif len(labels) == 1:
+                # Single label only.
+                label = labels[0]
+            else:
+                #print(i_field,labels)
+                label = labels[i_field]
+
+            #inp_elem = self.get_input_handler_field(kind,default,name_lbl,range = rng,min_size = min_size)
+            inp_elem = input_element(self.panel2, kind, name_lbl = name_lbl, label = label, min_size = min_size, default = default, range = rng)
             inp_elem.Enable(self.enable_checkbox.GetValue())
-            par_sz.Add(inp_elem,1,wx.LEFT,20)
+
+            par_sz.Add(inp_elem.sizer,0,wx.LEFT|wx.ALIGN_LEFT,10)
             ui_elems = ui_elems + [inp_elem]
             
             i_field += 1
@@ -432,7 +639,7 @@ class key_ui_elem():
 
         # Check that number of lines is same as number of required lines,
         # or >= if keyword_ui is line expandable.
-        print(nrf,self.n_required_fields)
+        #print(nrf,self.n_required_fields)
         if self.key_dict['lexpandable']:
             if len(nrf) < len(self.n_required_fields):
                return False,message
@@ -498,7 +705,8 @@ class key_ui_elem():
     
     def ShowItems(self,val):
         self.key_sizer.ShowItems(val)
-        self.panel2_sizer.Layout()
+        #self.panel2_sizer.Layout()
+        do_layout(self.panel2)
 
 
     ################################################################################
@@ -526,15 +734,16 @@ class key_ui_elem():
             else:
                 default = None
 
-            inp_elem = self.get_input_handler_field(kind,default,self.keyword,range = rng,min_size = self.min_size)
+            inp_elem = input_element(self.panel2,kind,default = default,name_lbl = self.keyword,range = rng,min_size = self.min_size)
             is_enabled = self.enable_checkbox.GetValue()
             inp_elem.Enable(is_enabled)
-            self.par_sizers[irow].Add(inp_elem,1,wx.LEFT,20)
+            self.par_sizers[irow].Add(inp_elem.sizer,0,wx.LEFT,20)
             self.ui_elems[irow] = self.ui_elems[irow] + [inp_elem]
             self.kinds[irow] = self.kinds[irow] + [kind]
             irow += 1
-        self.panel2_sizer.Layout()
+        #self.panel2_sizer.Layout()
         self.panel2.SetVirtualSize(self.panel2_sizer.GetMinSize())
+        do_layout(self.panel2)
 
 
     def add_ui_row(self,evt=None):
@@ -567,8 +776,9 @@ class key_ui_elem():
         self.key_sizer.Insert(index,par_sz,0,wx.ALL|wx.EXPAND,10)
         self.par_sizers.insert(-1,par_sz)
         self.ui_elems = self.ui_elems + [ui_elems]
-        self.panel2_sizer.Layout()
+        #self.panel2_sizer.Layout()
         self.panel2.SetVirtualSize(self.panel2_sizer.GetMinSize())
+        do_layout(self.panel2)
         
 
     # What to do when enable is checked/unchecked. Enable/disable all input fields 
@@ -598,7 +808,7 @@ class key_ui_elem():
         if ie.error:
             obj.SetForegroundColour(wx.RED)
             obj.SetFocus
-            evt.Skip()
+            #evt.Skip()
             return
 
         if inp_fl.validate(range):
@@ -612,18 +822,18 @@ class key_ui_elem():
 
             obj.SetFocus()
 
-        evt.Skip()
+        #evt.Skip()
         return
 
     def validate_float_chars(self,evt):
         key = evt.GetKeyCode()
 
         if key < wx.WXK_SPACE or key == wx.WXK_DELETE or key > 255:
-            evt.Skip()
+            #evt.Skip()
             return
 
         if chr(key) in "0123456789-.eE":
-            evt.Skip()
+            #evt.Skip()
             return
         
         return
@@ -648,14 +858,14 @@ wx.Choice.GetValue = GetValue
 wx.FilePickerCtrl.SetValue = SetValue
 wx.Choice.SetValue = SetValue
 
-class MyFrame(wx.Frame):
+class Frame(wx.Frame):
     def __init__(self, *args, **kwds):
         #super().__init__(parent=None, title='Corvus')
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         
         # Initialize the input definition
-        self.inp_def = input_keys_dict.input_definition_dict('corvus')
+        self.inp_def = input_definition.input_definition_dict('corvus')
         self.inpdict = self.inp_def.inp_def_dict
         self.input_type = self.inpdict['_input_type']
         del self.inpdict['_input_type'] # For now delete this. Might need it in the future?
@@ -672,6 +882,8 @@ class MyFrame(wx.Frame):
         screenSize = wx.DisplaySize()
         screenWidth = int(screenSize[0]/3*2)
         screenHeight = int(screenSize[1]/3*2)
+        top_panel_size = (screenWidth,int(screenHeight/8))
+        top_panel_border = int(top_panel_size[1]/10)
         self.SetSize(wx.Size(screenWidth, screenHeight))
 
         # Make a menu-bar
@@ -691,21 +903,27 @@ class MyFrame(wx.Frame):
         # Add a splitter window with top and bottom panes.
         self.splitter_window0 = wx.SplitterWindow(self)
         self.top_panel = wx.Panel(self.splitter_window0)
-        self.top_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.top_panel_sizer = wx.GridBagSizer()
         #self.top_panel_hsizer1 = wx.BoxSizer(wx.HORIZONTAL)
         self.writeInputButton = wx.Button(self.top_panel,label="Write Input File")
-        self.top_panel_sizer.Add(self.writeInputButton,1,wx.ALL,5)
+        #self.top_panel_sizer.Add(self.writeInputButton,1,wx.ALL,5)
+        self.top_panel_sizer.Add(self.writeInputButton,(0,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.writeInputButton.Bind(wx.EVT_BUTTON,self.write_input_file)
+        self.quick_start_choice = wx.Choice(self.top_panel,name = "quick_start", choices = ['Quick Start'] + list(self.inp_def.predefined.keys()))
+        self.top_panel_sizer.Add(self.quick_start_choice,(0,1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.quick_start_choice.Bind(wx.EVT_CHOICE,self.set_values_from_predefined)
         self.show_enabled_checkbox = wx.CheckBox(self.top_panel,label='Show only enabled input')
-        self.top_panel_sizer.Add(self.show_enabled_checkbox,1,wx.ALL,5)
+        #self.top_panel_sizer.Add(self.show_enabled_checkbox,1,wx.ALL,5)
+        self.top_panel_sizer.Add(self.show_enabled_checkbox,(0,15),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.show_enabled_checkbox.Bind(wx.EVT_CHECKBOX,self.filter_keywords)
         self.category_choice = wx.Choice(self.top_panel,name = "category", choices = self.categories)
-        self.category_choice.SetSelection(self.category_choice.FindString('category: property, code: general'))
-        self.top_panel_sizer.Add(self.category_choice,1,wx.ALL,5)
+        self.category_choice.SetSelection(self.category_choice.FindString('property'))
+        #self.top_panel_sizer.Add(self.category_choice,1,wx.ALL,5)
+        self.top_panel_sizer.Add(self.category_choice,(0,13),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.category_choice.Bind(wx.EVT_CHOICE,self.filter_keywords)
         self.code_choice = wx.Choice(self.top_panel,name = "code", choices = self.codes)
         self.code_choice.SetSelection(self.code_choice.FindString('general'))
-        self.top_panel_sizer.Add(self.code_choice,1,wx.ALL,5)
+        self.top_panel_sizer.Add(self.code_choice,(0,14),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.code_choice.Bind(wx.EVT_CHOICE,self.filter_keywords) 
         #wx.CallAfter(self.code_choice.SetLabel, 'code')
         #wx.CallAfter(print("label ",self.code_choice.GetLabel()))
@@ -742,15 +960,17 @@ class MyFrame(wx.Frame):
         # show the input fields of the currently selected keyword.
         # The ui_elem_dict will hold the ui elements associated with each keyword. 
         self.ui_elem_dict = dict()
-        self.inp_page = input_page(self.main_notebook,self.inpdict)
+        self.inp_page = input_page(self.main_notebook,self.inp_def)
         self.main_notebook.AddPage(self.inp_page.splitter_window,"category: property, code: general")
 
         self.showNextButton = wx.Button(self.top_panel,label="Next")
-        self.top_panel_sizer.Add(self.showNextButton,1,wx.ALL,5)
+        #self.top_panel_sizer.Add(self.showNextButton,1,wx.ALL,5)
+        self.top_panel_sizer.Add(self.showNextButton,(1,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.showNextButton.Bind(wx.EVT_BUTTON,self.show_next_required)
 
         self.showAllRequired = wx.CheckBox(self.top_panel,label="Show all required")
-        self.top_panel_sizer.Add(self.showAllRequired,1,wx.ALL,5)
+        #self.top_panel_sizer.Add(self.showAllRequired,1,wx.ALL,5)
+        self.top_panel_sizer.Add(self.showAllRequired,(1,15),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.showAllRequired.Bind(wx.EVT_CHECKBOX,self.show_all_required)
         #splitter_window1, panel1, panel2 = self.MakeInputPage("All Keywords")
         #splitter_window2, panel3, panel4 = self.MakeInputPage("Copy of All Keywords")
@@ -764,14 +984,14 @@ class MyFrame(wx.Frame):
         #self.key_ui_dict['cell_struc_xyz_red'].set_values([['A',0,0,0],['B',1.0,1.0,1.0]])
 
         self.splitter_window0.SplitHorizontally(self.top_panel,self.main_notebook,int(screenHeight/8))
-        self.inp_page.splitter_window.SplitVertically(self.inp_page.panel1,self.inp_page.panel2,int(screenWidth/3))
+        self.inp_page.splitter_window.SplitVertically(self.inp_page.panel1,self.inp_page.panel2,int(screenWidth/4))
         #splitter_window2.SplitVertically(panel3,panel4,0)
         self.Bind(wx.EVT_CLOSE,self.onExit)
 
         self.Layout()
         self.required = ['target_list']
         self.show_required(self.required[0])
-        print('required at initialization',self.required)
+        #print('required at initialization',self.required)
 
     def get_values_dict(self):
         self.values_dict = {}
@@ -794,6 +1014,39 @@ class MyFrame(wx.Frame):
 
     # Show only the kewords selected by the filter choices.
     #def show_only_required_keywords(self):
+    def set_values_from_predefined(self,evt):
+        obj = evt.GetEventObject()
+        predef = obj.GetString(obj.GetSelection())
+        if predef == "Quick Start": 
+            #evt.Skip()
+            return
+        key_list = []
+        vals_dict = {}
+        for key,value in self.inp_def.predefined.items():
+            if key == predef:
+                pred_dict = value
+                for k,v in pred_dict.items():
+                    if k == '_other':
+                        # Show these keywords.
+                        key_list = key_list + v
+                    else:
+                        # Set the values and show
+                        key_list = key_list + [k]
+                        vals_dict[k] = v
+        message = 'Would you like to overwrite some settings with new ones? If no, the relevant keywords will be shown' + \
+        'without changing the settings.'
+        md = wx.MessageDialog(self.splitter_window0,message,style=wx.YES_NO|wx.CANCEL)
+        answer = md.ShowModal()
+        if  answer == wx.ID_CANCEL:
+                        return
+        elif answer == wx.ID_YES:
+            self.set_values(vals_dict)
+        
+        self.inp_page.show_keywords(key_list)
+        self.code_choice.SetSelection(self.code_choice.FindString('all'))
+        self.category_choice.SetSelection(self.category_choice.FindString('all'))
+        #evt.Skip()
+
 
     def show_next_required(self,evt):
         # Validate current key.
@@ -825,7 +1078,7 @@ class MyFrame(wx.Frame):
                     req = self.inp_page.current_key_ui.keyword
 
             
-            # Now check that the currently selected keyword is 
+            # Now check that the currently selected keyword has valid input.
             if hasattr(self.inp_page,"current_key_ui"):
                 is_valid,message = self.inp_page.current_key_ui.validate_key_values()
                 if not is_valid:
@@ -840,8 +1093,9 @@ class MyFrame(wx.Frame):
                     
                     # If this was the last requirement, disable the button.
                     if not self.required:
-                        # Disable next button
+                        # Disable next button and show all enabled keywords.
                         self.showNextButton.Disable()
+                        self.show_filtered(all_categories = True, all_codes=True, only_enabled = True)
                         return
                     self.show_required(self.required[0])
             else:
@@ -863,30 +1117,59 @@ class MyFrame(wx.Frame):
             self.show_filtered()
 
     def show_all_required(self,evt):
-        # Get required of current ui_key.
+        #print(self.required)
         if self.showAllRequired.GetValue():
+            #print('box checked')
             if self.required:
-                self.show_filtered(all_enabled = True)
+                #print('required is not empty')
                 # Get all required keys.
                 keys = [key for key in self.required if key in self.inpdict]
                 # Get all required categories.
                 categories = [c for c in self.required if c in self.categories]
                 # Get all keys from each category
                 ckeys = []
+                # Get code filter
+                code = self.code_choice.GetString(self.code_choice.GetSelection())
                 for c in categories:
-                    ckeys = ckeys + [key for key in self.inpdict if c in self.inpdict[key]['category']]
-                keys = keys + ckeys 
-                print('required inside show_all_required:')
-                print(keys)
-                self.inp_page.show_keywords(keys)
-                self.inp_page.panel1_sizer.Layout()
-                self.inp_page.panel2.Layout()
+                    if code == 'all':
+                        ckeys = ckeys + [key for key in self.inpdict if c in self.inpdict[key]['category']]
+                    else:
+                        ckeys = ckeys + [key for key in self.inpdict if (c in self.inpdict[key]['category'] and code in self.inpdict[key]['code'])]
+                keys = keys + ckeys
+                # Check if keys have more than one category or more than one code, and show all if they do.
+                all_codes = False
+                all_categories = False
+                category = self.category_choice.GetString(self.category_choice.GetSelection())
+                for key in keys:
+                    if self.inpdict[key]['code'] != code:
+                        all_codes = True
+                        break
+                for key in keys:
+                    if self.inpdict[key]['category'] != code:
+                        all_categories = True
+                        break
                 
+                self.show_filtered(all_categories = all_categories, all_codes = all_codes)
+                #print('required inside show_all_required:')
+                #print(keys)
+                self.inp_page.show_keywords(keys)
+                do_layout((self.inp_page.panel1,self.inp_page.panel2))
+                #self.inp_page.panel1_sizer.Layout()
+                #self.inp_page.panel2.Layout()
+        else:
+            # Unchecked. Show all keywords.
+            if self.required:
+                # If there are still required keywords, show the current one.
+                self.show_required(self.required[0])
+            else:
+                # Show all keywords
+                self.show_filtered(only_enabled = True, all_categories = True, all_codes = True)
+                    
                 
     def update_required(self,key):
         # Get new required keys/categories from this key.
-        print('start of update_required')
-        print(self.required)
+        #print('start of update_required')
+        #print(self.required)
         if 'required' not in self.inpdict[key]: return
         
         if self.inpdict[key]['required'] is None:
@@ -934,20 +1217,23 @@ class MyFrame(wx.Frame):
         splitter_window = self.inp_page.current_key_ui.panel1.GetParent()
         self.inp_page.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
         self.inp_page.current_key_ui.panel2.SetVirtualSize(self.inp_page.current_key_ui.panel2_sizer.GetMinSize())
-        self.inp_page.current_key_ui.panel2.Layout()
-        self.inp_page.panel1_sizer.Layout()
+        #self.inp_page.current_key_ui.panel2.Layout()
+        #self.inp_page.panel1_sizer.Layout()
+        do_layout((self.inp_page.panel1,self.inp_page.panel2))
             
     def filter_keywords(self,evt):
         self.show_filtered()
         #print('show_filtered triggered: ',evt)
 
-    def show_filtered(self,all_enabled=False):
+    def show_filtered(self,all_categories=False, all_codes=False,only_enabled=False):
         # Filter keywords by code, category, and enabled if show_enabled_only is checkted.
         # Get current selections.
-        if all_enabled:
+        if only_enabled:
             self.show_enabled_checkbox.SetValue(True)
+        if all_categories:
             self.category_choice.SetSelection(self.category_choice.FindString('all'))
-            self.code_choice.SetSelection(self.category_choice.FindString('all'))
+        if all_codes:
+            self.code_choice.SetSelection(self.code_choice.FindString('all'))
             
         show_only_enabled = self.show_enabled_checkbox.GetValue()
         category = self.category_choice.GetString(self.category_choice.GetSelection())
@@ -972,107 +1258,19 @@ class MyFrame(wx.Frame):
                     show = False
 
             key_ui.key_toggle.Show(show)
-            panel1_sizer = key_ui.panel1_sizer
-            panel1_sizer.Layout()
-            self.inp_page.panel1.Layout()
-            self.inp_page.splitter_window.Layout()
-            self.inp_page.panel1.FitInside()
-            self.inp_page.panel2.Layout()
-            self.inp_page.panel2.FitInside()
+            if key_ui.key_toggle.GetValue(): key_ui.ShowItems(show)
 
-    """
-    on_press_panel1_sizer
-    When toggle in panel1_sizer is pressed, the input widgets in the right panel are shown/hidden
-    according to to the state of the toggle that has been pressed. All other inputs are hidden
-    """
-    def on_press_panel1_sizer(self,event):
-        # Get the toggle that was pressed.
-        obj = event.GetEventObject()
-        # Validate that the currently viewed key_ui is valid.
-        if hasattr(self,"current_key_ui"):
-            is_valid,message = self.current_key_ui.validate_key_values()
-            if not is_valid:
-                md = wx.MessageDialog(self,message)
-                md.ShowModal()
-                obj.SetValue(False)
-                return None
-        # Get the keyword from the button text.
-        keyword = obj.GetLabelText()
-        obj.SetValue(True)
-        for key,key_ui_elem in self.key_ui_dict.items():
-            if key_ui_elem.keyword == keyword:
-                #print(keyword,key_ui_elem.keyword)
-                key_ui_elem.ShowItems(True)
-                self.current_key_ui = key_ui_elem
-            else:
-                key_ui_elem.key_toggle.SetValue(False)
-                key_ui_elem.ShowItems(False)
+            # panel1_sizer = key_ui.panel1_sizer
+            # panel1_sizer.Layout()
+            # self.inp_page.panel1.Layout()
+            # self.inp_page.splitter_window.Layout()
+            # self.inp_page.panel1.FitInside()
+            # self.inp_page.panel2.Layout()
+            # self.inp_page.panel2.FitInside()
+            do_layout((self.inp_page.panel1,self.inp_page.panel2))
 
-        splitter_window = self.current_key_ui.panel1.GetParent()
-        self.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
-        self.current_key_ui.panel2.SetVirtualSize(self.current_key_ui.panel2_sizer.GetMinSize())
-        self.current_key_ui.panel2.Layout()
+    #def validate_current_keyword(self,evt):
 
-    """
-    on_press_panel2
-    The only use of buttons (regular buttons, not toggle) in panel2 is to add fields or 
-    lines to repeating input, e.g., atoms, or pseudopotentials, etc. where the number of 
-    input lines or fields is unknown. Thus a button press in panel2 will add a row or 
-    column to of the same type of input.
-    """
-    def on_press_panel2(self,event):
-        # Get the button that was pressed.
-        obj = event.GetEventObject()
-
-        # This time the keyword is stored in the name of the button (not the label).
-        keyword = obj.Name
-
-        panel2 = obj.GetParent()
-        panel2_sizer = obj.GetParent().GetSizer()
-        # Get the horizontal sizer that contains this button. We will want to insert
-        # a line or field before this button. 
-        par_sz = obj.GetContainingSizer()
-
-        # Get teh button label, which states if we should add a line or field.
-        label = obj.GetLabelText()
-        
-        # Add the line/field depending on if the button was an add line/field button. 
-        if label == 'Add Line':
-            # Get the key_sizer associated with this keyword. This is the 
-            key_sizer = self.ui_elem_dict[keyword][1]
-            #key_sizer = self.panel2_sizer.GetChildren()[self.ui_elem_dict[keyword]].GetSizer()
-
-            # Get the data types for the additional line. Assume that the data types are the 
-            # same as the last current line of input fields.
-            kind_line = self.inpdict[keyword]["kinds"][-2]
-            default_line = self.inpdict[keyword]["defaults"][0]
-
-            # Use the get_input_handler_row function to populate the new horizontal sizer.
-            par_sz = self.get_input_handler_row(panel2,kind_line,default_line,keyword)
-
-            # Insert the new line into key_sizer before the add line button.
-            nRows = key_sizer.GetItemCount()
-            key_sizer.Insert(nRows-1, par_sz,0,wx.ALL|wx.EXPAND,10)
-            
-        elif label == 'Add Field':
-            # Need to find the sizer that this button is in inside 
-            par_sz = obj.GetContainingSizer()
-
-            # Get the kind_line, as we need both the last kind in the line, and the length.
-            kind_line = self.inpdict[keyword]["kinds"][0]
-            default = self.inpdict[keyword]["defaults"][0][-2]
-
-            # Make the new widget.
-            widget = self.get_input_handler_field(panel2,kind_line[-2],default,len(kind_line),keyword)
-
-            # Insert the widget before the add field button.
-            nFields = par_sz.GetItemCount()
-            par_sz.Insert(nFields-1,widget,1,wx.LEFT,20)
-            par_sz.Layout()
-        
-        # Refresh the layout.
-        panel2_sizer.Layout()
-        panel2.SetVirtualSize(panel2_sizer.GetMinSize())
 
     # Write the input file - triggered by button.   
     def write_input_file(self,evt):
@@ -1103,7 +1301,8 @@ class MyFrame(wx.Frame):
                         return
                     
                     self.values_dict,is_valid,message = translate_input.read_corvus_input(pathname)
-                    #print('Valid input file: ', is_valid)
+                    dir = pathlib.Path(pathname).parent
+                    os.chdir(dir)
                 except IOError:
                     wx.LogError("Cannot open file '%s'." % newfile)
 
@@ -1116,7 +1315,7 @@ class MyFrame(wx.Frame):
                 self.set_values(self.values_dict)
                 # Set the filter and code to all, and set show only enabled.
                 
-                self.show_filtered(all_enabled = True)
+                self.show_filtered(all_categories = True, all_codes = True, only_enabled=True)
                 self.inp_page.current_key_ui.ShowItem(True)
                 
 
@@ -1142,53 +1341,29 @@ class MyFrame(wx.Frame):
                     wx.LogError("Cannot open file '%s'." % newfile)
         elif evt.GetId() == wx.ID_EXIT:
             self.OnExit(evt)
-    
-##########################################################
-# Validators
-##########################################################
-def validate_float(evt,range=None):
-    obj = evt.GetEventObject()
-    val=obj.GetValue()
-    inp_fl = inp_float(str(val))
-    if inp_fl.validate(range):
-        val=float(obj.GetValue())
-        obj.SetForegroundColour(wx.BLACK)
+
+def do_layout(windows):
+    if isinstance(windows,list) or isinstance(windows,tuple):
+        for window in windows:
+            window.Layout()
+            window.FitInside()
     else:
-        obj.SetForegroundColour(wx.RED)
-        #floatErrorDialog = wx.MessageDialog(self,"ERROR: Input requires float.",style=wx.ICON_NONE)
-        #if floatErrorDialog.ShowModal() == wx.ID_OK:
-        #floatErrorDialog.Destroy()
-
-        obj.SetFocus()
-
-    evt.Skip()
-    return
-
-def validate_float_chars(evt):
+        windows.Layout()
+        windows.FitInside()
     
-    key = evt.GetKeyCode()
 
-    if key < wx.WXK_SPACE or key == wx.WXK_DELETE or key > 255:
-        evt.Skip()
-        return
 
-    if chr(key) in "0123456789-.eE":
-        evt.Skip()
-        return
-    
-    return
-        
-class MyApp(wx.App):
-    def OnInit(self):
-        self.frame = MyFrame(None, wx.ID_ANY, "")
-        self.SetTopWindow(self.frame)
-        # self.frame.Show()
-        return True      
+# class MyApp(wx.App):
+#     def OnInit(self):
+#         self.frame = Frame(None, wx.ID_ANY, "")
+#         self.SetTopWindow(self.frame)
+#         # self.frame.Show()
+#         return True      
 
 
 
 
-if __name__ == '__main__':
-    app = MyApp(0)
-    #frame = MyFrame()
-    app.MainLoop()
+# if __name__ == '__main__':
+#     app = MyApp(0)
+#     #frame = MyFrame()
+#     app.MainLoop()
