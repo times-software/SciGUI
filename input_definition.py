@@ -448,7 +448,7 @@ class input_definition_dict():
             #  cif_input
             help =  ['cif input file name.']
             kinds =  [
-               [ inp_file_name ],
+               [ inp_structure_file ],
                ]
             code =  'general'
             importance =  'essential'

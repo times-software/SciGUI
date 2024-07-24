@@ -8,6 +8,7 @@ import translate_input
 from input_types import *
 import os
 import pathlib
+import structure_visualization
 
 """ Make general scigui classes for each gui element: Frame, panel, notbook, 
     split panel, sizer, text control, spin control, combo box, file chooser. 
@@ -39,6 +40,7 @@ class input_element():
                 except:
                     print('Wrong default or kind for keyword: ', name_lbl, ' in config file.')
                     print('Should be float.')
+                    exit()
                 self.widget = wx.TextCtrl(parent,value=default,name=name_lbl)
                 #inp_elem = wx.lib.agw.floatspin.FloatTextCtrl(panel,name=name_lbl)
             else:
@@ -55,6 +57,7 @@ class input_element():
                 except:
                     print('Wrong default or kind for keyword: ', name_lbl, ' in config file.')
                     print('Should be integer.')
+                    exit()
                 self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=val,name=name_lbl)
             else:
                 self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=0,name=name_lbl)
@@ -95,6 +98,13 @@ class input_element():
                 self.widget = wx.TextCtrl(parent,name=name_lbl,style=wx.TE_MULTILINE|wx.HSCROLL)
         elif kind.__name__ == 'inp_file_name':
             self.widget = wx.FilePickerCtrl(parent, name = name_lbl)
+            self.widget.Bind(wx.EVT_FILEPICKER_CHANGED,self.on_file_change)
+            min_size2 = (min_size[0]*2,min_size[1])
+        elif kind.__name__ == 'inp_structure_file':
+            self.widget = wx.FilePickerCtrl(parent, name = name_lbl)
+            self.widget.Bind(wx.EVT_FILEPICKER_CHANGED,self.on_file_change)
+            self.view_button = wx.Button(parent,label='View',name=name_lbl)
+            self.view_button.Bind(wx.EVT_BUTTON,self.view_structure)
             min_size2 = (min_size[0]*2,min_size[1])
         elif kind.__name__ == 'inp_choice':
             #print('range=',range)
@@ -109,13 +119,32 @@ class input_element():
             self.widget.SetMinSize(min_size2)
             
         self.sizer.Add(self.widget,1,wx.TOP,2)
+        if kind.__name__ == 'inp_structure_file':
+            self.sizer.Add(self.view_button,1,wx.TOP,2)
+            self.view_button.Enable(False)
 
     def Show(self,val):
-        self.label_text.Show(False)
-        self.widget.Show(False)
+        self.label_text.Show(val)
+        self.widget.Show(val)
+        if hasattr(self,'view_button'): self.view_button.Show(val)
 
     def Enable(self,val):
         self.widget.Enable(val)
+
+    def on_file_change(self,evt):
+        print(self.widget.GetValue())
+        if hasattr(self,'view_button'):
+            file = inp_structure_file(self.widget.GetValue())
+            print(file,file.validate())
+            if file.validate(): 
+                self.view_button.Enable(True)
+            else:
+                self.view_button.Enable(False)
+
+    def view_structure(self,evt):
+        # This is a structure field, so it's widget is a filepicker.
+        structure_file = inp_structure_file(self.widget.GetValue()) 
+        structure_visualization.run_viewer(structure_file)
 
     def ToggleButtonLabel(self,evt):
         obj = evt.GetEventObject()
@@ -914,16 +943,17 @@ class Frame(wx.Frame):
         self.quick_start_choice.Bind(wx.EVT_CHOICE,self.set_values_from_predefined)
         self.show_enabled_checkbox = wx.CheckBox(self.top_panel,label='Show only enabled input')
         #self.top_panel_sizer.Add(self.show_enabled_checkbox,1,wx.ALL,5)
-        self.top_panel_sizer.Add(self.show_enabled_checkbox,(0,15),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        filter_start = 15
+        self.top_panel_sizer.Add(self.show_enabled_checkbox,(0,filter_start + 2),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.show_enabled_checkbox.Bind(wx.EVT_CHECKBOX,self.filter_keywords)
         self.category_choice = wx.Choice(self.top_panel,name = "category", choices = self.categories)
         self.category_choice.SetSelection(self.category_choice.FindString('property'))
         #self.top_panel_sizer.Add(self.category_choice,1,wx.ALL,5)
-        self.top_panel_sizer.Add(self.category_choice,(0,13),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.top_panel_sizer.Add(self.category_choice,(0,filter_start),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.category_choice.Bind(wx.EVT_CHOICE,self.filter_keywords)
         self.code_choice = wx.Choice(self.top_panel,name = "code", choices = self.codes)
         self.code_choice.SetSelection(self.code_choice.FindString('general'))
-        self.top_panel_sizer.Add(self.code_choice,(0,14),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.top_panel_sizer.Add(self.code_choice,(0,filter_start+1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.code_choice.Bind(wx.EVT_CHOICE,self.filter_keywords) 
         #wx.CallAfter(self.code_choice.SetLabel, 'code')
         #wx.CallAfter(print("label ",self.code_choice.GetLabel()))

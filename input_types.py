@@ -10,6 +10,7 @@ class inp_str(str):
 
 
     def validate(self,range=None):
+        ie.error = False
         if len(self.split()) != 1:
             ie.error = True
             ie.error_message = 'String fields should have only one word.'
@@ -32,6 +33,20 @@ class inp_file_name(str):
         return instance
 
     def validate(self,range=None):
+        ie.error = False
+        if not Path(self).is_file():
+            ie.error = True
+            ie.error_message = str(self) + ' is not an existing file.'
+        return not ie.error
+    
+class inp_structure_file(str):
+    def __new__(cls,s):
+        instance = super().__new__(cls,str(Path(s.strip()).absolute()))
+        
+        return instance
+
+    def validate(self,range=None):
+        ie.error = False
         if not Path(self).is_file():
             ie.error = True
             ie.error_message = str(self) + ' is not an existing file.'
@@ -55,6 +70,7 @@ class inp_bool(str):
 
     def validate(self,range=None):
         # String
+        ie.error = False
         if self not in ['','True']:
             ie.error = True
             ie.error_message = 'Logical flags should be true, t, .true., false, f, or .false'
@@ -66,7 +82,7 @@ class inp_choice(str):
         return instance
 
     def validate(self,range=None):
-        print(self,range)
+        ie.error = False
         if self not in range.split(','):
             ie.error = True
             ie.error_message = 'Invalid option. Must be one of of the values: ' + range
@@ -118,6 +134,7 @@ class inp_int(int):
             return None
 
     def validate(self,range=None):
+        ie.error = False
         if not isinstance(self,int):
             ie.error = True
             ie.error_message = 'Invalid value for int type input: ' + str(self)
