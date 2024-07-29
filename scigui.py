@@ -164,6 +164,12 @@ class input_element():
         self.widget.SetValue(val)
         if self.kind.__name__ == 'inp_structure_file':
             self.view_button.Enable(True)
+        elif self.kind.__name__ == 'inp_bool':
+            if self.widget.GetValue():
+                label = "True"
+            else:
+                label = "False"
+            self.widget.SetLabel(label)
 
     def validate_float(self,evt,range=None):
         #print('validating float')
@@ -884,7 +890,7 @@ def SetValue(self,val):
     if isinstance(self,wx.FilePickerCtrl):
         self.SetPath(val)
     elif isinstance(self,wx.Choice):
-        self.SetSelection(self.FindString(val))  
+        self.SetSelection(self.FindString(val))
 
 
 wx.FilePickerCtrl.GetValue = GetValue
@@ -1065,10 +1071,12 @@ class Frame(wx.Frame):
             
             if self.infile is None:
                 self.infile = str(Path(os.getcwd) / Path('corvus.in'))
-                # Get values from GUI.
-                self.get_values_dict()
-                translate_input.write_corvus_input(self.values_dict,self.infile)
-            print(self.infile)
+
+            # Get values from GUI.
+            self.get_values_dict()
+            translate_input.write_corvus_input(self.values_dict,self.infile)
+
+            #print(self.infile)
             sys.argv = ['run-corvus','-i',self.infile]
             sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
             oneshot()
@@ -1365,6 +1373,8 @@ class Frame(wx.Frame):
                     md = wx.MessageDialog(self,message,style=wx.YES_NO)
                     if md.ShowModal() == wx.ID_NO:
                         return
+                    
+                    self.infile = str(pathname)
                     
                     self.values_dict,is_valid,message = translate_input.read_corvus_input(pathname)
                     dir = pathlib.Path(pathname).parent
