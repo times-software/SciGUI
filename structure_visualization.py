@@ -6,9 +6,11 @@ def run_viewer(file, vs='jmol'):
    if vs == 'jmol':
       port = 8008
       # Get the path to java and jmol.
-      env_path = Path('miniconda3/envs/crystal_viewer')
+      env_path = Path('miniconda3/envs/GUI')
       java = Path.home() / env_path / Path('bin/java')
+      if not java.is_file(): return (True,'java not found.')
       jmol = Path.home() / env_path / Path('share/jmol/Jmol.jar')
+      if not jmol.is_file(): retur (True, 'jmol not found.')
       jmol_args = ['-o', '-j', 'sync -8008', file]
       jmol_cmd = [java, '-jar', jmol] + jmol_args
 
@@ -22,6 +24,6 @@ def run_viewer(file, vs='jmol'):
            stdout=sp.DEVNULL,
            stderr=sp.DEVNULL)
       elif osname() == 'Darwin' or osname() == "Linux":
-         jmol = sp.run(jmol_cmd, shell=False,
+         jmol = sp.Popen(jmol_cmd, shell=False,
            bufsize=0,
            universal_newlines=True)

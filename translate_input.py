@@ -68,21 +68,25 @@ def read_corvus_input(file):
    inp_dict = {}
    ik = 0
    #print(key_list)
+   is_valid = True
+   message =  ''
    while ik < len(key_list):
       key = key_list[ik].replace('\n','')
       #print(inp_def[key]['kinds'][0][0].__name__)
       if inp_def.inp_def_dict[key]['kinds'][0][0].__name__ == 'inp_paragraph':
          # If this is a paragraph type, we need a list of lists. Each inner list
          # is a single string holding an entire line of text.
+         is_valid = True
+         message = ''
          inp_dict[key] = [list(filter(None,key_list[ik+1].split('\n')))]
       else:
          # This is not a paragraph, interpret each separate word as a field.
          inp_key_vals = [v.split() for v in list(filter(None,key_list[ik+1].split('\n')))]
          print('inp_key_vals',inp_key_vals)
          inp_dict[key],is_valid,message = cast_input_key_vals(inp_key_vals,key,inp_def.inp_def_dict)
-         if not is_valid:
-            return inp_dict, is_valid, message
-         #print(inp_dict[key])
+
+      if not is_valid:
+         return inp_dict, is_valid, message
       ik += 2
 
    return inp_dict, is_valid, message

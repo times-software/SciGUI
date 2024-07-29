@@ -9,6 +9,8 @@ from input_types import *
 import os
 import pathlib
 import structure_visualization
+import graphing
+import subprocess
 
 """ Make general scigui classes for each gui element: Frame, panel, notbook, 
     split panel, sizer, text control, spin control, combo box, file chooser. 
@@ -27,6 +29,7 @@ class input_element():
             lbl = label
 
         #print('label=',lbl)
+        self.kind = kind
         self.label_text = wx.StaticText(parent, label = lbl,style=wx.ALIGN_LEFT)
         self.sizer.Add(self.label_text,1,wx.TOP,2)
     
@@ -159,6 +162,8 @@ class input_element():
     
     def SetValue(self,val):
         self.widget.SetValue(val)
+        if self.kind.__name__ == 'inp_structure_file':
+            self.view_button.Enable(True)
 
     def validate_float(self,evt,range=None):
         #print('validating float')
@@ -889,10 +894,14 @@ wx.Choice.SetValue = SetValue
 
 class Frame(wx.Frame):
     def __init__(self, *args, **kwds):
-        #super().__init__(parent=None, title='Corvus')
+        super().__init__(parent=None, title='Corvus')
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
-        wx.Frame.__init__(self, *args, **kwds)
+        #wx.Frame.__init__(self, *args, **kwds)
         
+        self.infile = str(Path(os.getcwd()) /  Path('corvus.in'))
+        # Set the datafiles
+        self.datafile = None
+
         # Initialize the input definition
         self.inp_def = input_definition.input_definition_dict('corvus')
         self.inpdict = self.inp_def.inp_def_dict
@@ -934,10 +943,10 @@ class Frame(wx.Frame):
         self.top_panel = wx.Panel(self.splitter_window0)
         self.top_panel_sizer = wx.GridBagSizer()
         #self.top_panel_hsizer1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.writeInputButton = wx.Button(self.top_panel,label="Write Input File")
+        self.runButton = wx.Button(self.top_panel,label="Run")
         #self.top_panel_sizer.Add(self.writeInputButton,1,wx.ALL,5)
-        self.top_panel_sizer.Add(self.writeInputButton,(0,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
-        self.writeInputButton.Bind(wx.EVT_BUTTON,self.write_input_file)
+        self.top_panel_sizer.Add(self.runButton,(0,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.runButton.Bind(wx.EVT_BUTTON,self.run)
         self.quick_start_choice = wx.Choice(self.top_panel,name = "quick_start", choices = ['Quick Start'] + list(self.inp_def.predefined.keys()))
         self.top_panel_sizer.Add(self.quick_start_choice,(0,1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.quick_start_choice.Bind(wx.EVT_CHOICE,self.set_values_from_predefined)
@@ -998,6 +1007,12 @@ class Frame(wx.Frame):
         self.top_panel_sizer.Add(self.showNextButton,(1,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.showNextButton.Bind(wx.EVT_BUTTON,self.show_next_required)
 
+        # Plotting
+        self.plotButton = wx.Button(self.top_panel,label="Plot")
+        #self.top_panel_sizer.Add(self.showNextButton,1,wx.ALL,5)
+        self.top_panel_sizer.Add(self.plotButton,(1,1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.plotButton.Bind(wx.EVT_BUTTON,self.on_plot_button)
+
         self.showAllRequired = wx.CheckBox(self.top_panel,label="Show all required")
         #self.top_panel_sizer.Add(self.showAllRequired,1,wx.ALL,5)
         self.top_panel_sizer.Add(self.showAllRequired,(1,15),flag=wx.TOP|wx.LEFT,border=top_panel_border)
@@ -1042,6 +1057,27 @@ class Frame(wx.Frame):
     # Event handlers
     #####################################################################
 
+    def run(self,evt):
+        if self.input_type == 'corvus':
+            import re
+            import sys
+            from corvus.controls import oneshot
+            
+            if self.infile is None:
+                self.infile = str(Path(os.getcwd) / Path('corvus.in'))
+                # Get values from GUI.
+                self.get_values_dict()
+                translate_input.write_corvus_input(self.values_dict,self.infile)
+            print(self.infile)
+            sys.argv = ['run-corvus','-i',self.infile]
+            sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+            oneshot()
+            
+    def on_plot_button(self,evt):
+        if self.datafile is None:
+            graphing.plot()
+        else:
+            graphing.plot(self.datafile)
     # Show only the kewords selected by the filter choices.
     #def show_only_required_keywords(self):
     def set_values_from_predefined(self,evt):
@@ -1305,7 +1341,7 @@ class Frame(wx.Frame):
     # Write the input file - triggered by button.   
     def write_input_file(self,evt):
         self.get_values_dict()
-        translate_input.write_corvus_input(self.values_dict,'corvus.inp')
+        translate_input.write_corvus_input(self.values_dict,'corvus.in')
 
     # Runs on exit (menu->quit or red x)
     def onExit(self, evt):
@@ -1346,7 +1382,7 @@ class Frame(wx.Frame):
                 # Set the filter and code to all, and set show only enabled.
                 
                 self.show_filtered(all_categories = True, all_codes = True, only_enabled=True)
-                self.inp_page.current_key_ui.ShowItem(True)
+                self.inp_page.current_key_ui.ShowItems(True)
                 
 
                 
@@ -1355,17 +1391,17 @@ class Frame(wx.Frame):
             about_dialog.ShowModal()
         elif evt.GetId() == wx.ID_SAVE:
             self.get_values_dict()
-            with wx.FileDialog(self, "Open input file",
-                       style=wx.FD_OPEN) as fileDialog:
+            with wx.FileDialog(self, "Save As",
+                       style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT|wx.FD_CHANGE_DIR) as fileDialog:
 
                 if fileDialog.ShowModal() == wx.ID_CANCEL:
                     return     # the user changed their mind
 
                 # Proceed loading the file chosen by the user
-                pathname = fileDialog.GetPath()
+                self.infile = fileDialog.GetPath()
                 try:
-                    with open(pathname, 'w') as file:
-                        translate_input.write_corvus_input(self.values_dict,file)
+                    self.get_values_dict()
+                    translate_input.write_corvus_input(self.values_dict,self.infile)
 
                 except IOError:
                     wx.LogError("Cannot open file '%s'." % newfile)
