@@ -418,14 +418,15 @@ class input_page():
         # self.panel1.Layout()
         # self.panel2.Layout()
         # self.splitter_window.Layout()
-        do_layout((self.panel1,self.panel2,self.splitter_window))
-        # Call highlighting after layout?
-        #va = self.current_key_ui.key_toggle.GetClassDefaultAttributes()
         if highlight:
             for key in keys:
                 #print("HL:", key)
                 col = (colour[0],colour[1],colour[2],150)
                 self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(col)
+        do_layout((self.panel1,self.panel2,self.splitter_window))
+        # Call highlighting after layout?
+        #va = self.current_key_ui.key_toggle.GetClassDefaultAttributes()
+        
 
 
     def show_only_keywords(self,keys):
@@ -1105,6 +1106,7 @@ class Frame(wx.Frame):
         self.top_panel_sizer.Add(self.runButton,(0,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.runButton.Bind(wx.EVT_BUTTON,self.run)
         self.quick_start_choice = wx.Choice(self.top_panel,name = "quick_start", choices = ['Quick Start'] + list(self.inp_def.predefined.keys()))
+        self.quick_start_choice.SetSelection(self.quick_start_choice.FindString('Quick Start'))
         self.top_panel_sizer.Add(self.quick_start_choice,(0,1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.quick_start_choice.Bind(wx.EVT_CHOICE,self.set_values_from_predefined)
         self.show_enabled_checkbox = wx.CheckBox(self.top_panel,label='Show only enabled input')
@@ -1583,10 +1585,11 @@ class Frame(wx.Frame):
                     
                     self.Reset()
                     self.infile = str(pathname)
-                    
-                    self.values_dict,is_valid,message = translate_input.read_corvus_input(pathname)
                     dir = pathlib.Path(pathname).parent
                     os.chdir(dir)
+                    self.values_dict,is_valid,message = translate_input.read_corvus_input(pathname)
+                    
+                    
                 except IOError:
                     wx.LogError("Cannot open file '%s'." % newfile)
 
@@ -1626,7 +1629,7 @@ class Frame(wx.Frame):
                 if fileDialog.ShowModal() == wx.ID_CANCEL:
                     return     # the user changed their mind
 
-                # Proceed loading the file chosen by the user
+                # Proceed saving to the file chosen by the user
                 self.infile = fileDialog.GetPath()
                 try:
                     self.get_values_dict()
