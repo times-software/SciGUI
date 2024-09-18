@@ -1,12 +1,14 @@
 import wx
 import wx.lib.scrolledpanel
 import input_errors as ie
+import sys
+from io import StringIO
 #import os, sys, subprocess, shutil #, resource
 #import readconfig
 import input_definition
 import translate_input
 from input_types import *
-import os
+import os, subprocess
 import pathlib
 import structure_visualization
 import graphing
@@ -45,9 +47,11 @@ class input_element():
                     print('Should be float.')
                     exit()
                 self.widget = wx.TextCtrl(parent,value=default,name=name_lbl)
+                self.default = default
                 #inp_elem = wx.lib.agw.floatspin.FloatTextCtrl(panel,name=name_lbl)
             else:
                 self.widget = wx.TextCtrl(parent,name=name_lbl)
+                self.default = ''
                 #inp_elem = wx.lib.agw.floatspin.FloatTextCtrl(panel,name=name_lbl)
             #inp_elem.Bind(wx.EVT_KILL_FOCUS,self.validate_float)
             self.widget.Bind(wx.EVT_KEY_UP, lambda event: self.validate_float(event, range))
@@ -62,8 +66,10 @@ class input_element():
                     print('Should be integer.')
                     exit()
                 self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=val,name=name_lbl)
+                self.default = val
             else:
                 self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=0,name=name_lbl)
+                self.default = 0
         elif kind.__name__ == 'inp_bool':
             # Logical input
             if default is not None:
@@ -77,7 +83,7 @@ class input_element():
                     exit()
             else:
                 val = False
-            
+            self.default = val
             if val:
                 lbl = "True"
             else:
@@ -91,28 +97,35 @@ class input_element():
             # String input
             if default is not None:
                 self.widget = wx.TextCtrl(parent,value=default,name=name_lbl)
+                self.default = default
             else:
                 self.widget = wx.TextCtrl(parent,name=name_lbl)
+                self.default = ''
         elif kind.__name__ == 'inp_paragraph':
             # Paragraph?
             if default is not None:
                 self.widget = wx.TextCtrl(parent,value=default,name=name_lbl,style=wx.TE_MULTILINE|wx.HSCROLL)
+                self.default = default
             else:
                 self.widget = wx.TextCtrl(parent,name=name_lbl,style=wx.TE_MULTILINE|wx.HSCROLL)
+                self.default = ''
         elif kind.__name__ == 'inp_file_name':
             self.widget = wx.FilePickerCtrl(parent, name = name_lbl)
             self.widget.Bind(wx.EVT_FILEPICKER_CHANGED,self.on_file_change)
             min_size2 = (min_size[0]*2,min_size[1])
+            self.default = ''
         elif kind.__name__ == 'inp_structure_file':
             self.widget = wx.FilePickerCtrl(parent, name = name_lbl)
             self.widget.Bind(wx.EVT_FILEPICKER_CHANGED,self.on_file_change)
             self.view_button = wx.Button(parent,label='View',name=name_lbl)
             self.view_button.Bind(wx.EVT_BUTTON,self.view_structure)
             min_size2 = (min_size[0]*2,min_size[1])
+            self.default = ''
         elif kind.__name__ == 'inp_choice':
             #print('range=',range)
             #exit()
             self.widget = wx.Choice(parent,name = name_lbl, choices = [''] + range.split(','))
+            self.default = ''
         else:
             ie.error_message = 'Invalid type in input_types.py: ' + kind.__name__
             ie.input_error = True
@@ -125,6 +138,63 @@ class input_element():
         if kind.__name__ == 'inp_structure_file':
             self.sizer.Add(self.view_button,1,wx.TOP,2)
             self.view_button.Enable(False)
+
+    def Reset(self):
+        self.SetValue(self.default)
+        if self.kind.__name__ == 'inp_float':
+            # Float input
+            if self.default is not None:
+                self.widget.SetValue(self.default)
+            else:
+                self.widget.SetValue('')
+            
+        elif self.kind.__name__ == 'inp_int':
+            # Integer input. Add spin control
+            if self.default is not None:
+                self.widget.SetValue(int(self.default))
+            else:
+                self.widget.SetValue(0)
+        elif self.kind.__name__ == 'inp_bool':
+            # Logical input
+            if self.default is not None:
+                val = self.default
+            else:
+                val = False
+            
+            if val:
+                lbl = "True"
+            else:
+                lbl = "False"
+
+            self.widget.SetLabel(lbl)
+            self.widget.SetValue(val)
+            
+        elif self.kind.__name__ == 'inp_str': 
+            # String input
+            if self.default is not None:
+                self.widget.SetValue(self.default) 
+            else:
+                self.widget.SetValue('')
+        elif self.kind.__name__ == 'inp_paragraph':
+            # Paragraph?
+            if self.default is not None:
+                self.widget.SetValue(self.default)
+            else:
+                self.widget.SetValue('')
+        elif self.kind.__name__ == 'inp_file_name':
+            if self.default is not None:
+                self.widget.SetValue(self.default)
+            else:
+                self.widget.SetValue('')
+        elif self.kind.__name__ == 'inp_structure_file':
+            if self.default is not None:
+                self.widget.SetValue(self.default)
+                self.view_button.Enable(False)
+            else:
+                selt.widget.SetValue('')
+            
+        elif self.kind.__name__ == 'inp_choice':
+            self.widget.SetValue('')
 
     def Show(self,val):
         self.label_text.Show(val)
@@ -185,7 +255,7 @@ class input_element():
 
         if inp_fl.validate(range):
             val=float(obj.GetValue())
-            obj.SetForegroundColour(wx.BLACK)
+            obj.SetForegroundColour('')
         else:
             obj.SetForegroundColour(wx.RED)
             #floatErrorDialog = wx.MessageDialog(self,"ERROR: Input requires float.",style=wx.ICON_NONE)
@@ -324,13 +394,56 @@ class input_page():
         # self.panel2.FitInside()
         do_layout(self.panel2)
 
-    def show_keywords(self,keys):
-        for key,key_ui in self.key_ui_dict.items():
-            key_ui.ShowItems(False)
-            key_ui.key_toggle.Show(False) 
-
+    def show_keywords(self,keys,highlight=False,colour = wx.GREEN,set_current=True):
+        # Shows a set of keywords, these will be highlighted 
+        # if highlight = True.
+        # If set_current, the currently selected keyword will be changed to the first
+        # in this list if current selection is not in this list.
+        if not keys: return
         for key in keys:
             self.key_ui_dict[key].key_toggle.Show(True)
+            self.key_ui_dict[key].key_toggle_window.Show(True)
+
+        if set_current:
+            if self.current_key_ui.keyword in keys:
+                self.current_key_ui.ShowItems(True)
+            else:
+                # Show first keyword in required keys.
+                self.key_ui_dict[keys[0]].ShowItems(True)
+                self.current_key_ui = self.key_ui_dict[keys[0]]
+                self.current_key_ui.key_toggle.SetValue(True)
+                self.current_key_ui.key_toggle.SetFocus()
+
+        # self.panel1.Layout()
+        # self.panel2.Layout()
+        # self.splitter_window.Layout()
+        do_layout((self.panel1,self.panel2,self.splitter_window))
+        # Call highlighting after layout?
+        #va = self.current_key_ui.key_toggle.GetClassDefaultAttributes()
+        if highlight:
+            for key in keys:
+                #print("HL:", key)
+                col = (colour[0],colour[1],colour[2],150)
+                self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(col)
+
+
+    def show_only_keywords(self,keys):
+        # Shows a set of keywords, hiding all others
+        # Calling this with an empty keys list will hide all
+        # keywords.
+        for key,key_ui in self.key_ui_dict.items():
+            key_ui.ShowItems(False)
+            key_ui.key_toggle.Show(False)
+            key_ui.key_toggle_window.Show(False)
+            key_ui.key_toggle_window.SetBackgroundColour(wx.NullColour)
+
+        key_panels = []
+        if not keys: return
+        for key in keys:
+            self.key_ui_dict[key].key_toggle_window.Show(True)
+            key_panels = key_panels + self.key_ui_dict[key].key_toggle_window
+            self.key_ui_dict[key].key_toggle.Show(True)
+
         if self.current_key_ui.keyword in keys:
             self.current_key_ui.ShowItems(True)
         else:
@@ -338,6 +451,7 @@ class input_page():
             self.key_ui_dict[keys[0]].ShowItems(True)
             self.current_key_ui = self.key_ui_dict[keys[0]]
             self.current_key_ui.key_toggle.SetValue(True)
+            self.current_key_ui.key_toggle.SetFocus()
 
         # self.panel1.Layout()
         # self.panel2.Layout()
@@ -351,6 +465,7 @@ class input_page():
 class key_ui_elem():
     def __init__(self,keyword,key_dict,panel1, panel2, min_size=None):
         # Add the key toggle button.
+        #print(keyword)
         self.keyword = keyword
         self.min_size = min_size
         self.key_dict = key_dict
@@ -371,8 +486,17 @@ class key_ui_elem():
 
         self.panel1_sizer = panel1.GetSizer()
         self.panel2_sizer = panel2.GetSizer()
-        self.key_toggle = wx.ToggleButton(self.panel1, label=keyword, style=wx.ALIGN_RIGHT)
-        self.panel1_sizer.Add(self.key_toggle,0,wx.ALIGN_LEFT|wx.ALL,5)
+        self.key_toggle_window = wx.Panel(self.panel1,style=wx.BORDER_THEME)
+        #if self.key_toggle_window.CanSetTransparent:
+        #    self.key_toggle_window.SetTransparent(50)
+        #self.panel1_sizer.Add(self.key_toggle_window,0,wx.ALIGN_LEFT|wx.LEFT,5)
+        self.panel1_sizer.Add(self.key_toggle_window,proportion = 0, flag=wx.ALIGN_LEFT|wx.TOP|wx.LEFT,border=5)
+        self.key_toggle_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.key_toggle = wx.ToggleButton(self.key_toggle_window, label=keyword)
+        #self.key_toggle_sizer.Add(self.key_toggle,0,wx.ALL,0)
+        self.key_toggle_sizer.Add(self.key_toggle,proportion = 0,flag=wx.ALL,border=2)
+        self.key_toggle_window.SetSizer(self.key_toggle_sizer)
+        #self.panel1_sizer.Add(self.key_toggle,0,wx.ALIGN_LEFT|wx.ALL,5)
         
         # In the right window, add a vertical sizer which will contain the help text, 
         # then all of the lines of input for this keyword. 
@@ -401,6 +525,7 @@ class key_ui_elem():
         self.ui_elems = []
         self.kinds = []
         self.par_sizers = []
+        self.defaults = []
         #print('key_ranges=',key_dict['ranges'])
 
         for kind_line in key_dict["kinds"]:
@@ -457,6 +582,7 @@ class key_ui_elem():
             self.key_sizer.Add(par_sz,0,wx.ALL|wx.EXPAND,2)
             self.par_sizers = self.par_sizers + [par_sz]
             self.ui_elems = self.ui_elems + [ui_elems]
+            self.defaults = self.defaults + [default_line]
             self.kinds = self.kinds + [kind_line]
 
             i_line += 1
@@ -483,6 +609,16 @@ class key_ui_elem():
 
         # At start, no keyword options are shown.
         #self.panel2_sizer.Hide(self.key_sizer)
+
+    def Reset(self):
+        self.enable_checkbox.SetValue(False)
+        self.enable_keyword_elements(False)
+        for ui_line in self.ui_elems:
+                for uie in ui_line:
+                    uie.Reset()
+        
+
+         
 
     def set_labels(self,iline,key_dict):
         if key_dict['field_labels'] is None: return None
@@ -747,6 +883,10 @@ class key_ui_elem():
         self.key_sizer.ShowItems(val)
         #self.panel2_sizer.Layout()
         do_layout(self.panel2)
+    
+    def Highlight(self):
+        self.key_toggle.SetOwnForegroundColour(wx.GREEN)
+
 
 
     ################################################################################
@@ -773,6 +913,7 @@ class key_ui_elem():
                 self.key_dict['defaults'][irow] = self.key_dict['defaults'][irow] + [default]
             else:
                 default = None
+                
 
             inp_elem = input_element(self.panel2,kind,default = default,name_lbl = self.keyword,range = rng,min_size = self.min_size)
             is_enabled = self.enable_checkbox.GetValue()
@@ -847,7 +988,7 @@ class key_ui_elem():
         inp_fl = inp_float(str(val))
         if ie.error:
             obj.SetForegroundColour(wx.RED)
-            obj.SetFocus
+            obj.SetFocus()
             #evt.Skip()
             return
 
@@ -933,14 +1074,22 @@ class Frame(wx.Frame):
         # Make a menu-bar
         # Initialize the menu.
         filemenu= wx.Menu()
-        filemenu.Append(wx.ID_OPEN, "Open", "Open")
-        filemenu.Append(wx.ID_SAVE, "Save", "Save")
-        filemenu.Append(wx.ID_ABOUT, "About","About")
-        filemenu.Append(wx.ID_EXIT,"Exit","Close")
+        helpmenu= wx.Menu()
+        item_open = filemenu.Append(wx.ID_ANY, "Open", "Open")
+        self.id_open = item_open.GetId()
+        item_save = filemenu.Append(wx.ID_ANY, "Save", "Save")
+        self.id_save = item_save.GetId()
+        item_about = helpmenu.Append(wx.ID_ANY, "About","About")
+        self.id_about = item_about.GetId()
+        item_doc = helpmenu.Append(wx.ID_ANY,"Doc","Doc")
+        self.id_doc = item_doc.GetId()
+        item_exit = filemenu.Append(wx.ID_ANY,"Exit","Exit")
+        self.id_exit = item_exit.GetId()
 
         # Construct the menubar.
         menuBar = wx.MenuBar()
         menuBar.Append(filemenu,"File") # Integrating the "filemenu" to the MenuBar
+        menuBar.Append(helpmenu,"Help")
         self.SetMenuBar(menuBar)  # Attaching the MenuBar to the Frame.
         self.Bind(wx.EVT_MENU, self.menuhandler)
         
@@ -950,6 +1099,7 @@ class Frame(wx.Frame):
         self.top_panel_sizer = wx.GridBagSizer()
         #self.top_panel_hsizer1 = wx.BoxSizer(wx.HORIZONTAL)
         self.runButton = wx.Button(self.top_panel,label="Run")
+        #self.runButton.SetBackgroundColour((0, 230, 0, 100))
         #self.top_panel_sizer.Add(self.writeInputButton,1,wx.ALL,5)
         self.top_panel_sizer.Add(self.runButton,(0,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.runButton.Bind(wx.EVT_BUTTON,self.run)
@@ -1008,10 +1158,10 @@ class Frame(wx.Frame):
         self.inp_page = input_page(self.main_notebook,self.inp_def)
         self.main_notebook.AddPage(self.inp_page.splitter_window,"category: property, code: general")
 
-        self.showNextButton = wx.Button(self.top_panel,label="Next")
+        #self.showNextButton = wx.Button(self.top_panel,label="Next")
         #self.top_panel_sizer.Add(self.showNextButton,1,wx.ALL,5)
-        self.top_panel_sizer.Add(self.showNextButton,(1,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
-        self.showNextButton.Bind(wx.EVT_BUTTON,self.show_next_required)
+        #self.top_panel_sizer.Add(self.showNextButton,(1,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        #self.showNextButton.Bind(wx.EVT_BUTTON,self.show_next_required)
 
         # Plotting
         self.plotButton = wx.Button(self.top_panel,label="Plot")
@@ -1048,15 +1198,12 @@ class Frame(wx.Frame):
         self.values_dict = {}
         for key,key_ui in self.inp_page.key_ui_dict.items():
             if key_ui.enable_checkbox.GetValue(): self.values_dict[key] = key_ui.get_values()
-        
+
     def set_values(self,values_dict):
         for key,val in values_dict.items():
             self.inp_page.key_ui_dict[key].set_values(val)
             self.inp_page.key_ui_dict[key].ShowItems(False)
-        
 
-
-    
 
 
     #####################################################################
@@ -1068,7 +1215,7 @@ class Frame(wx.Frame):
             import re
             import sys
             from corvus.controls import oneshot
-            
+
             if self.infile is None:
                 self.infile = str(Path(os.getcwd) / Path('corvus.in'))
 
@@ -1079,8 +1226,11 @@ class Frame(wx.Frame):
             #print(self.infile)
             sys.argv = ['run-corvus','-i',self.infile]
             sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-            oneshot()
-            
+            try:
+               oneshot()
+            except SystemExit:
+               pass
+
     def on_plot_button(self,evt):
         if self.datafile is None:
             graphing.plot()
@@ -1091,32 +1241,40 @@ class Frame(wx.Frame):
     def set_values_from_predefined(self,evt):
         obj = evt.GetEventObject()
         predef = obj.GetString(obj.GetSelection())
-        if predef == "Quick Start": 
+        if predef == "Quick Start":
             #evt.Skip()
             return
         key_list = []
+        associated_key_list = []
         vals_dict = {}
         for key,value in self.inp_def.predefined.items():
             if key == predef:
                 pred_dict = value
                 for k,v in pred_dict.items():
-                    if k == '_other':
-                        # Show these keywords.
+                    if k == '_required':
+                        # Show these keywords, and highlight. Don't set enabled.
                         key_list = key_list + v
+                    elif k == '_associated':
+                        associated_key_list = associated_key_list + v
                     else:
                         # Set the values and show
                         key_list = key_list + [k]
                         vals_dict[k] = v
-        message = 'Would you like to overwrite some settings with new ones? If no, the relevant keywords will be shown' + \
+        message = 'Would you like to overwrite your settings with new ones? If no, the relevant keywords will be shown' + \
         'without changing the settings.'
         md = wx.MessageDialog(self.splitter_window0,message,style=wx.YES_NO|wx.CANCEL)
         answer = md.ShowModal()
         if  answer == wx.ID_CANCEL:
                         return
         elif answer == wx.ID_YES:
+            self.Reset()
             self.set_values(vals_dict)
-        
-        self.inp_page.show_keywords(key_list)
+        # Fist hide all keywords
+        self.inp_page.show_only_keywords([])
+        # Now show required keywords with highlighted green outline.
+        if key_list: self.inp_page.show_keywords(key_list,highlight=True,set_current=True)
+        # Now show associated keywords highlighted blue
+        if associated_key_list: self.inp_page.show_keywords(associated_key_list,highlight=True,colour=wx.BLUE,set_current=False)
         self.code_choice.SetSelection(self.code_choice.FindString('all'))
         self.category_choice.SetSelection(self.category_choice.FindString('all'))
         #evt.Skip()
@@ -1168,7 +1326,7 @@ class Frame(wx.Frame):
                     # If this was the last requirement, disable the button.
                     if not self.required:
                         # Disable next button and show all enabled keywords.
-                        self.showNextButton.Disable()
+                        #self.showNextButton.Disable()
                         self.show_filtered(all_categories = True, all_codes=True, only_enabled = True)
                         return
                     self.show_required(self.required[0])
@@ -1226,7 +1384,7 @@ class Frame(wx.Frame):
                 self.show_filtered(all_categories = all_categories, all_codes = all_codes)
                 #print('required inside show_all_required:')
                 #print(keys)
-                self.inp_page.show_keywords(keys)
+                self.inp_page.show_only_keywords(keys)
                 do_layout((self.inp_page.panel1,self.inp_page.panel2))
                 #self.inp_page.panel1_sizer.Layout()
                 #self.inp_page.panel2.Layout()
@@ -1281,11 +1439,13 @@ class Frame(wx.Frame):
                 key_ui_elem.enable_checkbox.SetValue(True)
                 key_ui_elem.key_toggle.SetValue(True)
                 key_ui_elem.key_toggle.Show(True)
+                key_ui_elem.key_toggle_window.Show(True)
                 self.inp_page.current_key_ui = key_ui_elem
                 key_ui_elem.enable_keyword_elements(True)
             else:
                 key_ui_elem.key_toggle.SetValue(False)
                 key_ui_elem.key_toggle.Show(False)
+                key_ui_elem.key_toggle_window.Show(False)
                 key_ui_elem.ShowItems(False)
 
         splitter_window = self.inp_page.current_key_ui.panel1.GetParent()
@@ -1294,6 +1454,10 @@ class Frame(wx.Frame):
         #self.inp_page.current_key_ui.panel2.Layout()
         #self.inp_page.panel1_sizer.Layout()
         do_layout((self.inp_page.panel1,self.inp_page.panel2))
+
+    def Reset(self):
+        for key,key_ui in self.inp_page.key_ui_dict.items():
+            key_ui.Reset()
             
     def filter_keywords(self,evt):
         self.show_filtered()
@@ -1332,6 +1496,7 @@ class Frame(wx.Frame):
                     show = False
 
             key_ui.key_toggle.Show(show)
+            key_ui.key_toggle_window.Show(show)
             if key_ui.key_toggle.GetValue(): key_ui.ShowItems(show)
 
             # panel1_sizer = key_ui.panel1_sizer
@@ -1358,8 +1523,8 @@ class Frame(wx.Frame):
 
     # Handles menu events - file -> open, about, save, quit    
     def menuhandler(self,evt):
-        
-        if evt.GetId() == wx.ID_OPEN:
+        id = evt.GetId()
+        if id == self.id_open:
             with wx.FileDialog(self, "Open input file",
                        style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
 
@@ -1374,6 +1539,7 @@ class Frame(wx.Frame):
                     if md.ShowModal() == wx.ID_NO:
                         return
                     
+                    self.Reset()
                     self.infile = str(pathname)
                     
                     self.values_dict,is_valid,message = translate_input.read_corvus_input(pathname)
@@ -1396,10 +1562,21 @@ class Frame(wx.Frame):
                 
 
                 
-        elif evt.GetId() == wx.ID_ABOUT:
+        elif id == self.id_about:
             about_dialog = wx.MessageDialog(self, "Sci-GUI version 0.00")
             about_dialog.ShowModal()
-        elif evt.GetId() == wx.ID_SAVE:
+        elif id == self.id_doc:
+            message = "Documentation for Corvus GUI built with Sci-GUI. \n\n" + \
+                "1. Window structure: \n" + \
+                "    a) Top panel holds run controls and keyword filters.\n" + \
+                "    b) Left panel holds list of keywords as toggle buttons.\n" + \
+                "    c) Right panel shows elements of the selected keyword, along with help." + \
+                "       Use the 'enable' checkbox to enable the keyword and fill out the arguments." + \
+                "\n" + \
+                "2. "
+            about_dialog = wx.MessageDialog(self, message)
+            about_dialog.ShowModal()
+        elif id == self.id_save:
             self.get_values_dict()
             with wx.FileDialog(self, "Save As",
                        style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT|wx.FD_CHANGE_DIR) as fileDialog:
@@ -1415,7 +1592,7 @@ class Frame(wx.Frame):
 
                 except IOError:
                     wx.LogError("Cannot open file '%s'." % newfile)
-        elif evt.GetId() == wx.ID_EXIT:
+        elif id == self.id_exit:
             self.OnExit(evt)
 
 def do_layout(windows):

@@ -43,20 +43,28 @@ class input_definition_dict():
          self.first_keys = ['target_list']
 
    def set_predefined(self):
+      # List predefined sets of keywords corresponding to certain types of calculations. To be used
+      # for a "Quick Start" menu option.
       if self.input_type == 'corvus':
          self.predefined = {'FEFF spectrum from CIF': \
                             {'target_list':[['cfavg'],['helper']], \
-                                                    '_other': ['cfavg_target','cif_input','absorbing_atom_type','feff.edge']}, \
+                                                    '_required': ['cfavg_target','cif_input','absorbing_atom_type','feff.edge'], \
+                                                    '_associated':['feff.fms','feff.scf','feff.exchange']}, \
+                           'FEFF spectrum from Mat. Proj. id': {'target_list':[['cfavg'],['helper']], \
+                                                    '_required': ['cfavg_target','mp_id','mp_apikey','absorbing_atom_type','feff.edge']}, \
                            'FEFF xanes of a single absorber': {'target_list':[['xanes'],['feff']], \
-                                                               '_other':['feff.edge','absorbing_atom','cluster']}, \
+                                                               '_required':['feff.edge','absorbing_atom','cluster']}, \
                            'FEFF EXAFS of a single absorber': {'target_list':[['exafs'],['feff']], \
-                                                               '_other':['feff.edge','absorbing_atom','cluster']}, \
+                                                               '_required':['feff.edge','absorbing_atom','cluster']}, \
                            'FEFF XES of a single absorber': {'target_list':[['xes'],['feff']], \
-                                                               '_other':['feff.edge','absorbing_atom','cluster']}, \
+                                                               '_required':['feff.edge','absorbing_atom','cluster']}, \
                            'FEFF RIXS of a single absorber': {'target_list':[['rixs','feff']], \
-                                                               '_other':['feff.edge','absorbing_atom','cluster']} \
+                                                               '_required':['feff.edge','absorbing_atom','cluster']} \
          }
          
+
+   def set_associated(self):
+      pass
 
    # Below are the definitions of the different input types for the GUI to handle
    def _fill_input_dict(self,input_type):
@@ -169,7 +177,7 @@ class input_definition_dict():
             category =  'computational'
             field_labels =  [['ncpu']]
             ranges =  [['1,']]
-            defaults =  None
+            defaults =  [[1]]
             field_types =  None
             fexpandable =  False
             lexpandable =  False
@@ -179,8 +187,87 @@ class input_definition_dict():
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
+            # polarization
+            help = ['Set 3 different polarization directions to calculate in cartesian coordinates.',
+                    'By default, these are set to x, y, z, i.e., ',
+                     '  polarization{',
+                     '     1.0 0.0 0.0',
+                     '     0.0 1.0 0.0',
+                     '     0.0 0.0 1.0',
+                     '     }']
 
+            kinds = [[inp_int, inp_int, inp_int],
+                     [inp_int, inp_int, inp_int],
+                     [inp_int, inp_int, inp_int]]
 
+            code = 'general'
+
+            importance = 'useful'
+            category = 'spectrum'
+            defaults = None
+            ranges = None
+            field_labels = [['x', 'y', 'z']]
+            fexpandable = False
+            lexpandable = True
+            req = None
+            self.inp_def_dict["polarization"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            # atomic_charge
+            help = ['charge to be placed on each atoms of a given species.',
+                    'atomic_symbol charge',
+                    '...']
+            
+            kinds = [[inp_str, inp_float]]
+            code = 'general'
+            importance = 'useful'
+            category = 'system_properties'
+            field_labels = [['Atom', 'charge']]
+            defaults = None
+            field_types = None
+            ranges = None
+            fexpandable = False
+            lexpandable = True
+            req = None
+            self.inp_def_dict["atomic_charge"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            # materials project keywords
+            # mp_id
+            help = ['Single material project id. Can be mp-NNNN or just the number.']
+            kinds = [[inp_str]]
+            code = 'general'
+            importance = 'useful'
+            category = 'structure'
+            field_labels = [['mp-id']]
+            defaults = None
+            field_types = None
+            ranges = None
+            fexpandable = False
+            lexpandable = False
+            req = {'all': ['mp_apikey']}
+            self.inp_def_dict["mp_id"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            # mp_apikey
+            help = ['API key for the materials project.']
+            kinds = [[inp_str]]
+            code = 'general'
+            importance = 'useful'
+            category = 'structure'
+            field_labels = [['apikey']]
+            defaults = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            self.inp_def_dict["mp_apikey"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            
             #  usehandlers
             help =  ['Explicitely declare what Handlers are to be used in the generation of the', 'Workflow. This helps the current simple Workflow generator when a given target', 'is provided by more than one Handler.', 'Current possible values are:', 'Feff, FeffRixs, Dmdw, Abinit, Vasp, Nwchem, Orca']
             kinds =  [
@@ -742,7 +829,6 @@ class input_definition_dict():
             importance =  'useful'
             category =  'structure'
             field_labels =  [['At. Sym.', 'x', 'y', 'z']]
-            ranges =  None
             defaults =  None
             field_types =  None
             fexpandable =  False
@@ -875,7 +961,7 @@ class input_definition_dict():
             category =  'spectrum'
             field_labels =  [['fermi shift']]
             ranges =  None
-            defaults =  [['0.0']]
+            defaults =  None
             field_types =  None
             fexpandable =  False
             lexpandable =  False
@@ -1550,7 +1636,7 @@ class input_definition_dict():
             #  feff.MPI.ARGS
             help =  []
             kinds =  [
-               [ inp_float, inp_int ],
+               [inp_str],
                ]
             code =  'feff'
             importance =  'IMPORTANCE'
@@ -1765,12 +1851,29 @@ class input_definition_dict():
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
-
+            # feff.equivalence_nmax
+            help = ['Set the maximum number of potentials per species to use. Effects feff.equivalence{ 2 }']
+            kinds = [[inp_int]]
+            code = 'feff'
+            importance = 'useful'
+            category = 'scf,potentials'
+            field_labels = 'nmax'
+            ranges = [['1,']]
+            defaults = [[5]]
+            field_types = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            self.inp_def_dict["feff.equivalence_nmax"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
 
             #  feff.debye
-            help =  ['feff.debye', 'Set temperature and Debye temperature for calculations of EXAFS Debye-Waller', 'factors.', 'idwopt - set method for calculating DW factors.', 'NOTE: This input variable is not fully implemented yet.']
+            help =  ['feff.debye', 'Set temperature and Debye temperature for calculations of EXAFS Debye-Waller factors.', 
+                     '   feff.debye{ temp debye_temp }', 
+                     'NOTE: This input variable is not fully implemented yet.']
             kinds =  [
-               [ inp_str ],
+               [ inp_float, inp_float ],
                ]
             code =  'feff'
             importance =  'IMPORTANCE'
