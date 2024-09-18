@@ -79,10 +79,16 @@ def read_corvus_input(file):
          is_valid = True
          message = ''
          inp_dict[key] = [list(filter(None,key_list[ik+1].split('\n')))]
+      elif ((inp_def.inp_def_dict[key]['kinds'][0][0].__name__ == 'inp_file') or
+           (inp_def.inp_def_dict[key]['kinds'][0][0].__name__ == 'inp_structure_file')):
+         # This is a file definition, keep whole lines to preserve spaces in
+         # paths.
+         inp_key_vals = [list(filter(None,key_list[ik+1].split('\n')))]
+         print(key,inp_key_vals)
+         inp_dict[key],is_valid,message = cast_input_key_vals(inp_key_vals,key,inp_def.inp_def_dict)
       else:
          # This is not a paragraph, interpret each separate word as a field.
          inp_key_vals = [v.split() for v in list(filter(None,key_list[ik+1].split('\n')))]
-         print('inp_key_vals',inp_key_vals)
          inp_dict[key],is_valid,message = cast_input_key_vals(inp_key_vals,key,inp_def.inp_def_dict)
 
       if not is_valid:
@@ -142,17 +148,17 @@ def cast_input_key_vals(vals,key,inp_dict):
             ival = min(iv,len(inp_dict[key]['kinds'][iline])-1)
 
             # Cast the string to the correct input type, then validate it.
-            print(key,inp_dict[key]['kinds'][iline][ival])
+            #print(key,inp_dict[key]['kinds'][iline][ival])
             new_val = inp_dict[key]['kinds'][iline][ival](v)
             if input_errors.error: 
                message = input_errors.error_message
                input_errors.error_message = 'Incorrect type in field #' + str(iv+1) + ' of keyword: ' + key + \
                                    '. ' + message
             
-            print(key,inp_dict[key]['ranges'])
-            print('new_val=',new_val,v)
+            #print(key,inp_dict[key]['ranges'])
+            #print('new_val=',new_val,v)
             if inp_dict[key]['ranges'] is not None:
-               print(key,inp_dict[key]['ranges'])
+               #print(key,inp_dict[key]['ranges'])
                # If ranges exist for this keyword, check that input value is in range.
                # List of ranges can be shorter than list of fields or list of kinds. Use
                # last defined ranges element to check ranges.
@@ -181,10 +187,10 @@ def cast_input_key_vals(vals,key,inp_dict):
    return new_vals, True, 'valid'
 
 def write_corvus_input(values_dict,file):
-   print('values_dict',values_dict)
+   #print('values_dict',values_dict)
    with open(file,"w") as inp_file:
       for key,lines in values_dict.items():
-         print(key,lines)
+         #print(key,lines)
          inp_file.write(key)
          inp_file.write('{\n')
          for line in lines:
