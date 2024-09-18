@@ -169,7 +169,8 @@ class plot(wx.Frame):
         screenHeight = screenSize[1]/screen_ppi[1]
         size = (screenWidth,screenHeight)
         super().__init__(None, -1, title)
-        self.figure = Figure(figsize=size)
+        #self.figure = Figure(figsize=size)
+        self.figure = Figure()
         self.axes = self.figure.add_subplot()
         self.axes.format_coord = lambda x, y: ""
         self.axes.set_xlabel('E (eV)')
