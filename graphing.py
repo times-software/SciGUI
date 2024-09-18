@@ -38,18 +38,45 @@ class MyNavigationToolbar(NavigationToolbar):
         with wx.FileDialog(self,defaultDir=os.getcwd(),
                        style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
 
-           if fileDialog.ShowModal() == wx.ID_CANCEL:
-               return     # the user changed their mind
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return     # the user changed their mind
 
         # Proceed loading the file chosen by the user
-           file = fileDialog.GetPath()
-           try:
-               x, y = np.loadtxt(file,usecols=(0,1),unpack=True)
-               self.legend_texts=self.legend_texts + [str(file)]
-               ax.plot(x,y)
-               ax.legend(labels=self.legend_texts,fancybox=True, shadow=True,draggable=True,loc='upper left')
-           except IOError:
-               wx.LogError("Cannot open file '%s'." % newfile)
+            file = fileDialog.GetPath()
+            try:
+                data  = np.loadtxt(file,unpack=True)
+                if data.size >= 2:
+                    # Ask user what columns they want.
+                    ix=1
+                    iy=2
+                    parameters = ['x-axis label', 'y-axis label']
+                    vals = ['1','2']
+                    dlg = ParameterDialog(parameters,vals)
+                    # Display as a modal dialog
+                    result = dlg.ShowModal()
+                    # Check which button was pressed and take the appropriate action
+                    if result == wx.ID_OK:
+                        print("Dialog: OK")
+                        # Retrieve the parameters values and print them
+                        parameter_values = dlg.GetParameters()
+                        try:
+                            ix=int(parameter_values[0])
+                            iy=int(parameter_values[1])
+                        except:
+                            ix=1
+                            iy=2
+                elif data.size == 2:
+                    ix = 1
+                    iy = 2
+
+                x = data[ix-1]
+                y = data[iy-1]
+
+                self.legend_texts=self.legend_texts + [str(file)]
+                ax.plot(x,y)
+                ax.legend(labels=self.legend_texts,fancybox=True, shadow=True,draggable=True,loc='upper left')
+            except IOError:
+                wx.LogError("Cannot open file '%s'." % newfile)
 
         self.canvas.draw()
         event.Skip()
@@ -65,7 +92,7 @@ class MyNavigationToolbar(NavigationToolbar):
        vals = vals + self.legend_texts
        print(vals)
        for it, text in enumerate(self.legend_texts):
-          parameters = parameters + ['Line '+str(it)]
+          parameters = parameters + ['Legend '+str(it)]
        dlg = ParameterDialog(parameters,vals)
 
        # Display as a modal dialog

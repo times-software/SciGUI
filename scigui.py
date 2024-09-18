@@ -12,7 +12,8 @@ import os, subprocess
 import pathlib
 import structure_visualization
 import graphing
-import subprocess
+#import subprocess
+from time import sleep
 
 """ Make general scigui classes for each gui element: Frame, panel, notbook, 
     split panel, sizer, text control, spin control, combo box, file chooser. 
@@ -1044,8 +1045,8 @@ class Frame(wx.Frame):
         super().__init__(parent=None, title='Corvus')
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         #wx.Frame.__init__(self, *args, **kwds)
-        
-        self.infile = str(Path(os.getcwd()) /  Path('corvus.in'))
+        self.defaultFile = 'corvus.in'
+        self.infile = None
         # Set the datafiles
         self.datafile = None
 
@@ -1205,7 +1206,24 @@ class Frame(wx.Frame):
             self.inp_page.key_ui_dict[key].ShowItems(False)
 
 
+    def save_as(self):
+        with wx.FileDialog(self, "Save As", defaultFile=self.defaultFile,
+            style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT|wx.FD_CHANGE_DIR) as fileDialog:
 
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return     # the user changed their mind
+
+            # Proceed loading the file chosen by the user
+            self.infile = fileDialog.GetPath()
+            try:
+                self.get_values_dict()
+                translate_input.write_corvus_input(self.values_dict,self.infile)
+
+            except IOError:
+                wx.LogError("Cannot open file '%s'." % newfile)
+
+            dir = pathlib.Path(self.infile).parent
+            os.chdir(dir)
     #####################################################################
     # Event handlers
     #####################################################################
@@ -1217,19 +1235,43 @@ class Frame(wx.Frame):
             from corvus.controls import oneshot
 
             if self.infile is None:
-                self.infile = str(Path(os.getcwd) / Path('corvus.in'))
-
-            # Get values from GUI.
-            self.get_values_dict()
-            translate_input.write_corvus_input(self.values_dict,self.infile)
-
-            #print(self.infile)
-            sys.argv = ['run-corvus','-i',self.infile]
-            sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-            try:
-               oneshot()
-            except SystemExit:
-               pass
+                self.save_as()
+                # Check if corvus.in exists already and ask if overwrite if it
+                # does.
+            elif Path(self.infile).is_file():
+                # Check if user wants to overwrite the current file or save in a different directory.
+                message = 'The current input file:\n' + self.infile + '\nwill be overwritten.' + \
+                         ' Continue or save to a new file?'
+                with wx.MessageDialog(self.splitter_window0,message,style=wx.YES_NO|wx.CANCEL) as md:
+                    md.SetYesNoCancelLabels('Continue', 'Save As', 'Cancel')
+                    answer = md.ShowModal()
+                    if  answer == wx.ID_CANCEL:
+                        return
+                    elif answer == wx.ID_YES:
+                        self.get_values_dict()
+                        translate_input.write_corvus_input(self.values_dict,self.infile)
+                    elif answer == wx.ID_NO:
+                        self.save_as()
+            
+            title = 'Corvus is running ...' 
+            message = 'This will take time. You can see the output on the associated terminal.'
+            with wx.Dialog(self.splitter_window0,title=title,style=wx.CAPTION) as md:
+                text = wx.StaticText(md,label=message,style=wx.ALIGN_CENTRE_HORIZONTAL)
+                text.Wrap(md.GetSize()[0]-10)
+                #md.CreateTextSizer(message,md.GetSize()[0]-10)
+                #md.CreateTextSizer(message,50)
+                md.Show()
+                wx.Yield()
+                sys.argv = ['run-corvus','-i',self.infile]
+                sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+                try:
+                    oneshot()
+                except SystemExit:
+                    pass
+                md.Destroy()
+            message = 'Corvus is finished.'
+            with wx.MessageDialog(self.splitter_window0,message,style=wx.OK) as md:
+                answer = md.ShowModal()
 
     def on_plot_button(self,evt):
         if self.datafile is None:
