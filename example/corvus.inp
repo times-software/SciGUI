@@ -1,3 +1,7 @@
+target_list{
+cfavg
+helper
+}
 absorbing_atom_type{
 Fe
 }
@@ -5,11 +9,8 @@ cfavg_target{
 xanes
 }
 cif_input{
-/Users/jjkas/Programs/SciGUI/example/LFSO.cif
+LFSO.cif
 }
 feff.edge{
 K
-}
-target_list{
-cfavg
 }
