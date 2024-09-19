@@ -30,11 +30,13 @@ class input_element():
             lbl = ' '
         else:
             lbl = label
-
-        #print('label=',lbl)
+        
         self.kind = kind
         self.label_text = wx.StaticText(parent, label = lbl,style=wx.ALIGN_LEFT)
         self.sizer.Add(self.label_text,1,wx.TOP,2)
+
+        text_size = self.label_text.GetTextExtent("W")
+        if min_size is None: min_size = (text_size[0]*10, text_size[1]*2)
     
         min_size2 = min_size
         if kind.__name__ == 'inp_float':
@@ -47,15 +49,16 @@ class input_element():
                     print('Wrong default or kind for keyword: ', name_lbl, ' in config file.')
                     print('Should be float.')
                     exit()
-                self.widget = wx.TextCtrl(parent,value=default,name=name_lbl)
+                self.widget = wx.TextCtrl(parent,value=default,name=name_lbl,style=wx.ALIGN_LEFT)
                 self.default = default
                 #inp_elem = wx.lib.agw.floatspin.FloatTextCtrl(panel,name=name_lbl)
             else:
-                self.widget = wx.TextCtrl(parent,name=name_lbl)
+                self.widget = wx.TextCtrl(parent,name=name_lbl,style=wx.ALIGN_LEFT)
                 self.default = ''
                 #inp_elem = wx.lib.agw.floatspin.FloatTextCtrl(panel,name=name_lbl)
             #inp_elem.Bind(wx.EVT_KILL_FOCUS,self.validate_float)
             self.widget.Bind(wx.EVT_KEY_UP, lambda event: self.validate_float(event, range))
+            self.widget.Bind(wx.EVT_KILL_FOCUS, lambda event: self.validate_float(event, range))
             self.widget.Bind(wx.EVT_CHAR,self.validate_float_chars)
         elif kind.__name__ == 'inp_int':
             # Integer input. Add spin control
@@ -66,10 +69,10 @@ class input_element():
                     print('Wrong default or kind for keyword: ', name_lbl, ' in config file.')
                     print('Should be integer.')
                     exit()
-                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=val,name=name_lbl)
+                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=val,name=name_lbl,style=wx.ALIGN_LEFT)
                 self.default = val
             else:
-                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=0,name=name_lbl)
+                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=0,name=name_lbl,style=wx.ALIGN_LEFT)
                 self.default = 0
         elif kind.__name__ == 'inp_bool':
             # Logical input
@@ -90,35 +93,35 @@ class input_element():
             else:
                 lbl = "False"
 
-            self.widget = wx.ToggleButton(parent,label=lbl,name=name_lbl)
+            self.widget = wx.ToggleButton(parent,label=lbl,name=name_lbl,style=wx.ALIGN_LEFT)
             self.widget.SetValue(val)
             self.widget.Bind(wx.EVT_TOGGLEBUTTON, self.ToggleButtonLabel)
             
         elif kind.__name__ == 'inp_str': 
             # String input
             if default is not None:
-                self.widget = wx.TextCtrl(parent,value=default,name=name_lbl)
+                self.widget = wx.TextCtrl(parent,value=default,name=name_lbl,style=wx.ALIGN_LEFT)
                 self.default = default
             else:
-                self.widget = wx.TextCtrl(parent,name=name_lbl)
+                self.widget = wx.TextCtrl(parent,name=name_lbl,style=wx.ALIGN_LEFT)
                 self.default = ''
         elif kind.__name__ == 'inp_paragraph':
             # Paragraph?
             if default is not None:
-                self.widget = wx.TextCtrl(parent,value=default,name=name_lbl,style=wx.TE_MULTILINE|wx.HSCROLL)
+                self.widget = wx.TextCtrl(parent,value=default,name=name_lbl,style=wx.TE_MULTILINE|wx.HSCROLL|wx.ALIGN_LEFT)
                 self.default = default
             else:
-                self.widget = wx.TextCtrl(parent,name=name_lbl,style=wx.TE_MULTILINE|wx.HSCROLL)
+                self.widget = wx.TextCtrl(parent,name=name_lbl,style=wx.TE_MULTILINE|wx.HSCROLL|wx.ALIGN_LEFT)
                 self.default = ''
         elif kind.__name__ == 'inp_file_name':
-            self.widget = wx.FilePickerCtrl(parent, name = name_lbl)
+            self.widget = wx.FilePickerCtrl(parent, name = name_lbl,style=wx.ALIGN_LEFT)
             self.widget.Bind(wx.EVT_FILEPICKER_CHANGED,self.on_file_change)
             min_size2 = (min_size[0]*2,min_size[1])
             self.default = ''
         elif kind.__name__ == 'inp_structure_file':
-            self.widget = wx.FilePickerCtrl(parent, name = name_lbl)
+            self.widget = wx.FilePickerCtrl(parent, name = name_lbl,style=wx.ALIGN_LEFT)
             self.widget.Bind(wx.EVT_FILEPICKER_CHANGED,self.on_file_change)
-            self.view_button = wx.Button(parent,label='View',name=name_lbl)
+            self.view_button = wx.Button(parent,label='View',name=name_lbl,style=wx.ALIGN_LEFT)
             self.view_button.Bind(wx.EVT_BUTTON,self.view_structure)
             min_size2 = (min_size[0]*2,min_size[1])
             self.default = ''
@@ -131,14 +134,21 @@ class input_element():
             ie.error_message = 'Invalid type in input_types.py: ' + kind.__name__
             ie.input_error = True
             ie.error_type = 'fatal'
-    
+            print(ie.error_message)
+            exit()
+   
         if min_size2 is not None:
-            self.widget.SetMinSize(min_size2)
+            if min_size2[0] > 0 and min_size[1] > 0:
+                #wx.CallAfter(self.widget.SetMinSize,min_size2)
+                self.widget.SetMinSize,min_size2
+            else:
+                self.widget.SetMinSize,(20,40)
             
         self.sizer.Add(self.widget,1,wx.TOP,2)
         if kind.__name__ == 'inp_structure_file':
             self.sizer.Add(self.view_button,1,wx.TOP,2)
             self.view_button.Enable(False)
+
 
     def Reset(self):
         self.SetValue(self.default)
@@ -201,6 +211,7 @@ class input_element():
         self.label_text.Show(val)
         self.widget.Show(val)
         if hasattr(self,'view_button'): self.view_button.Show(val)
+        self.sizer.Layout()
 
     def Enable(self,val):
         self.widget.Enable(val)
@@ -247,13 +258,16 @@ class input_element():
         obj = evt.GetEventObject()
         val=obj.GetValue()
         ie.error = False
+        if val == '': return
         inp_fl = inp_float(str(val))
         if ie.error:
             obj.SetForegroundColour(wx.RED)
-            obj.SetFocus
+            obj.SetFocus()
+            obj.SetInsertionPointEnd()
             #evt.Skip()
             return
 
+        #print('Testing outside', range, inp_fl>=0.0) 
         if inp_fl.validate(range):
             val=float(obj.GetValue())
             obj.SetForegroundColour('')
@@ -262,8 +276,8 @@ class input_element():
             #floatErrorDialog = wx.MessageDialog(self,"ERROR: Input requires float.",style=wx.ICON_NONE)
             #if floatErrorDialog.ShowModal() == wx.ID_OK:
             #floatErrorDialog.Destroy()
-
             obj.SetFocus()
+            obj.SetInsertionPointEnd()
 
         #evt.Skip()
         return
@@ -327,8 +341,6 @@ class input_page():
         # Below we will loop over the input keywords
         # Hold index of the sizer that holds input fields for each keyword.
         i_key = 0
-        text_size = wx.TextCtrl().GetTextExtent("W")
-        min_size = (text_size[0]*10, text_size[1]*2)
         
         
         self.key_ui_dict = {}
@@ -340,7 +352,7 @@ class input_page():
                 # Ignore.
                 if inpkey ==  '_input_type': continue
 
-                self.key_ui_dict[inpkey] = key_ui_elem(inpkey,self.inp_dict[inpkey],self.panel1, self.panel2,min_size)
+                self.key_ui_dict[inpkey] = key_ui_elem(inpkey,self.inp_dict[inpkey],self.panel1, self.panel2)
                 self.key_ui_dict[inpkey].ShowItems(False)
                 i_key += 1
         else:
@@ -351,7 +363,7 @@ class input_page():
             # Ignore.
             if inpkey ==  '_input_type' or inpkey in first_keys: continue
 
-            self.key_ui_dict[inpkey] = key_ui_elem(inpkey,self.inp_dict[inpkey],self.panel1, self.panel2,min_size)
+            self.key_ui_dict[inpkey] = key_ui_elem(inpkey,self.inp_dict[inpkey],self.panel1, self.panel2)
             self.key_ui_dict[inpkey].ShowItems(False)
             i_key += 1
     
@@ -364,7 +376,7 @@ class input_page():
         
         
         #return splitter_window, panel1, panel2
-    
+
     def on_press_panel1_sizer(self,event):
         # Get the toggle that was pressed.
         obj = event.GetEventObject()
@@ -587,6 +599,7 @@ class key_ui_elem():
             # Set the input handlers to use for this line of kinds (data types).
             par_sz,ui_elems = self.get_input_handler_row(kind_line,default_line,keyword,
                                                          ranges = range_line,min_size = min_size, labels = label_line)
+            #self.key_sizer.Add(par_sz,0,wx.ALL|wx.EXPAND,2)
             self.key_sizer.Add(par_sz,0,wx.ALL|wx.EXPAND,2)
             self.par_sizers = self.par_sizers + [par_sz]
             self.ui_elems = self.ui_elems + [ui_elems]
@@ -692,6 +705,7 @@ class key_ui_elem():
     of fields in the row that this is associated with. name_lbl will be used to name
     the widget.
     Returns: widget (wx.Window)
+    ! NOT USED ANYMORE. NOW USE input_element class.
     """
     def get_input_handler_field(self,kind,default,name_lbl,range = None, min_size=None):
         #print(name_lbl,kind.__name__)
@@ -798,6 +812,7 @@ class key_ui_elem():
             val_line = []
             n_fields = 0
             for elem in ui_line:
+                elem
                 v = elem.GetValue()
                 # Empty strings will not be included in the output.
                 # Need to add a "validate keyword" that checks that all
@@ -889,6 +904,9 @@ class key_ui_elem():
     
     def ShowItems(self,val):
         self.key_sizer.ShowItems(val)
+        for ui_elem_line in self.ui_elems:
+            for ui_elem in ui_elem_line:
+                ui_elem.Show(val)
         #self.panel2_sizer.Layout()
         do_layout(self.panel2)
     
@@ -923,10 +941,10 @@ class key_ui_elem():
                 default = None
                 
 
-            inp_elem = input_element(self.panel2,kind,default = default,name_lbl = self.keyword,range = rng,min_size = self.min_size)
+            inp_elem = input_element(self.panel2,kind,default = default,name_lbl = self.keyword,range = rng)
             is_enabled = self.enable_checkbox.GetValue()
             inp_elem.Enable(is_enabled)
-            self.par_sizers[irow].Add(inp_elem.sizer,0,wx.LEFT,20)
+            self.par_sizers[irow].Add(inp_elem.sizer,0,wx.LEFT|wx.ALIGN_LEFT,10)
             self.ui_elems[irow] = self.ui_elems[irow] + [inp_elem]
             self.kinds[irow] = self.kinds[irow] + [kind]
             irow += 1
@@ -955,14 +973,14 @@ class key_ui_elem():
 
 
         par_sz,ui_elems = self.get_input_handler_row(kind_line,default_line,self.keyword,
-                                                         ranges = range_line,min_size = self.min_size)
+                                                         ranges = range_line)
         
         # Update the attributes and key dictionary.
         self.kinds = self.kinds + [kind_line]
         
         # Insert this into the key_sizer
         index = self.key_sizer.GetItemCount() - 1
-        self.key_sizer.Insert(index,par_sz,0,wx.ALL|wx.EXPAND,10)
+        self.key_sizer.Insert(index,par_sz,0,wx.ALL|wx.EXPAND,2)
         self.par_sizers.insert(-1,par_sz)
         self.ui_elems = self.ui_elems + [ui_elems]
         #self.panel2_sizer.Layout()
@@ -1193,7 +1211,7 @@ class Frame(wx.Frame):
         self.Show()
         #self.key_ui_dict['cell_struc_xyz_red'].set_values([['A',0,0,0],['B',1.0,1.0,1.0]])
 
-        self.splitter_window0.SplitHorizontally(self.top_panel,self.main_notebook,int(screenHeight/8))
+        self.splitter_window0.SplitHorizontally(self.top_panel,self.main_notebook,int(screenHeight/7))
         self.inp_page.splitter_window.SplitVertically(self.inp_page.panel1,self.inp_page.panel2,int(screenWidth/4))
         #splitter_window2.SplitVertically(panel3,panel4,0)
         self.Bind(wx.EVT_CLOSE,self.onExit)

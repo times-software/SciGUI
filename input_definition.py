@@ -89,7 +89,7 @@ class input_definition_dict():
             importance =  'essential'
             category =  'property'
             field_labels =  [['property'],['code']]
-            ranges =  [['xanes,xes,rixs,cfavg'],['feff,siesta,ocean,vasp,abinit,orca,helper']]
+            ranges =  [['xanes,exafs,xes,rixs,cfavg'],['feff,siesta,ocean,vasp,abinit,orca,helper']]
             defaults =  None
             field_types =  None
             fexpandable =  True

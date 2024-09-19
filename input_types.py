@@ -91,6 +91,7 @@ class inp_choice(str):
 
 class inp_float(float):
     def __new__(cls,f):
+        ie.error = False
         try:
             instance = super().__new__(cls,float(f))
             return instance
@@ -100,6 +101,7 @@ class inp_float(float):
             return None
 
     def validate(self,range=None):
+        #print('inside inp_float validate:',self,range)
         #print('validating float:')
         #print('range: ',range)
         #print('self: ',self)
@@ -112,14 +114,16 @@ class inp_float(float):
         if range is not None:
             r = range.split(',')
             if not r[0]: # first part is empty, only has max val
-                ie.error = float(r[1]) <= self
-                ie.error_message = 'Value must be >= ' + r[1]
+                ie.error = float(r[1]) < self
+                ie.error_message = 'Value must be <= ' + r[1]
             elif not r[1]:
-                ie.error = float(r[0]) >= self
-                ie.error_message = 'Value must be <= ' + r[0]
+                #print(float(r[0]),self)
+                ie.error = float(r[0]) > self
+                ie.error_message = 'Value must be >= ' + r[0]
             else:
-                ie.error = (float(r[0]) <= self) and (self <= float(r[1]))
+                ie.error = (float(r[0]) > self) or (self > float(r[1]))
                 ie.error_message = 'Value must be in range (' + r[0] + ',' + r[1] + ')'
+            #print(ie.error_message)
             #print('invalid range', ie.error_message)
         return not ie.error
 
