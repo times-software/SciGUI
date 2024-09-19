@@ -376,17 +376,23 @@ class input_page():
                 md.ShowModal()
                 obj.SetValue(False)
                 return None
-        # Get the keyword from the button text.
-        keyword = obj.GetLabelText()
-        obj.SetValue(True)
-        for key,key_ui_elem in self.key_ui_dict.items():
-            if key_ui_elem.keyword == keyword:
-                #print(keyword,key_ui_elem.keyword)
-                key_ui_elem.ShowItems(True)
-                self.current_key_ui = key_ui_elem
             else:
-                key_ui_elem.key_toggle.SetValue(False)
-                key_ui_elem.ShowItems(False)
+                keyword = obj.GetLabelText()
+                obj.SetValue(True)
+                self.current_key_ui.ShowItems(False)
+                self.current_key_ui.key_toggle.SetValue(False)
+                self.key_ui_dict[keyword].ShowItems(True)
+                self.current_key_ui = self.key_ui_dict[keyword]
+
+        # Get the keyword from the button text.
+        #for key,key_ui_elem in self.key_ui_dict.items():
+        #    if key_ui_elem.keyword == keyword:
+                #print(keyword,key_ui_elem.keyword)
+        #        key_ui_elem.ShowItems(True)
+        #        self.current_key_ui = key_ui_elem
+        #    else:
+        #        key_ui_elem.key_toggle.SetValue(False)
+        #        key_ui_elem.ShowItems(False)
 
         splitter_window = self.current_key_ui.panel1.GetParent()
         self.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
