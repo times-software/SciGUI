@@ -137,13 +137,13 @@ class input_element():
             print(ie.error_message)
             exit()
    
-        if min_size2 is not None:
-            if min_size2[0] > 0 and min_size[1] > 0:
+        if min_size2[0] > 0 and min_size[1] > 0:
                 #wx.CallAfter(self.widget.SetMinSize,min_size2)
-                self.widget.SetMinSize,min_size2
-            else:
-                self.widget.SetMinSize,(20,40)
-            
+            self.widget.SetMinSize,min_size2
+        else:
+            self.widget.SetMinSize((80,20))
+        #    
+        #self.widget.SetMinSize(min_size2)
         self.sizer.Add(self.widget,1,wx.TOP,2)
         if kind.__name__ == 'inp_structure_file':
             self.sizer.Add(self.view_button,1,wx.TOP,2)
