@@ -63,7 +63,7 @@ def read_corvus_input(file):
    clean_str = '\n'.join(lines2)
    #print(clean_str)
    # Find keywords. First one at beginning, all others between } {
-   key_list = list(filter(None,re.split(',|\{|\}',clean_str)[0:-1]))
+   key_list = list(filter(None,re.split(r',|\{|\}',clean_str)[0:-1]))
    #print(key_list)
    inp_dict = {}
    ik = 0

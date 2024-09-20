@@ -271,6 +271,7 @@ class input_element():
         if inp_fl.validate(range):
             val=float(obj.GetValue())
             obj.SetForegroundColour('')
+            evt.Skip()
         else:
             obj.SetForegroundColour(wx.RED)
             #floatErrorDialog = wx.MessageDialog(self,"ERROR: Input requires float.",style=wx.ICON_NONE)
