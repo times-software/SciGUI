@@ -49,7 +49,7 @@ class input_definition_dict():
          self.predefined = {'FEFF spectrum from CIF': \
                             {'target_list':[['cfavg'],['helper']], \
                                                     '_required': ['cfavg_target','cif_input','absorbing_atom_type','feff.edge'], \
-                                                    '_associated':['feff.fms','feff.scf','feff.exchange']}, \
+                                                    '_useful':['feff.fms','feff.scf','feff.exchange']}, \
                            'FEFF spectrum from Mat. Proj. id': {'target_list':[['cfavg'],['helper']], \
                                                     '_required': ['cfavg_target','mp_id','mp_apikey','absorbing_atom_type','feff.edge']}, \
                            'FEFF xanes of a single absorber': {'target_list':[['xanes'],['feff']], \
