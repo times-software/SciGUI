@@ -56,7 +56,7 @@ class MyNavigationToolbar(NavigationToolbar):
                     result = dlg.ShowModal()
                     # Check which button was pressed and take the appropriate action
                     if result == wx.ID_OK:
-                        print("Dialog: OK")
+                        #print("Dialog: OK")
                         # Retrieve the parameters values and print them
                         parameter_values = dlg.GetParameters()
                         try:
@@ -90,7 +90,7 @@ class MyNavigationToolbar(NavigationToolbar):
        vals = vals + [ax.get_xlabel()]
        vals = vals + [ax.get_ylabel()]
        vals = vals + self.legend_texts
-       print(vals)
+       #print(vals)
        for it, text in enumerate(self.legend_texts):
           parameters = parameters + ['Legend '+str(it)]
        dlg = ParameterDialog(parameters,vals)
@@ -99,14 +99,14 @@ class MyNavigationToolbar(NavigationToolbar):
        result = dlg.ShowModal()
        # Check which button was pressed and take the appropriate action
        if result == wx.ID_OK:
-           print("Dialog: OK")
+           #print("Dialog: OK")
            # Retrieve the parameters values and print them
            parameter_values = dlg.GetParameters()
            # First 2 parameters are x-axis, y-axis
            ax.set_xlabel(parameter_values[0])
            ax.set_ylabel(parameter_values[1])
-           print(len(parameter_values))
-           print(parameter_values) 
+           #print(len(parameter_values))
+           #print(parameter_values) 
            if len(parameter_values) > 2: 
               self.legend_texts = parameter_values[2:]
               ax.legend(labels=self.legend_texts,fancybox=True,shadow=True,draggable=True,loc='upper left')
@@ -116,7 +116,8 @@ class MyNavigationToolbar(NavigationToolbar):
            #self.canvas.draw()
            #ax.legend(fancybox=True,shadow=True)
        elif result == wx.ID_CANCEL:
-           print("Dialog: Cancel")
+           pass
+           #print("Dialog: Cancel")
            # Destroy the dialog window so we can close safely this one when we exit
        dlg.Destroy()
 
@@ -191,7 +192,7 @@ class plot(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.canvas, 1, wx.TOP | wx.LEFT | wx.EXPAND)
 
-        print(self.legend_texts)
+        #print(self.legend_texts)
         self.toolbar = MyNavigationToolbar(self.canvas,self.legend_texts)
         self.toolbar.Realize()
         # By adding toolbar in sizer, we are able to put it at the bottom

@@ -217,10 +217,10 @@ class input_element():
         self.widget.Enable(val)
 
     def on_file_change(self,evt):
-        print(self.widget.GetValue())
+        #print(self.widget.GetValue())
         if hasattr(self,'view_button'):
             file = inp_structure_file(self.widget.GetValue())
-            print(file,file.validate())
+            #print(file,file.validate())
             if file.validate(): 
                 self.view_button.Enable(True)
             else:
@@ -414,22 +414,45 @@ class input_page():
         # self.panel2.FitInside()
         do_layout(self.panel2)
 
-    def show_keywords(self,keys,highlight=False,colour = wx.GREEN,set_current=True):
+    def show_keywords(self,required_keys,useful_keys,associated_keys,highlight=False,set_current=True,colours=[wx.GREEN,wx.BLUE,wx.YELLOW]):
         # Shows a set of keywords, these will be highlighted 
         # if highlight = True.
         # If set_current, the currently selected keyword will be changed to the first
         # in this list if current selection is not in this list.
-        if not keys: return
-        for key in keys:
-            self.key_ui_dict[key].key_toggle.Show(True)
-            self.key_ui_dict[key].key_toggle_window.Show(True)
+        cols = []
+        for c in colours:
+            cols = cols + [(c[0],c[1],c[2],150)]
+        for key,key_ui in self.key_ui_dict.items():
+            if key in required_keys:
+                #print(key, 'green')
+                self.key_ui_dict[key].key_toggle.Show(True)
+                self.key_ui_dict[key].key_toggle_window.Show(True)
+                if highlight:
+                    self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(cols[0])
+            elif key in useful_keys:
+                #print(key, 'blue')
+                self.key_ui_dict[key].key_toggle.Show(True)
+                self.key_ui_dict[key].key_toggle_window.Show(True)
+                if highlight:
+                    self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(cols[1])
+            elif key in associated_keys:
+                #print(key, 'yellow')
+                self.key_ui_dict[key].key_toggle.Show(True)
+                self.key_ui_dict[key].key_toggle_window.Show(True)
+                if highlight:
+                    self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(cols[2])
+            else:
+                self.key_ui_dict[key].key_toggle.Show(False)
+                self.key_ui_dict[key].key_toggle_window.Show(False)
+                self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(wx.NullColour)
+
 
         if set_current:
-            if self.current_key_ui.keyword in keys:
+            if self.current_key_ui.keyword in required_keys:
                 self.current_key_ui.ShowItems(True)
             else:
                 # Show first keyword in required keys.
-                self.key_ui_dict[keys[0]].ShowItems(True)
+                self.key_ui_dict[required_keys[0]].ShowItems(True)
                 self.current_key_ui = self.key_ui_dict[keys[0]]
                 self.current_key_ui.key_toggle.SetValue(True)
                 self.current_key_ui.key_toggle.SetFocus()
@@ -437,12 +460,17 @@ class input_page():
         # self.panel1.Layout()
         # self.panel2.Layout()
         # self.splitter_window.Layout()
-        if highlight:
-            for key in keys:
-                #print("HL:", key)
-                col = (colour[0],colour[1],colour[2],150)
-                self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(col)
+        #col = (colour[0],colour[1],colour[2],150)
+        #if highlight:
+        #for key in keys:
+        #    print("HL:", key)
+        #    print(self.key_ui_dict[key].key_toggle_window.GetBackgroundColour())
+        #    self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(col)
+        #    print(self.key_ui_dict[key].key_toggle_window.GetBackgroundColour())
+        #self.current_key_ui.key_toggle_window.SetBackgroundColour(col)
+
         do_layout((self.panel1,self.panel2,self.splitter_window))
+        #Oprint(self.current_key_ui.key_toggle_window.GetBackgroundColour())
         # Call highlighting after layout?
         #va = self.current_key_ui.key_toggle.GetClassDefaultAttributes()
         
@@ -459,7 +487,8 @@ class input_page():
             key_ui.key_toggle_window.SetBackgroundColour(wx.NullColour)
 
         key_panels = []
-        if not keys: return
+        if not keys: 
+            return True
         for key in keys:
             self.key_ui_dict[key].key_toggle_window.Show(True)
             key_panels = key_panels + self.key_ui_dict[key].key_toggle_window
@@ -478,6 +507,7 @@ class input_page():
         # self.panel2.Layout()
         # self.splitter_window.Layout()
         do_layout((self.panel1,self.panel2,self.splitter_window))
+        return True
 
 """key_ui_elem is an object that holds all ui elements associated with a single keyword.
     Each keyword has a toggle button, and option widgets. The option widgets will be shown if
@@ -515,7 +545,7 @@ class key_ui_elem():
         self.key_toggle_sizer = wx.BoxSizer(wx.VERTICAL)
         self.key_toggle = wx.ToggleButton(self.key_toggle_window, label=keyword)
         #self.key_toggle_sizer.Add(self.key_toggle,0,wx.ALL,0)
-        self.key_toggle_sizer.Add(self.key_toggle,proportion = 0,flag=wx.ALL,border=2)
+        self.key_toggle_sizer.Add(self.key_toggle,proportion = 0,flag=wx.ALL,border=1)
         self.key_toggle_window.SetSizer(self.key_toggle_sizer)
         #self.panel1_sizer.Add(self.key_toggle,0,wx.ALIGN_LEFT|wx.ALL,5)
         
@@ -1148,11 +1178,18 @@ class Frame(wx.Frame):
         self.code_choice.SetSelection(self.code_choice.FindString('general'))
         self.top_panel_sizer.Add(self.code_choice,(0,filter_start+1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.code_choice.Bind(wx.EVT_CHOICE,self.filter_keywords) 
+        #col = wx.GREEN
+        #col = (col[0],col[1],col[2],150)
+        #self.top_panel.SetBackgroundColour(col)
+        #sleep(1)
+        #self.top_panel.SetBackgroundColour('')
+        #sleep(1)
+        #self.top_panel.SetBackgroundColour(col)
         #wx.CallAfter(self.code_choice.SetLabel, 'code')
         #wx.CallAfter(print("label ",self.code_choice.GetLabel()))
 
         #self.top_panel_sizer.Add()
-        self.Show()
+        #self.Show()
         self.top_panel.SetSizer(self.top_panel_sizer)
 
         # Add a notebook so that this is one page.
@@ -1197,10 +1234,10 @@ class Frame(wx.Frame):
         self.top_panel_sizer.Add(self.plotButton,(1,1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.plotButton.Bind(wx.EVT_BUTTON,self.on_plot_button)
 
-        self.showAllRequired = wx.CheckBox(self.top_panel,label="Show all required")
+        #self.showAllRequired = wx.CheckBox(self.top_panel,label="Show all required")
         #self.top_panel_sizer.Add(self.showAllRequired,1,wx.ALL,5)
-        self.top_panel_sizer.Add(self.showAllRequired,(1,15),flag=wx.TOP|wx.LEFT,border=top_panel_border)
-        self.showAllRequired.Bind(wx.EVT_CHECKBOX,self.show_all_required)
+        #self.top_panel_sizer.Add(self.showAllRequired,(1,15),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        #self.showAllRequired.Bind(wx.EVT_CHECKBOX,self.show_all_required)
         #splitter_window1, panel1, panel2 = self.MakeInputPage("All Keywords")
         #splitter_window2, panel3, panel4 = self.MakeInputPage("Copy of All Keywords")
         # Put the two panels inside the split window.
@@ -1217,9 +1254,16 @@ class Frame(wx.Frame):
         #splitter_window2.SplitVertically(panel3,panel4,0)
         self.Bind(wx.EVT_CLOSE,self.onExit)
 
-        self.Layout()
         self.required = ['target_list']
-        self.show_required(self.required[0])
+        self.inp_page.current_key_ui = self.inp_page.key_ui_dict['target_list']
+        #self.inp_page.show_only_keywords([])
+        #wx.Yield()
+        self.inp_page.show_keywords(['target_list'],[],[],highlight=True,set_current=True)
+        self.Layout()
+        #sleep(1)
+        #self.inp_page.show_only_keywords([])
+        #self.inp_page.show_keywords(['target_list'],highlight=True,set_current=True,colour=wx.BLUE)
+
         #print('required at initialization',self.required)
 
     def get_values_dict(self):
@@ -1314,6 +1358,7 @@ class Frame(wx.Frame):
             #evt.Skip()
             return
         key_list = []
+        useful_key_list = []
         associated_key_list = []
         vals_dict = {}
         for key,value in self.inp_def.predefined.items():
@@ -1323,6 +1368,8 @@ class Frame(wx.Frame):
                     if k == '_required':
                         # Show these keywords, and highlight. Don't set enabled.
                         key_list = key_list + v
+                    elif k == '_useful':
+                        useful_key_list = useful_key_list + v
                     elif k == '_associated':
                         associated_key_list = associated_key_list + v
                     else:
@@ -1339,13 +1386,14 @@ class Frame(wx.Frame):
             self.Reset()
             self.set_values(vals_dict)
         # Fist hide all keywords
-        self.inp_page.show_only_keywords([])
-        # Now show required keywords with highlighted green outline.
-        if key_list: self.inp_page.show_keywords(key_list,highlight=True,set_current=True)
-        # Now show associated keywords highlighted blue
-        if associated_key_list: self.inp_page.show_keywords(associated_key_list,highlight=True,colour=wx.BLUE,set_current=False)
+        #self.inp_page.show_only_keywords([])
+        #wx.Yield()
+        # Now show required keywords with highlighted color outline.
+        self.inp_page.show_keywords(key_list,useful_key_list,associated_key_list,highlight=True,set_current=True)
         self.code_choice.SetSelection(self.code_choice.FindString('all'))
         self.category_choice.SetSelection(self.category_choice.FindString('all'))
+        self.Layout()
+        
         #evt.Skip()
 
 

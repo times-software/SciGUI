@@ -86,7 +86,7 @@ class inp_choice(str):
         if self not in range.split(','):
             ie.error = True
             ie.error_message = 'Invalid option. Must be one of of the values: ' + range
-        print(ie.error,ie.error_message)
+        #print(ie.error,ie.error_message)
         return not ie.error
 
 class inp_float(float):

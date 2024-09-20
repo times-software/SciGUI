@@ -84,7 +84,7 @@ def read_corvus_input(file):
          # This is a file definition, keep whole lines to preserve spaces in
          # paths.
          inp_key_vals = [list(filter(None,key_list[ik+1].split('\n')))]
-         print(key,inp_key_vals)
+         #print(key,inp_key_vals)
          inp_dict[key],is_valid,message = cast_input_key_vals(inp_key_vals,key,inp_def.inp_def_dict)
       else:
          # This is not a paragraph, interpret each separate word as a field.
