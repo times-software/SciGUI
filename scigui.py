@@ -139,7 +139,7 @@ class input_element():
    
         if min_size2[0] > 0 and min_size[1] > 0:
                 #wx.CallAfter(self.widget.SetMinSize,min_size2)
-            self.widget.SetMinSize,min_size2
+            self.widget.SetMinSize(min_size2)
         else:
             self.widget.SetMinSize((80,20))
         #    
