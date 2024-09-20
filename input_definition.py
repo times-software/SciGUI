@@ -9,34 +9,37 @@ from input_types import *
 # category will a
 class input_definition_dict():
 
-   def _fill_key_info(self,help,kinds,code,importance,category,field_labels,ranges=None,
-                  defaults = None, field_types = None,fexpandable=False,lexpandable=False,required=None):
-      key_info = dict()
-      key_info['help'] = help
-      key_info['kinds'] = kinds
+   #def _fill_key_info(self,help,kinds,code,importance,category,field_labels,ranges=None,
+   #               defaults = None, field_types = None,fexpandable=False,lexpandable=False,required=None,codes=None):
+   def _fill_key_info(self,help,kinds,code,importance,category,field_labels,ranges,
+                  defaults, field_types,fexpandable,lexpandable,required):
+       key_info = dict()
+       key_info['help'] = help
+       key_info['kinds'] = kinds
 
-      key_info['code'] = code
-      key_info['importance'] = importance
-      key_info['category'] = category
-      key_info['field_labels'] = field_labels
-      if field_types is not None:
-            key_info['field_types'] = field_types
-      key_info['ranges'] = ranges
-      key_info['fexpandable'] = fexpandable
-      key_info['lexpandable'] = lexpandable
-      key_info['defaults'] = defaults
-      key_info['required'] = required
-      return key_info
+       key_info['code'] = code
+       key_info['importance'] = importance
+       key_info['category'] = category
+       key_info['field_labels'] = field_labels
+       if field_types is not None:
+           key_info['field_types'] = field_types
+       key_info['ranges'] = ranges
+       key_info['fexpandable'] = fexpandable
+       key_info['lexpandable'] = lexpandable
+       key_info['defaults'] = defaults
+       key_info['required'] = required
+       return key_info
 
    #############################################################################################
    #         BEGIN DEFINITION OF KEYWORDS FOR CORVUS
    #############################################################################################
 
    def __init__(self,input_type):
+      codes = ['general','feff']
       self.input_type = input_type
       self.required_keys = {}
       self.inp_def_dict = dict()
-      self._fill_input_dict(input_type)
+      self._fill_input_dict(input_type,codes)
       self.predefined = {}
       self.set_predefined()
       if input_type == 'corvus':
@@ -67,7 +70,7 @@ class input_definition_dict():
       pass
 
    # Below are the definitions of the different input types for the GUI to handle
-   def _fill_input_dict(self,input_type):
+   def _fill_input_dict(self,input_type,codes):
       if input_type == 'corvus':
             # Special keyword holds type of input 'corvus'
             self.inp_def_dict['_input_type'] = 'corvus'
@@ -95,7 +98,8 @@ class input_definition_dict():
             fexpandable =  True
             lexpandable =  False
             req =  {'cfavg': ['cfavg_target'], 'xanes': ['cluster', 'absorbing_atom', 'feff.edge'], 'xes': ['cluster', 'absorbing_atom', 'feff.edge'], 'rixs': ['cluster', 'absorbing_atom', 'feff.edge']}
-            self.inp_def_dict["target_list"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["target_list"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -117,7 +121,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["title"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["title"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -139,7 +144,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["scratch"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["scratch"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -161,7 +167,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["usesaved"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["usesaved"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -183,7 +190,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["multiprocessing_ncpu"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["multiprocessing_ncpu"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -210,7 +218,8 @@ class input_definition_dict():
             fexpandable = False
             lexpandable = True
             req = None
-            self.inp_def_dict["polarization"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["polarization"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -230,7 +239,8 @@ class input_definition_dict():
             fexpandable = False
             lexpandable = True
             req = None
-            self.inp_def_dict["atomic_charge"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["atomic_charge"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -248,7 +258,8 @@ class input_definition_dict():
             fexpandable = False
             lexpandable = False
             req = {'all': ['mp_apikey']}
-            self.inp_def_dict["mp_id"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["mp_id"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -263,7 +274,8 @@ class input_definition_dict():
             fexpandable = False
             lexpandable = False
             req = None
-            self.inp_def_dict["mp_apikey"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["mp_apikey"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -284,7 +296,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["usehandlers"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["usehandlers"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -306,7 +319,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["method"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["method"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -328,7 +342,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["xc"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["xc"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -350,7 +365,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["pspfiles"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["pspfiles"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -372,7 +388,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["scf_conv"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["scf_conv"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -394,7 +411,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["keep_symm"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["keep_symm"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -416,7 +434,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["constant_volume"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["constant_volume"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -438,7 +457,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nkpoints"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nkpoints"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -460,7 +480,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nqpoints"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nqpoints"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -482,7 +503,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["pw_encut"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["pw_encut"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -504,7 +526,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["numberofconfigurations"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["numberofconfigurations"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -526,7 +549,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["clusterradius"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["clusterradius"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -548,7 +572,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cif_input"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cif_input"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -570,7 +595,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["supercell_dimensions"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["supercell_dimensions"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -592,7 +618,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ismetal"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ismetal"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -614,7 +641,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ene_int"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ene_int"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -638,7 +666,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cell_vectors"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cell_vectors"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -660,7 +689,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["cell_struc_opt_flags"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cell_struc_opt_flags"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -682,7 +712,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["cell_struc_xyz_red"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cell_struc_xyz_red"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -704,7 +735,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["number_of_atoms"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["number_of_atoms"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -726,7 +758,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["species"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["species"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -748,7 +781,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cell_scaling_iso"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cell_scaling_iso"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -770,7 +804,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cell_scaling_abc"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cell_scaling_abc"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -792,7 +827,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cell_angles_abc"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cell_angles_abc"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -814,7 +850,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["mac_diel_const"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["mac_diel_const"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -835,7 +872,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["cluster"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cluster"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -857,7 +895,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["absorbing_atom"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["absorbing_atom"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -879,7 +918,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["absorbing_atom_type"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["absorbing_atom_type"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -901,7 +941,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["charge"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["charge"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -923,7 +964,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["multiplicity"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["multiplicity"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -945,7 +987,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["spectral_broadening"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["spectral_broadening"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -967,7 +1010,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["fermi_shift"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["fermi_shift"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -989,7 +1033,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["spin_moment"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["spin_moment"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1011,7 +1056,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["xanes_file"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["xanes_file"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1033,7 +1079,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["spectralFunction_file"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["spectralFunction_file"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1055,7 +1102,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["abinit.verbatim"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["abinit.verbatim"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1077,7 +1125,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["abinit.ngqpt"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["abinit.ngqpt"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1099,7 +1148,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["abinit.ng2qpt"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["abinit.ng2qpt"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1121,7 +1171,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["dmdw.ioflag"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["dmdw.ioflag"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1143,7 +1194,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["dmdw.nlanc"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["dmdw.nlanc"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1165,7 +1217,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["dmdw.paths"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["dmdw.paths"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1187,7 +1240,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["dmdw.tempgrid"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["dmdw.tempgrid"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1209,7 +1263,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["nwchem.basis"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.basis"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1231,7 +1286,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.qmd.nstep_nucl"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.qmd.nstep_nucl"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1253,7 +1309,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.qmd.dt_nucl"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.qmd.dt_nucl"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1275,7 +1332,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.qmd.targ_temp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.qmd.targ_temp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1297,7 +1355,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.qmd.thermostat"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.qmd.thermostat"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1319,7 +1378,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.qmd.print_xyz"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.qmd.print_xyz"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1341,7 +1401,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.xc"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.xc"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1363,7 +1424,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.mult"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.mult"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1385,7 +1447,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.qmd.snapstep"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.qmd.snapstep"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1407,7 +1470,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.xas.alpha"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.xas.alpha"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1429,7 +1493,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.xas.xrayenergywin"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.xas.xrayenergywin"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1451,7 +1516,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.xas.nroots"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.xas.nroots"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1473,7 +1539,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.xas.vec"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.xas.vec"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1495,7 +1562,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.iter"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.iter"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1517,7 +1585,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.charge"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.charge"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1539,7 +1608,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nwchem.xaselem"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nwchem.xaselem"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1561,7 +1631,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["nuctemp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["nuctemp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1583,7 +1654,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["debyetemp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["debyetemp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1605,7 +1677,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["dmdw_nlanczos"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["dmdw_nlanczos"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1627,7 +1700,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.MPI.CMD"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.MPI.CMD"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1649,7 +1723,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.MPI.ARGS"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.MPI.ARGS"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1671,7 +1746,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.atoms"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.atoms"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1693,7 +1769,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.hole"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.hole"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1715,7 +1792,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.overlap"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.overlap"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1737,7 +1815,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.control"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.control"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1759,7 +1838,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.exchange"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.exchange"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1781,7 +1861,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.ion"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.ion"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1803,7 +1884,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.title"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.title"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1825,7 +1907,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.folp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.folp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1847,7 +1930,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.rpath"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.rpath"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1864,7 +1948,8 @@ class input_definition_dict():
             fexpandable = False
             lexpandable = False
             req = None
-            self.inp_def_dict["feff.equivalence_nmax"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.equivalence_nmax"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1886,7 +1971,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.debye"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.debye"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1908,7 +1994,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.dmdw"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.dmdw"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1930,7 +2017,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.rmultiplier"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.rmultiplier"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1952,7 +2040,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.ss"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.ss"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1974,7 +2063,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.print"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.print"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -1996,7 +2086,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.potentials"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.potentials"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2018,7 +2109,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.potentials.spin"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.potentials.spin"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2040,7 +2132,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.lfms1"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.lfms1"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2062,7 +2155,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.lfms2"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.lfms2"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2084,7 +2178,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.nleg"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.nleg"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2106,7 +2201,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.criteria"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.criteria"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2128,7 +2224,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.iorder"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.iorder"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2150,7 +2247,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.pcriteria"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.pcriteria"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2172,7 +2270,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.sig2"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.sig2"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2194,7 +2293,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.xanes"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.xanes"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2216,7 +2316,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.corrections"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.corrections"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2238,7 +2339,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.afolp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.afolp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2260,7 +2362,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.exafs"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.exafs"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2282,7 +2385,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.polarization"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.polarization"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2304,7 +2408,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.ellipticity"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.ellipticity"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2326,7 +2431,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.rgrid"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.rgrid"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2348,7 +2454,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.rphases"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.rphases"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2370,7 +2477,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.nstar"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.nstar"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2392,7 +2500,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.nohole"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.nohole"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2414,7 +2523,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.sig3"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.sig3"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2436,7 +2546,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.jumprm"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.jumprm"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2458,7 +2569,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.mbconv"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.mbconv"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2480,7 +2592,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.spin"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.spin"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2503,7 +2616,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.edge"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.edge"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2525,7 +2639,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.scf"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.scf"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2547,7 +2662,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.fms"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.fms"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2569,7 +2685,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.ldos"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.ldos"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2591,7 +2708,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.interstitial"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.interstitial"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2613,7 +2731,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.cfaverage"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.cfaverage"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2635,7 +2754,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.s02"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.s02"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2657,7 +2777,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.xes"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.xes"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2679,7 +2800,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.danes"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.danes"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2701,7 +2823,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.fprime"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.fprime"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2723,7 +2846,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.rsigma"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.rsigma"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2745,7 +2869,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.xmcd"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.xmcd"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2767,7 +2892,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.multipole"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.multipole"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2789,7 +2915,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.unfreezef"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.unfreezef"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2811,7 +2938,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.tdlda"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.tdlda"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2833,7 +2961,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.pmbse"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.pmbse"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2855,7 +2984,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.mpse"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.mpse"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2877,7 +3007,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.sfconv"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.sfconv"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2899,7 +3030,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.self"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.self"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2921,7 +3053,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.sfse"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.sfse"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2943,7 +3076,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.rconv"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.rconv"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2966,7 +3100,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.elnes"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.elnes"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -2989,7 +3124,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.exelfs"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.exelfs"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3011,7 +3147,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.magic"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.magic"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3033,7 +3170,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.absolute"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.absolute"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3055,7 +3193,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.symmetry"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.symmetry"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3077,7 +3216,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.real"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.real"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3099,7 +3239,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.reciprocal"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.reciprocal"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3121,7 +3262,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.sgroup"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.sgroup"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3143,7 +3285,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.lattice"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.lattice"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3165,7 +3308,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.kmesh"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.kmesh"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3187,7 +3331,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.strfac"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.strfac"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3209,7 +3354,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.corehole"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.corehole"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3231,7 +3377,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.target"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.target"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3253,7 +3400,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.egrid"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.egrid"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3275,7 +3423,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.coordinates"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.coordinates"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3297,7 +3446,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.extpot"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.extpot"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3319,7 +3469,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.chbroad"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.chbroad"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3341,7 +3492,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.chsh"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.chsh"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3363,7 +3515,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.dims"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.dims"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3386,7 +3539,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.nrixs"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.nrixs"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3408,7 +3562,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.ljmax"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.ljmax"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3430,7 +3585,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.ldec"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.ldec"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3452,7 +3608,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.setedge"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.setedge"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3474,7 +3631,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.eps0"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.eps0"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3496,7 +3654,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["opcons.usesaved"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["opcons.usesaved"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3518,7 +3677,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.opcons"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.opcons"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3540,7 +3700,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.numdens"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.numdens"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3562,7 +3723,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.preps"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.preps"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3584,7 +3746,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.egapse"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.egapse"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3606,7 +3769,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.chwidth"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.chwidth"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3628,7 +3792,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.restart"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.restart"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3650,7 +3815,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.config"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.config"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3672,7 +3838,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["feff.screen"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.screen"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3694,7 +3861,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.cif"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.cif"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3716,7 +3884,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.equivalence"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.equivalence"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3738,7 +3907,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.compton"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.compton"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3760,7 +3930,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.rhozzp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.rhozzp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3782,7 +3953,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.cgrid"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.cgrid"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3804,7 +3976,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.corval"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.corval"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3826,7 +3999,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.siggk"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.siggk"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3848,7 +4022,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.temperature"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.temperature"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3875,7 +4050,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.density"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.density"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3897,7 +4073,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.rixs"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.rixs"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3919,7 +4096,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.rlprint"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.rlprint"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3941,7 +4119,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.hubbard"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.hubbard"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3963,7 +4142,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.crpa"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.crpa"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -3985,7 +4165,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["feff.scxc"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["feff.scxc"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4007,7 +4188,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["orca.expert"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.expert"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4029,7 +4211,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.convergencestrategy"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.convergencestrategy"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4051,7 +4234,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.cpcm"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.cpcm"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4073,7 +4257,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.method.method"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.method.method"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4095,7 +4280,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.method.runtype"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.method.runtype"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4117,7 +4303,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.method.amass"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.method.amass"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4139,7 +4326,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.method.usesymm"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.method.usesymm"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4161,7 +4349,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.method.frozencore"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.method.frozencore"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4183,7 +4372,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.method.allowrhf"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.method.allowrhf"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4205,7 +4395,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.method.ri"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.method.ri"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4227,7 +4418,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.method.grid"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.method.grid"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4249,7 +4441,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.method.gridx"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.method.gridx"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4271,7 +4464,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.hftyp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.hftyp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4293,7 +4487,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.fracocc"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.fracocc"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4315,7 +4510,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.smeartemp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.smeartemp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4337,7 +4533,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.keepints"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.keepints"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4359,7 +4556,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.keepdens"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.keepdens"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4381,7 +4579,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.readints"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.readints"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4403,7 +4602,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.usecheapints"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.usecheapints"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4425,7 +4625,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.valformat"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.valformat"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4447,7 +4648,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.kmatrix"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.kmatrix"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4469,7 +4671,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.jmatrix"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.jmatrix"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4491,7 +4694,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.scfmode"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.scfmode"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4513,7 +4717,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.maxiter"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.maxiter"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4535,7 +4740,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.guess"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.guess"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4557,7 +4763,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.autostart"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.autostart"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4579,7 +4786,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.convergence"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.convergence"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4601,7 +4809,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.diis"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.diis"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4623,7 +4832,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.kdiis"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.kdiis"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4645,7 +4855,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.nr"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.nr"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4667,7 +4878,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.soscf"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.soscf"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4689,7 +4901,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.cnvdamp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.cnvdamp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4711,7 +4924,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.cnvshift"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.cnvshift"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4733,7 +4947,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.scf.uno"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.scf.uno"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4755,7 +4970,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.basis.basis"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.basis.basis"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4777,7 +4993,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.basis.decontract"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.basis.decontract"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4799,7 +5016,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.mp2"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.mp2"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4821,7 +5039,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.mp2type"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.mp2type"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4843,7 +5062,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.ci"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.ci"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4865,7 +5085,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.citype"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.citype"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4887,7 +5108,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.tole"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.tole"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4909,7 +5131,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.tolrmsg"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.tolrmsg"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4931,7 +5154,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.tolmaxg"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.tolmaxg"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4953,7 +5177,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.tolrmsd"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.tolrmsd"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4975,7 +5200,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.tolrmaxd"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.tolrmaxd"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -4997,7 +5223,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.geom.optimizationquality"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.geom.optimizationquality"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5019,7 +5246,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.coords.units"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.coords.units"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5041,7 +5269,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.rel.method"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.rel.method"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5063,7 +5292,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.rel.soctype"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.rel.soctype"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5085,7 +5315,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.output.printlevel"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.output.printlevel"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5107,7 +5338,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.output.print"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.output.print"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5129,7 +5361,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.output.xyzfile"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.output.xyzfile"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5151,7 +5384,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["orca.output.pdbfile"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["orca.output.pdbfile"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5173,7 +5407,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.MPI.CMD"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.MPI.CMD"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5195,7 +5430,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.PAO.EnergyShift"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.PAO.EnergyShift"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5217,7 +5453,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.TD.ShapeOfEfield"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.TD.ShapeOfEfield"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5239,7 +5476,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.TD.CoreExcitedAtom"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.TD.CoreExcitedAtom"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5261,7 +5499,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.TD.CorePerturbationCharge"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.TD.CorePerturbationCharge"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5283,7 +5522,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.TD.mxPC"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.TD.mxPC"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5305,7 +5545,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.Diag.DivideAndConquer"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.Diag.DivideAndConquer"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5327,7 +5568,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.LongOutput"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.LongOutput"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5349,7 +5591,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.MeshCutoff"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.MeshCutoff"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5371,7 +5614,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.XC.functional"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.XC.functional"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5393,7 +5637,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.XC.authors"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.XC.authors"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5415,7 +5660,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.LatticeConstant"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.LatticeConstant"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5437,7 +5683,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["siesta.Block.PAO.Basis"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.Block.PAO.Basis"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5459,7 +5706,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.Block.LatticeParameters"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.Block.LatticeParameters"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5481,7 +5729,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.MaxSCFIterations"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.MaxSCFIterations"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5503,7 +5752,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.UseSaveData"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.UseSaveData"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5525,7 +5775,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.DM.InitSpin.AF"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.DM.InitSpin.AF"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5547,7 +5798,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.SpinPolarized"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.SpinPolarized"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5569,7 +5821,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.DM.NumberBroyden"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.DM.NumberBroyden"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5591,7 +5844,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.DM.NumberPulay"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.DM.NumberPulay"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5613,7 +5867,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.DM.MixingWeight"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.DM.MixingWeight"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5635,7 +5890,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.DM.Tolerance"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.DM.Tolerance"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5657,7 +5913,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.SolutionMethod"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.SolutionMethod"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5679,7 +5936,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.PAO.BasisType"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.PAO.BasisType"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5701,7 +5959,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.PAO.BasisSize"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.PAO.BasisSize"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5723,7 +5982,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.ElectronicTemperature"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.ElectronicTemperature"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5745,7 +6005,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.NumberOfAtoms"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.NumberOfAtoms"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5767,7 +6028,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.NumberOfSpecies"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.NumberOfSpecies"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5789,7 +6051,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.Block.ChemicalSpeciesLabel"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.Block.ChemicalSpeciesLabel"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5811,7 +6074,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.AtomicCoordinatesFormat"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.AtomicCoordinatesFormat"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5833,7 +6097,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["siesta.Block.AtomicCoordinatesAndAtomicSpecies"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.Block.AtomicCoordinatesAndAtomicSpecies"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5855,7 +6120,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.Coreresponse.Broadening"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.Coreresponse.Broadening"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5877,7 +6143,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["siesta.Beta.Broadening"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.Beta.Broadening"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5899,7 +6166,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["siesta.expert"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["siesta.expert"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5921,7 +6189,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["phsf.numtimepoints"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["phsf.numtimepoints"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5943,7 +6212,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["phsf.broadening"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["phsf.broadening"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5965,7 +6235,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["phsf.ekeqp"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["phsf.ekeqp"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -5987,7 +6258,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cif2cell.cif_input"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cif2cell.cif_input"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6009,7 +6281,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cif2cell.program"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cif2cell.program"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6031,7 +6304,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cif2cell.outfile"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cif2cell.outfile"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6053,7 +6327,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cif2cell.supercell"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cif2cell.supercell"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6075,7 +6350,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cif2cell.cartesian"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cif2cell.cartesian"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6097,7 +6373,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["cif2cell.atomicunits"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cif2cell.atomicunits"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6119,7 +6396,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  {'xanes': ['structure', 'absorbing_atom_type', 'feff.edge'], 'xes': ['structure', 'absorbing_atom_type', 'feff.edge'], 'rixs': ['structure', 'absorbing_atom_type', 'feff.edge']}
 
-            self.inp_def_dict["cfavg_target"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["cfavg_target"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6141,7 +6419,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["fit.target"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["fit.target"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6163,7 +6442,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["fit.parameters"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["fit.parameters"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6185,7 +6465,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["fit.datafile"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["fit.datafile"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6207,7 +6488,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["fit.bond"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["fit.bond"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6229,7 +6511,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.photon.operator"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.photon.operator"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6251,7 +6534,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.photon.polarization"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.photon.polarization"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6273,7 +6557,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.photon.qhat"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.photon.qhat"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6295,7 +6580,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.photon.energy"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.photon.energy"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6317,7 +6603,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.para_prefix"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.para_prefix"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6339,7 +6626,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.ser_prefix"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.ser_prefix"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6361,7 +6649,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.dft"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.dft"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6383,7 +6672,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.scratch"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.scratch"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6405,7 +6695,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.acell"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.acell"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6429,7 +6720,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.rprim"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.rprim"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6451,7 +6743,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.ntypat"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.ntypat"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6473,7 +6766,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.znucl"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.znucl"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6495,7 +6789,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.natom"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.natom"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6517,7 +6812,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.typat"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.typat"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6539,7 +6835,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["ocean.xred"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.xred"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6561,7 +6858,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.diemac"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.diemac"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6583,7 +6881,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.nspin"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.nspin"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6605,7 +6904,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["ocean.smag"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.smag"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6627,7 +6927,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.smag.ixc"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.smag.ixc"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6650,7 +6951,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["ocean.ldau"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.ldau"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6672,7 +6974,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.zymb"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.zymb"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6694,7 +6997,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["ocean.pp_list"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.pp_list"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6716,7 +7020,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.ecut"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.ecut"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6738,7 +7043,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.nkpt"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.nkpt"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6760,7 +7066,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.ngkpt"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.ngkpt"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6782,7 +7089,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.nbands"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.nbands"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6804,7 +7112,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.screen.nbands"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.screen.nbands"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6826,7 +7135,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.occopt"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.occopt"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6848,7 +7158,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.fband"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.fband"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6870,7 +7181,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.toldfe"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.toldfe"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6892,7 +7204,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.tolwfr"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.tolwfr"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6914,7 +7227,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.nstep"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.nstep"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6936,7 +7250,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.screen.nkpt"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.screen.nkpt"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6958,7 +7273,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.abpad"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.abpad"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -6980,7 +7296,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.dft_energy_range"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.dft_energy_range"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7002,7 +7319,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.screen_energy_range"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.screen_energy_range"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7024,7 +7342,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.k0"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.k0"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7046,7 +7365,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.degauss"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.degauss"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7068,7 +7388,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.opf.program"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.opf.program"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7090,7 +7411,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.opf.fill"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.opf.fill"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7112,7 +7434,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.opf.opts"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.opf.opts"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7134,7 +7457,8 @@ class input_definition_dict():
             lexpandable =  True
             req =  None
 
-            self.inp_def_dict["ocean.edges"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.edges"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7156,7 +7480,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.screen.shells"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.screen.shells"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7178,7 +7503,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.rad"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.rad"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7200,7 +7526,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.scfac"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.scfac"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7222,7 +7549,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.core_offset"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.core_offset"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7244,7 +7572,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.opf.hfkgrid"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.opf.hfkgrid"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7266,7 +7595,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.xmesh"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.xmesh"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7288,7 +7618,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.mode"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.mode"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7310,7 +7641,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.niter"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.niter"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7332,7 +7664,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.metal"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.metal"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7354,7 +7687,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.spin-orbit"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.spin-orbit"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7376,7 +7710,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.photon_q"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.photon_q"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7398,7 +7733,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.strength"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.strength"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7420,7 +7756,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.solver"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.solver"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7442,7 +7779,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.gmres.elist"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.gmres.elist"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7464,7 +7802,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.gmres.erange"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.gmres.erange"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7486,7 +7825,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.gmres.nloop"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.gmres.nloop"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7508,7 +7848,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.gmres.gprc"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.gmres.gprc"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7530,7 +7871,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.gmres.ffff"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.gmres.ffff"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
@@ -7552,7 +7894,8 @@ class input_definition_dict():
             lexpandable =  False
             req =  None
 
-            self.inp_def_dict["ocean.cnbse.broaden"] = self._fill_key_info(help,kinds,
+            if code in codes:
+                self.inp_def_dict["ocean.cnbse.broaden"] = self._fill_key_info(help,kinds,
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 

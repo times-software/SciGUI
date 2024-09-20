@@ -338,6 +338,8 @@ class input_page():
         #main_panel.SetSizer(main_sizer)
         self.panel1.SetSizer(self.panel1_sizer)
         self.panel2.SetSizer(self.panel2_sizer)
+        
+        self.panel2.Bind(wx.EVT_SIZE,self.on_resize)
 
         # Below we will loop over the input keywords
         # Hold index of the sizer that holds input fields for each keyword.
@@ -377,6 +379,11 @@ class input_page():
         
         
         #return splitter_window, panel1, panel2
+    def on_resize(self,evt):
+        if hasattr(self,"current_key_ui"):
+            self.current_key_ui.help_text_ui.SetLabel(self.current_key_ui.help_text)
+            self.current_key_ui.help_text_ui.Wrap(int(self.panel2.GetSize().width - 10))
+            do_layout(self.panel2)
 
     def on_press_panel1_sizer(self,event):
         # Get the toggle that was pressed.
@@ -408,7 +415,7 @@ class input_page():
         #        key_ui_elem.ShowItems(False)
 
         splitter_window = self.current_key_ui.panel1.GetParent()
-        self.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
+        self.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 20))
         # self.panel2.SetVirtualSize(self.current_key_ui.panel2_sizer.GetMinSize())
         # self.panel2.Layout()
         # self.panel2.FitInside()
@@ -532,6 +539,7 @@ class key_ui_elem():
             self.n_required_fields = self.n_required_fields + [n_field]
 
         self.panel1 = panel1
+        #print(wx.ColourDatabase().Find('DARK SLATE GREY'))
         self.panel2 = panel2
         self.help_text = keyword.strip() + ':' + '\n' + '\n'.join(key_dict['help'])
 
@@ -556,7 +564,6 @@ class key_ui_elem():
         
         # Add the help text to the key_sizer next.
         self.help_text_ui = wx.StaticText(panel2, label =self.help_text,style=wx.ALIGN_LEFT)
-
         # Make the text wrap at the edge of the right side panel. 
         #help_text.Wrap(self.splitter_window.GetWindow1().GetSize()[1])
         self.key_sizer.Add(self.help_text_ui,0,wx.LEFT|wx.ALIGN_LEFT|wx.EXPAND,10)
@@ -939,6 +946,7 @@ class key_ui_elem():
             for ui_elem in ui_elem_line:
                 ui_elem.Show(val)
         #self.panel2_sizer.Layout()
+        self.help_text_ui.Wrap(int(self.panel2.GetSize().width - 20))
         do_layout(self.panel2)
     
     def Highlight(self):
@@ -950,7 +958,6 @@ class key_ui_elem():
     #      EVENT PROCESSING FOR key_ui_elem class
     ################################################################################
              
-
     def add_ui_column(self,evt=None):
         # Insert a new field at the end of each line of ui_elements
         irow = 0
@@ -1108,6 +1115,7 @@ class Frame(wx.Frame):
 
         # Initialize the input definition
         self.inp_def = input_definition.input_definition_dict('corvus')
+
         self.inpdict = self.inp_def.inp_def_dict
         self.input_type = self.inpdict['_input_type']
         del self.inpdict['_input_type'] # For now delete this. Might need it in the future?
@@ -1250,7 +1258,9 @@ class Frame(wx.Frame):
         #self.key_ui_dict['cell_struc_xyz_red'].set_values([['A',0,0,0],['B',1.0,1.0,1.0]])
 
         self.splitter_window0.SplitHorizontally(self.top_panel,self.main_notebook,int(screenHeight/7))
+        self.splitter_window0.SetMinimumPaneSize(int(screenHeight/10))
         self.inp_page.splitter_window.SplitVertically(self.inp_page.panel1,self.inp_page.panel2,int(screenWidth/4))
+        self.inp_page.splitter_window.SetMinimumPaneSize(int(screenWidth/8))
         #splitter_window2.SplitVertically(panel3,panel4,0)
         self.Bind(wx.EVT_CLOSE,self.onExit)
 
@@ -1258,7 +1268,9 @@ class Frame(wx.Frame):
         self.inp_page.current_key_ui = self.inp_page.key_ui_dict['target_list']
         #self.inp_page.show_only_keywords([])
         #wx.Yield()
-        self.inp_page.show_keywords(['target_list'],[],[],highlight=True,set_current=True)
+        wx.CallAfter(self.inp_page.show_keywords,['target_list'],[],[],highlight=True,set_current=True)
+        #self.inp_page.panel1.SetBackgroundColour((0,0,0,255))
+        #self.inp_page.panel1.SetBackgroundColour(wx.ColourDatabase().Find('DARK_SLATE_GREY'))
         self.Layout()
         #sleep(1)
         #self.inp_page.show_only_keywords([])
@@ -1566,7 +1578,8 @@ class Frame(wx.Frame):
                 key_ui_elem.ShowItems(False)
 
         splitter_window = self.inp_page.current_key_ui.panel1.GetParent()
-        self.inp_page.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 5))
+        #print('Wrap size:',int(splitter_window.GetWindow2().GetSize().width - 5))
+        self.inp_page.current_key_ui.help_text_ui.Wrap(int(splitter_window.GetWindow2().GetSize().width - 20))
         self.inp_page.current_key_ui.panel2.SetVirtualSize(self.inp_page.current_key_ui.panel2_sizer.GetMinSize())
         #self.inp_page.current_key_ui.panel2.Layout()
         #self.inp_page.panel1_sizer.Layout()
