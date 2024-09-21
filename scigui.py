@@ -1,4 +1,5 @@
 import wx
+import darkdetect
 import wx.lib.scrolledpanel
 import input_errors as ie
 import sys
@@ -70,13 +71,13 @@ class input_element():
                     print('Wrong default or kind for keyword: ', name_lbl, ' in config file.')
                     print('Should be integer.')
                     exit()
-                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=val,name=name_lbl,style=wx.ALIGN_LEFT)
+                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=val,name=name_lbl)
                 self.default = val
             else:
-                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=0,name=name_lbl,style=wx.ALIGN_LEFT)
+                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=0,name=name_lbl)
                 self.default = 0
         elif kind.__name__ == 'inp_bool':
-            # Logical input
+            # Logical input/
             if default is not None:
                 if default == "True":
                     val = True
@@ -254,6 +255,7 @@ class input_element():
                 label = "False"
             self.widget.SetLabel(label)
 
+
     def validate_float(self,evt,range=None):
         #print('validating float')
         obj = evt.GetEventObject()
@@ -427,9 +429,14 @@ class input_page():
         # if highlight = True.
         # If set_current, the currently selected keyword will be changed to the first
         # in this list if current selection is not in this list.
+        if darkdetect.isDark():
+            alpha = 50
+        else:
+            alpha = 255
+
         cols = []
         for c in colours:
-            cols = cols + [(c[0],c[1],c[2],50)]
+            cols = cols + [(c[0],c[1],c[2],alpha)]
         for key,key_ui in self.key_ui_dict.items():
             if key in required_keys:
                 #print(key, 'green')
@@ -547,6 +554,7 @@ class key_ui_elem():
         self.panel1_sizer = panel1.GetSizer()
         self.panel2_sizer = panel2.GetSizer()
         self.key_toggle_window = wx.Panel(self.panel1,style=wx.BORDER_THEME)
+        self.key_toggle_window.Bind(wx.EVT_SYS_COLOUR_CHANGED, self.OnColourChanged)
         #if self.key_toggle_window.CanSetTransparent:
         #    self.key_toggle_window.SetTransparent(50)
         #self.panel1_sizer.Add(self.key_toggle_window,0,wx.ALIGN_LEFT|wx.LEFT,5)
@@ -831,6 +839,15 @@ class key_ui_elem():
         return inp_elem
    
     
+    def OnColourChanged(self,evt):
+        obj = evt.GetEventObject()
+        col = obj.GetBackgroundColour()
+        if col[3] == 255:
+            new_col = (col[0],col[1],col[2],50)
+        else:
+            new_col = (col[0],col[1],col[2],255)
+        obj.SetBackgroundColour(new_col)
+
     def validate_key_values(self,evt=None): 
         # Compare number of non-empty fields with required number of fields 
         # for each line. 
