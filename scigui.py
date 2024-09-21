@@ -1,4 +1,5 @@
 import wx
+import darkdetect
 import wx.lib.scrolledpanel
 import input_errors as ie
 import sys
@@ -145,7 +146,7 @@ class input_element():
             self.widget.SetMinSize((80,20))
         #    
         #self.widget.SetMinSize(min_size2)
-        self.sizer.Add(self.widget,1,wx.TOP,2)
+        self.sizer.Add(self.widget,1,wx.TOP,3)
         if kind.__name__ == 'inp_structure_file':
             self.sizer.Add(self.view_button,1,wx.TOP,2)
             self.view_button.Enable(False)
@@ -427,9 +428,14 @@ class input_page():
         # if highlight = True.
         # If set_current, the currently selected keyword will be changed to the first
         # in this list if current selection is not in this list.
+        if darkdetect.isDark():
+            alpha = 50
+        else:
+            alpha = 255
+
         cols = []
         for c in colours:
-            cols = cols + [(c[0],c[1],c[2],150)]
+            cols = cols + [(c[0],c[1],c[2],alpha)]
         for key,key_ui in self.key_ui_dict.items():
             if key in required_keys:
                 #print(key, 'green')
