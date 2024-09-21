@@ -49,7 +49,7 @@ class MyNavigationToolbar(NavigationToolbar):
                     # Ask user what columns they want.
                     ix=1
                     iy=2
-                    parameters = ['x-axis label', 'y-axis label']
+                    parameters = ['x-axis column', 'y-axis column']
                     vals = ['1','2']
                     dlg = ParameterDialog(parameters,vals)
                     # Display as a modal dialog
