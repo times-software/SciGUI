@@ -71,13 +71,13 @@ class input_element():
                     print('Wrong default or kind for keyword: ', name_lbl, ' in config file.')
                     print('Should be integer.')
                     exit()
-                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=val,name=name_lbl,style=wx.ALIGN_LEFT)
+                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=val,name=name_lbl)
                 self.default = val
             else:
-                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=0,name=name_lbl,style=wx.ALIGN_LEFT)
+                self.widget = wx.SpinCtrl(parent,min=-100, max=100, initial=0,name=name_lbl)
                 self.default = 0
         elif kind.__name__ == 'inp_bool':
-            # Logical input
+            # Logical input/
             if default is not None:
                 if default == "True":
                     val = True
