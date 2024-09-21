@@ -1113,6 +1113,8 @@ class Frame(wx.Frame):
         self.infile = None
         # Set the datafiles
         self.datafile = None
+        self.is_running = False
+        self.run_aborted = False
 
         # Initialize the input definition
         self.inp_def = input_definition.input_definition_dict('corvus')
@@ -1312,12 +1314,35 @@ class Frame(wx.Frame):
     # Event handlers
     #####################################################################
 
+    def abort(self,evt=None):
+        obj = evt.GetEventObject()
+        obj.SetLabel('Aborting ...')
+        f = open('abort_corvus.txt','w')
+        f.write('True')
+        f.close()
+        while self.thread.is_alive():
+            wx.Yield()
+
+
+        self.run_aborted = True
+        self.runButton.Enable(True)
+        
     def run(self,evt):
         if self.input_type == 'corvus':
             import re
             import sys
             from corvus.controls import oneshot
 
+            # If a process is running allow it to abort, then return.
+            if self.is_running:
+                message = 'Corvus is currently running. Abort the current run?'
+                if wx.MessageDialog(self.splitter_window0,message,style=wx.YES_NO).ShowModal() == wx.ID_NO:
+                    return
+                else:
+                    self.abort()
+
+            self.is_running = True
+            self.runButton.Enable(False)
             if self.infile is None:
                 self.save_as()
                 # Check if corvus.in exists already and ask if overwrite if it
@@ -1338,24 +1363,37 @@ class Frame(wx.Frame):
                         self.save_as()
             
             title = 'Corvus is running ...' 
-            message = 'This will take time. You can see the output on the associated terminal.'
-            with wx.Dialog(self.splitter_window0,title=title,style=wx.CAPTION) as md:
-                text = wx.StaticText(md,label=message,style=wx.ALIGN_CENTRE_HORIZONTAL)
-                text.Wrap(md.GetSize()[0]-10)
-                #md.CreateTextSizer(message,md.GetSize()[0]-10)
-                #md.CreateTextSizer(message,50)
-                md.Show()
+            message = 'This will take time. You can see the \noutput on the associated terminal.'
+            md = wx.Dialog(self.splitter_window0,title=title)
+            text = wx.StaticText(md,label=message,style=wx.ALIGN_CENTRE_HORIZONTAL)
+            md_sizer = wx.BoxSizer(wx.VERTICAL)
+            md_sizer.Add(text,0,wx.ALL|wx.ALIGN_CENTRE_HORIZONTAL,10)
+            abort_button = wx.Button(md,label='Abort Calculation',style=wx.ALL|wx.ALIGN_CENTRE_HORIZONTAL)
+            md_sizer.Add(abort_button,0,wx.ALL|wx.ALIGN_CENTRE,20)
+            abort_button.Bind(wx.EVT_BUTTON,self.abort)
+            md.SetSizer(md_sizer) 
+            text.Wrap(md.GetSize()[0]-10)
+            sys.argv = ['run-corvus','-i',self.infile]
+            sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+            try:
+                self.thread = Thread(target=oneshot)
+            except SystemExit:
+                pass
+            self.thread.start()
+            md.Show()
+            while self.thread.is_alive():
                 wx.Yield()
-                sys.argv = ['run-corvus','-i',self.infile]
-                sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-                try:
-                    thread = Thread(target=oneshot())
-                except SystemExit:
-                    pass
-                md.Destroy()
-            message = 'Corvus is finished.'
-            with wx.MessageDialog(self.splitter_window0,message,style=wx.OK) as md:
-                answer = md.ShowModal()
+            if self.run_aborted:
+                message = 'Corvus was aborted.'
+                self.run_aborted = False
+            else:
+                message = 'Corvus is finished.'
+            text.SetLabel(message)
+                
+            wx.CallLater(3000,md.Destroy)
+            
+            self.is_running = False
+            self.runButton.Enable(True)
 
     def on_plot_button(self,evt):
         if self.datafile is None:
@@ -1725,7 +1763,7 @@ class Frame(wx.Frame):
                 except IOError:
                     wx.LogError("Cannot open file '%s'." % newfile)
         elif id == self.id_exit:
-            self.OnExit(evt)
+            self.onExit(evt)
 
 def do_layout(windows):
     if isinstance(windows,list) or isinstance(windows,tuple):
