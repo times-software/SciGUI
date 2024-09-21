@@ -842,7 +842,6 @@ class key_ui_elem():
     def OnColourChanged(self,evt):
         obj = evt.GetEventObject()
         col = obj.GetBackgroundColour()
-        print(col)
         if col[3] == 255:
             new_col = (col[0],col[1],col[2],50)
         else:
