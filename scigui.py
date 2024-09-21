@@ -14,6 +14,7 @@ import structure_visualization
 import graphing
 #import subprocess
 from time import sleep
+from threading import Thread
 
 """ Make general scigui classes for each gui element: Frame, panel, notbook, 
     split panel, sizer, text control, spin control, combo box, file chooser. 
@@ -119,7 +120,7 @@ class input_element():
             min_size2 = (min_size[0]*2,min_size[1])
             self.default = ''
         elif kind.__name__ == 'inp_structure_file':
-            self.widget = wx.FilePickerCtrl(parent, name = name_lbl,style=wx.ALIGN_LEFT)
+            self.widget = wx.FilePickerCtrl(parent, name = name_lbl,style=wx.ALIGN_LEFT|wx.FLP_USE_TEXTCTRL)
             self.widget.Bind(wx.EVT_FILEPICKER_CHANGED,self.on_file_change)
             self.view_button = wx.Button(parent,label='View',name=name_lbl,style=wx.ALIGN_LEFT)
             self.view_button.Bind(wx.EVT_BUTTON,self.view_structure)
@@ -1348,7 +1349,7 @@ class Frame(wx.Frame):
                 sys.argv = ['run-corvus','-i',self.infile]
                 sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
                 try:
-                    oneshot()
+                    thread = Thread(target=oneshot())
                 except SystemExit:
                     pass
                 md.Destroy()
