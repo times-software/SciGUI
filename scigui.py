@@ -145,7 +145,7 @@ class input_element():
             self.widget.SetMinSize((80,20))
         #    
         #self.widget.SetMinSize(min_size2)
-        self.sizer.Add(self.widget,1,wx.TOP,2)
+        self.sizer.Add(self.widget,1,wx.TOP,3)
         if kind.__name__ == 'inp_structure_file':
             self.sizer.Add(self.view_button,1,wx.TOP,2)
             self.view_button.Enable(False)
@@ -429,7 +429,7 @@ class input_page():
         # in this list if current selection is not in this list.
         cols = []
         for c in colours:
-            cols = cols + [(c[0],c[1],c[2],150)]
+            cols = cols + [(c[0],c[1],c[2],50)]
         for key,key_ui in self.key_ui_dict.items():
             if key in required_keys:
                 #print(key, 'green')
@@ -461,7 +461,7 @@ class input_page():
             else:
                 # Show first keyword in required keys.
                 self.key_ui_dict[required_keys[0]].ShowItems(True)
-                self.current_key_ui = self.key_ui_dict[keys[0]]
+                self.current_key_ui = self.key_ui_dict[required_keys[0]]
                 self.current_key_ui.key_toggle.SetValue(True)
                 self.current_key_ui.key_toggle.SetFocus()
 
