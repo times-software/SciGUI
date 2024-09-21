@@ -255,6 +255,7 @@ class input_element():
                 label = "False"
             self.widget.SetLabel(label)
 
+
     def validate_float(self,evt,range=None):
         #print('validating float')
         obj = evt.GetEventObject()
@@ -553,6 +554,7 @@ class key_ui_elem():
         self.panel1_sizer = panel1.GetSizer()
         self.panel2_sizer = panel2.GetSizer()
         self.key_toggle_window = wx.Panel(self.panel1,style=wx.BORDER_THEME)
+        self.key_toggle_window.Bind(wx.EVT_SYS_COLOUR_CHANGED, self.OnColourChanged)
         #if self.key_toggle_window.CanSetTransparent:
         #    self.key_toggle_window.SetTransparent(50)
         #self.panel1_sizer.Add(self.key_toggle_window,0,wx.ALIGN_LEFT|wx.LEFT,5)
@@ -837,6 +839,16 @@ class key_ui_elem():
         return inp_elem
    
     
+    def OnColourChanged(self,evt):
+        obj = evt.GetEventObject()
+        col = obj.GetBackgroundColour()
+        print(col)
+        if col[3] == 255:
+            new_col = (col[0],col[1],col[2],50)
+        else:
+            new_col = (col[0],col[1],col[2],255)
+        obj.SetBackgroundColour(new_col)
+
     def validate_key_values(self,evt=None): 
         # Compare number of non-empty fields with required number of fields 
         # for each line. 
