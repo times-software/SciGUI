@@ -476,7 +476,7 @@ class input_page():
             else:
                 # Show first keyword in required keys.
                 self.key_ui_dict[required_keys[0]].ShowItems(True)
-                self.current_key_ui = self.key_ui_dict[keys[0]]
+                self.current_key_ui = self.key_ui_dict[required_keys[0]]
                 self.current_key_ui.key_toggle.SetValue(True)
                 self.current_key_ui.key_toggle.SetFocus()
 
