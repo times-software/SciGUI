@@ -1,5 +1,5 @@
-import input_errors as ie
-from input_types import *
+import scigui.input_errors as ie
+from scigui.input_types import *
 
 
 # Make this a class. The class object should contain a dict() object. 

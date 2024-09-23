@@ -2,20 +2,20 @@ import wx
 import wx.richtext
 import darkdetect
 import wx.lib.scrolledpanel
-import input_errors as ie
+import scigui.input_errors as ie
 import sys
 from io import StringIO
 #import os, sys, subprocess, shutil #, resource
 #import readconfig
-import input_definition
-import translate_input
-from input_types import *
+import scigui.input_definition as input_definition
+import scigui.translate_input as translate_input
+from scigui.input_types import *
 import os, subprocess
 import pathlib
-import structure_visualization
-import graphing
+import scigui.structure_visualization as structure_visualization
+import scigui.graphing as graphing
 #import subprocess
-from time import sleep
+#from time import sleep
 from threading import Thread
 
 """ Make general scigui classes for each gui element: Frame, panel, notbook, 
@@ -1339,7 +1339,7 @@ class Frame(wx.Frame):
             style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT|wx.FD_CHANGE_DIR) as fileDialog:
 
             if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return     # the user changed their mind
+                return False    # the user changed their mind
 
             # Proceed loading the file chosen by the user
             self.infile = fileDialog.GetPath()
@@ -1352,6 +1352,7 @@ class Frame(wx.Frame):
 
             dir = pathlib.Path(self.infile).parent
             os.chdir(dir)
+            return True
     #####################################################################
     # Event handlers
     #####################################################################
@@ -1386,7 +1387,10 @@ class Frame(wx.Frame):
             self.is_running = True
             self.runButton.Enable(False)
             if self.infile is None:
-                self.save_as()
+                if not self.save_as(): 
+                    self.is_running = False
+                    self.runButton.Enable(True)
+                    return
                 # Check if corvus.in exists already and ask if overwrite if it
                 # does.
             elif Path(self.infile).is_file():
@@ -1402,7 +1406,10 @@ class Frame(wx.Frame):
                         self.get_values_dict()
                         translate_input.write_corvus_input(self.values_dict,self.infile)
                     elif answer == wx.ID_NO:
-                        self.save_as()
+                        if not self.save_as(): 
+                            self.is_running = False
+                            self.runButton.Enable(True)
+                            return
             
             title = 'Corvus is running ...' 
             message = 'This will take time. You can see the \noutput on the associated terminal.'

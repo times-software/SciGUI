@@ -1,4 +1,4 @@
-import readconfig
+import scigui.readconfig
 inp_dict = readconfig.read_config_file()
 
 def flatten(xss):

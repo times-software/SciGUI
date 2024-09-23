@@ -1,4 +1,4 @@
-import scigui as sg
+import scigui.scigui as sg
 import wx
 class MyApp(wx.App):
     def OnInit(self):
@@ -10,7 +10,8 @@ class MyApp(wx.App):
 
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
+def start():
     app = MyApp(0)
     #frame = MyFrame()
     app.MainLoop()

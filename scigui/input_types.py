@@ -1,5 +1,5 @@
 from pathlib import Path
-import input_errors as ie
+import scigui.input_errors as ie
 
 
 # Define some overloaded classes for validation of input dictionaries.

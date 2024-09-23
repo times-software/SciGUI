@@ -1,6 +1,6 @@
 import re
-import input_definition
-import input_errors
+import scigui.input_definition as input_definition
+import scigui.input_errors as input_errors
 
 
 # Define an text_input class. 
