@@ -12,12 +12,13 @@ class input_definition_dict():
    #def _fill_key_info(self,help,kinds,code,importance,category,field_labels,ranges=None,
    #               defaults = None, field_types = None,fexpandable=False,lexpandable=False,required=None,codes=None):
    def _fill_key_info(self,help,kinds,code,importance,category,field_labels,ranges,
-                  defaults, field_types,fexpandable,lexpandable,required):
+                  defaults,field_types,fexpandable,lexpandable,required,associated=None):
        key_info = dict()
        key_info['help'] = help
        key_info['kinds'] = kinds
 
        key_info['code'] = code
+       key_info['associated'] = associated
        key_info['importance'] = importance
        key_info['category'] = category
        key_info['field_labels'] = field_labels
@@ -52,19 +53,34 @@ class input_definition_dict():
          self.predefined = {'FEFF spectrum from CIF': \
                             {'target_list':[['cfavg'],['helper']], \
                                                     '_required': ['cfavg_target','cif_input','absorbing_atom_type','feff.edge'], \
-                                                    '_useful':['feff.fms','feff.scf','feff.exchange']}, \
+                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
+                                                               'feff.exchange','feff.corehole','feff.mpse', \
+                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
                            'FEFF spectrum from Mat. Proj. id': {'target_list':[['cfavg'],['helper']], \
-                                                    '_required': ['cfavg_target','mp_id','mp_apikey','absorbing_atom_type','feff.edge']}, \
+                                                    '_required': ['cfavg_target','mp_id','mp_apikey','absorbing_atom_type','feff.edge'], \
+                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
+                                                               'feff.exchange','feff.corehole','feff.mpse', \
+                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
                            'FEFF xanes of a single absorber': {'target_list':[['xanes'],['feff']], \
-                                                               '_required':['feff.edge','absorbing_atom','cluster']}, \
+                                                    '_required':['feff.edge','absorbing_atom','cluster'],\
+                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
+                                                               'feff.exchange','feff.corehole','feff.mpse', \
+                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.egrid']}, \
                            'FEFF EXAFS of a single absorber': {'target_list':[['exafs'],['feff']], \
-                                                               '_required':['feff.edge','absorbing_atom','cluster']}, \
+                                                    '_required':['feff.edge','absorbing_atom','cluster'],\
+                                                    '_useful':['feff.rpath','feff.nleg','feff.debye','feff.dmdw']}, \
                            'FEFF XES of a single absorber': {'target_list':[['xes'],['feff']], \
-                                                               '_required':['feff.edge','absorbing_atom','cluster']}, \
+                                                    '_required':['feff.edge','absorbing_atom','cluster'], \
+                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
+                                                               'feff.exchange','feff.corehole','feff.mpse', \
+                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.egrid']}, \
                            'FEFF RIXS of a single absorber': {'target_list':[['rixs','feff']], \
-                                                               '_required':['feff.edge','absorbing_atom','cluster']} \
+                                                    '_required':['feff.edge','absorbing_atom','cluster'], \
+                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
+                                                               'feff.exchange','feff.corehole','feff.mpse', \
+                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.egrid']}
          }
-         
+
 
    def set_associated(self):
       pass
@@ -83,8 +99,9 @@ class input_definition_dict():
             help =  ['Space separated list with all the target properties requested for this calculation, followed' + \
                      ' by line with space separated list of codes to be used for calculation of the corresponding property. ', 
                      'Possible properties to chose from:',
-                     ' 1. xanes,xes,rixs - calculate XANES spectrum of a single site.', 
-                     ' 2. cfavg - Calculate the configurational average over sites in a crystal structure. Choose the property to average using cfavg_target.']
+                     ' 1. xanes,xes,rixs - calculate spectrum of a single site.', 
+                     ' 2. cfavg - Calculate the configurational average over' + \
+                     'sites in a crystal structure. Choose the property to average using cfavg_target keyword.']
             kinds =  [
                [ inp_choice ],[inp_choice],
                ]
@@ -152,7 +169,8 @@ class input_definition_dict():
 
 
             #  usesaved
-            help =  ['Use previously calculated data rather than recalculating']
+            help =  ['Use previously calculated data rather than recalculating. ' + \
+                     'WARNING: This will not update calculations where data has already been calculated.']
             kinds =  [
                [ inp_bool ],
                ]
@@ -175,7 +193,8 @@ class input_definition_dict():
 
 
             #  multiprocessing_ncpu
-            help =  ['Number of processors to use in multiprocessing.', 'This should be maximum of the number of cpus on a single', 'node.']
+            help =  ['Number of processors to use in multiprocessing. This ' + \
+                     'should be at maximum the number of processors on a single node.']
             kinds =  [
                [ inp_int ],
                ]
@@ -196,7 +215,7 @@ class input_definition_dict():
                   field_types,fexpandable,lexpandable,req)
 
             # polarization
-            help = ['Set 3 different polarization directions to calculate in cartesian coordinates.',
+            help = ['Set 3 different polarization directions to calculate in cartesian coordinates. ' + \
                     'By default, these are set to x, y, z, i.e., ',
                      '  polarization{',
                      '     1.0 0.0 0.0',
@@ -246,7 +265,8 @@ class input_definition_dict():
 
             # materials project keywords
             # mp_id
-            help = ['Single material project id. Can be mp-NNNN or just the number.']
+            help = ['Get structure from the materials project using a single ' + \
+                    'materials project id.', 'Format: mp-NNNN']
             kinds = [[inp_str]]
             code = 'general'
             importance = 'useful'
@@ -264,7 +284,7 @@ class input_definition_dict():
                   field_types,fexpandable,lexpandable,req)
 
             # mp_apikey
-            help = ['API key for the materials project.']
+            help = ['Set your API key for the materials project.']
             kinds = [[inp_str]]
             code = 'general'
             importance = 'useful'
@@ -2647,7 +2667,16 @@ class input_definition_dict():
 
 
             #  feff.fms
-            help =  ['feff.fms', 'Use full multiple-scattering.', 'rfms   - radius of cluster to use for fms calculation.', 'lfms1  - 0 for solids, 1 for molecules', 'minv   - set algorithm for matrix inversion', '0: LU decomposition', '2: Lanczos', '3: Broyden (less reliable)', 'toler1 - tolerance to stop recursion and Broyden algorithm', 'toler2 - sets the matrix element of the Gt matrix to zero if its value is', 'less than toler2', 'rdirec - sets the matrix element of the Gt matrix to zero if the distance', 'between atoms is larger than rdirec']
+            help =  [' Use \rfull multiple-scattering.\n' + \
+                     '   rfms - radius of cluster to use for fms calculation.\n' + \
+                     '   lfms1  - 0 for solids, 1 for molecules\n' + \
+                     '   minv   - set algorithm for matrix inversion\n' + \
+                     '      0: LU decomposition\n' + \
+                     '      2: Lanczos\n' + \
+                     '      3: Broyden (less reliable)\n' + \
+                     '   toler1 - tolerance to stop recursion and Broyden algorithm\n' + \
+                     '   toler2 - sets the matrix element of the Gt matrix to zero if its value is less than toler2\n' + \
+                     '   rdirec - sets the matrix element of the Gt matrix to zero if the distance between atoms is larger than rdirec']
             kinds =  [
                [ inp_float, inp_int, inp_int, inp_float, inp_float, inp_float ],
                ]
