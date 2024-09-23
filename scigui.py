@@ -383,17 +383,17 @@ class input_page():
         
         
         #return splitter_window, panel1, panel2
-    def on_resize(self,evt=None,all_keys=False):
-        if all_keys:
-            for key,key_ui in self.key_ui_dict.items():
-                key_ui.help_text_ui.SetLabel(self.current_key_ui.help_text)
-                #key_ui.help_text_ui.Wrap(int(self.panel2.GetSize().width - 10))
-            do_layout(self.panel2)
-        else:
-            if hasattr(self,"current_key_ui"):
-                self.current_key_ui.help_text_ui.SetLabel(self.current_key_ui.help_text)
-                #self.current_key_ui.help_text_ui.Wrap(int(self.panel2.GetSize().width - 10))
-                do_layout(self.panel2)
+    #def on_resize(self,evt=None,all_keys=False):
+    #    if all_keys:
+    #        for key,key_ui in self.key_ui_dict.items():
+    #            key_ui.help_text_ui.SetLabel(self.current_key_ui.help_text)
+    #            #key_ui.help_text_ui.Wrap(int(self.panel2.GetSize().width - 10))
+    #        do_layout(self.panel2)
+    #    else:
+    #        if hasattr(self,"current_key_ui"):
+    #            self.current_key_ui.help_text_ui.SetLabel(self.current_key_ui.help_text)
+    #            #self.current_key_ui.help_text_ui.Wrap(int(self.panel2.GetSize().width - 10))
+    #            do_layout(self.panel2)
 
     def on_press_panel1_sizer(self,event):
         # Get the toggle that was pressed.
@@ -413,7 +413,7 @@ class input_page():
                 self.current_key_ui.key_toggle.SetValue(False)
                 self.current_key_ui = self.key_ui_dict[keyword]
                 self.current_key_ui.ShowItems(True)
-                print('Current keyword changed:',self.current_key_ui.keyword)
+                #print('Current keyword changed:',self.current_key_ui.keyword)
 
         # Get the keyword from the button text.
         #for key,key_ui_elem in self.key_ui_dict.items():
@@ -559,9 +559,9 @@ class key_ui_elem():
         self.panel1 = panel1
         #print(wx.ColourDatabase().Find('DARK SLATE GREY'))
         self.panel2 = panel2
-        if keyword == 'feff.fms': 
-            print(key_dict['help'])
-            print('\n'.join(key_dict['help']))
+        #if keyword == 'feff.fms': 
+        #    print(key_dict['help'])
+        #    print('\n'.join(key_dict['help']))
 
         self.panel1_sizer = panel1.GetSizer()
         self.panel2_sizer = panel2.GetSizer()
@@ -581,7 +581,7 @@ class key_ui_elem():
         # Add the help text to the key_sizer next.
         self.help_text = keyword.strip() + '\n' + '\n'.join(key_dict['help'])
         self.help_text_ui = wx.richtext.RichTextCtrl(panel2,value=self.help_text,
-                       style=wx.ALIGN_LEFT|wx.TE_WORDWRAP|wx.TE_MULTILINE|wx.TE_READONLY)
+                       style=wx.ALIGN_LEFT|wx.TE_WORDWRAP|wx.TE_MULTILINE|wx.TE_READONLY|wx.BORDER_SIMPLE)
         #self.help_text_ui.Enable(False)
         # Make the text wrap at the edge of the right side panel. 
         #help_text.Wrap(self.splitter_window.GetWindow1().GetSize()[1])
