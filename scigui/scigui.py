@@ -1410,7 +1410,15 @@ class Frame(wx.Frame):
                             self.is_running = False
                             self.runButton.Enable(True)
                             return
-            
+           
+            if not self.values_dict: 
+                message = 'You have not enabled any keywords. The input file is empty and corvus will not run.'
+                with wx.MessageDialog(self.splitter_window0,message,style=wx.OK) as md:
+                    md.ShowModal()
+                    self.is_running = False
+                    self.runButton.Enable(True)
+                    return
+
             title = 'Corvus is running ...' 
             message = 'This will take time. You can see the \noutput on the associated terminal.'
             md = wx.Dialog(self.splitter_window0,title=title)
