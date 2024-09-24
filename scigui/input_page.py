@@ -132,36 +132,33 @@ class input_page():
         # If set_current, the currently selected keyword will be changed to the first
         # in this list if current selection is not in this list.
         if darkdetect.isDark():
-            alpha = 50
+            cols = [(0,255,0,50),(0,0,255,50),(255,0,0,50)]
         else:
-            alpha = 255
+            cols = [(0,220,0,255),(0,50,255,255),(255,50,0,255)]
 
-        cols = []
-        for c in colours:
-            cols = cols + [(c[0],c[1],c[2],alpha)]
         for key,key_ui in self.key_ui_dict.items():
             if key in required_keys:
                 #print(key, 'green')
                 self.key_ui_dict[key].key_toggle.Show(True)
                 self.key_ui_dict[key].key_toggle_window.Show(True)
                 if highlight:
-                    self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(cols[0])
+                    self.key_ui_dict[key].key_toggle_window.SetOwnBackgroundColour(cols[0])
             elif key in useful_keys:
                 #print(key, 'blue')
                 self.key_ui_dict[key].key_toggle.Show(True)
                 self.key_ui_dict[key].key_toggle_window.Show(True)
                 if highlight:
-                    self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(cols[1])
+                    self.key_ui_dict[key].key_toggle_window.SetOwnBackgroundColour(cols[1])
             elif key in associated_keys:
                 #print(key, 'yellow')
                 self.key_ui_dict[key].key_toggle.Show(True)
                 self.key_ui_dict[key].key_toggle_window.Show(True)
                 if highlight:
-                    self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(cols[2])
+                    self.key_ui_dict[key].key_toggle_window.SetOwnBackgroundColour(cols[2])
             else:
                 self.key_ui_dict[key].key_toggle.Show(False)
                 self.key_ui_dict[key].key_toggle_window.Show(False)
-                self.key_ui_dict[key].key_toggle_window.SetBackgroundColour(wx.NullColour)
+                self.key_ui_dict[key].key_toggle_window.SetOwnBackgroundColour(wx.NullColour)
 
 
         if set_current:

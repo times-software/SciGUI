@@ -185,8 +185,12 @@ class Frame(wx.Frame):
         #self.inp_page.panel1.SetBackgroundColour(wx.ColourDatabase().Find('DARK_SLATE_GREY'))
         self.inp_page.show_keywords(['target_list'],[],[],highlight=True,set_current=True)
         self.inp_page.current_key_ui.ShowItems(True)
+        self.inp_page.current_key_ui.enable_checkbox.SetValue(True)
+        self.inp_page.current_key_ui.enable_keyword_elements(True)
+        self.show_enabled_checkbox.SetValue(True)
         #self.inp_page.on_resize(None,True)
         do_layout(self)
+        self.run(None,True)
         
         #sleep(1)
         #self.inp_page.show_only_keywords([])
@@ -241,12 +245,23 @@ class Frame(wx.Frame):
         self.run_aborted = True
         self.runButton.Enable(True)
         
-    def run(self,evt):
+    def run(self,evt=None,init=False):
         if self.input_type == 'corvus':
             import re
             import sys
             from corvus.controls import oneshot
+            # Run corvus with --version to load the libraries. This will make the first run load faster.
+            if init:
+                sys.argv = ['run-corvus','-v']
+                sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+                try:
+                    self.thread = Thread(target=oneshot)
+                except SystemExit:
+                    pass
 
+                self.thread.start()
+                return
+                
             # If a process is running allow it to abort, then return.
             if self.is_running:
                 message = 'Corvus is currently running. Abort the current run?'
@@ -332,6 +347,8 @@ class Frame(wx.Frame):
     #def show_only_required_keywords(self):
     def set_values_from_predefined(self,evt):
         obj = evt.GetEventObject()
+        # Turn of the show only enabled checkbox.
+        self.show_enabled_checkbox.SetValue(False)
         predef = obj.GetString(obj.GetSelection())
         if predef == "Quick Start":
             #evt.Skip()
@@ -355,7 +372,7 @@ class Frame(wx.Frame):
                         # Set the values and show
                         key_list = key_list + [k]
                         vals_dict[k] = v
-        message = 'Would you like to overwrite your settings with new ones? If no, the relevant keywords will be shown' + \
+        message = 'Would you like to overwrite your settings with new ones? If no, the relevant keywords will be shown ' + \
         'without changing the settings.'
         md = wx.MessageDialog(self.splitter_window0,message,style=wx.YES_NO|wx.CANCEL)
         answer = md.ShowModal()

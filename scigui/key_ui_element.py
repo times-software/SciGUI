@@ -37,7 +37,7 @@ class key_ui_elem():
 
         self.panel1_sizer = panel1.GetSizer()
         self.panel2_sizer = panel2.GetSizer()
-        self.key_toggle_window = wx.Panel(self.panel1,style=wx.BORDER_THEME)
+        self.key_toggle_window = wx.Panel(self.panel1,style=wx.BORDER_NONE)
         self.key_toggle_window.Bind(wx.EVT_SYS_COLOUR_CHANGED, self.OnColourChanged)
         #if self.key_toggle_window.CanSetTransparent:
         #    self.key_toggle_window.SetTransparent(50)
@@ -46,7 +46,7 @@ class key_ui_elem():
         self.key_toggle_sizer = wx.BoxSizer(wx.VERTICAL)
         self.key_toggle = wx.ToggleButton(self.key_toggle_window, label=keyword)
         #self.key_toggle_sizer.Add(self.key_toggle,0,wx.ALL,0)
-        self.key_toggle_sizer.Add(self.key_toggle,proportion = 0,flag=wx.ALL,border=1)
+        self.key_toggle_sizer.Add(self.key_toggle,proportion = 0,flag=wx.ALL,border=2)
         self.key_toggle_window.SetSizer(self.key_toggle_sizer)
         #self.panel1_sizer.Add(self.key_toggle,0,wx.ALIGN_LEFT|wx.ALL,5)
         
@@ -167,7 +167,7 @@ class key_ui_elem():
         # At start, no keyword options are shown.
         #self.panel2_sizer.Hide(self.key_sizer)
 
-    def on_key_down():
+    def on_key_down(self,evt):
         pass
 
     def Reset(self):
@@ -460,8 +460,8 @@ class key_ui_elem():
         #self.panel2_sizer.Layout()
         self.do_layout(self.panel2)
     
-    def Highlight(self):
-        self.key_toggle.SetOwnForegroundColour(wx.GREEN)
+    def Highlight(self,col):
+        self.key_toggle_window.SetOwnForegroundColour(col)
 
 
 
