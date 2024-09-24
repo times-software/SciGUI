@@ -272,6 +272,8 @@ class Frame(wx.Frame):
                     md.SetYesNoCancelLabels('Continue', 'Save As', 'Cancel')
                     answer = md.ShowModal()
                     if  answer == wx.ID_CANCEL:
+                        self.is_running = False
+                        self.runButton.Enable(True)
                         return
                     elif answer == wx.ID_YES:
                         self.get_values_dict()
