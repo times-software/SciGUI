@@ -160,9 +160,9 @@ class input_page():
                 self.key_ui_dict[key].key_toggle_window.Show(False)
                 self.key_ui_dict[key].key_toggle_window.SetOwnBackgroundColour(wx.NullColour)
 
-
+        all_keys = required_keys + useful_keys + associated_keys
         if set_current:
-            if self.current_key_ui.keyword in required_keys:
+            if self.current_key_ui.keyword in all_keys:
                 self.current_key_ui.ShowItems(True)
             else:
                 # Show first keyword in required keys.
