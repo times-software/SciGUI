@@ -132,9 +132,9 @@ class input_page():
         # If set_current, the currently selected keyword will be changed to the first
         # in this list if current selection is not in this list.
         if darkdetect.isDark():
-            cols = [(0,255,0,50),(0,0,255,50),(255,0,0,50)]
+            cols = [(255,0,0,50),(0,0,255,50),(0,255,0,50)]
         else:
-            cols = [(0,220,0,255),(0,50,255,255),(255,50,0,255)]
+            cols = [(255,0,0,255),(0,50,255,255),(255,50,0,255)]
 
         for key,key_ui in self.key_ui_dict.items():
             if key in required_keys:
