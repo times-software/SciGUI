@@ -680,17 +680,10 @@ class Frame(wx.Frame):
 
                 
         elif id == self.id_about:
-            about_dialog = wx.MessageDialog(self, "Sci-GUI version 0.00")
+            about_dialog = wx.MessageDialog(self, "Sci-GUI version 0.0.0 beta beta beta")
             about_dialog.ShowModal()
         elif id == self.id_doc:
-            message = "Documentation for Corvus GUI built with Sci-GUI. \n\n" + \
-                "1. Window structure: \n" + \
-                "    a) Top panel holds run controls and keyword filters.\n" + \
-                "    b) Left panel holds list of keywords as toggle buttons.\n" + \
-                "    c) Right panel shows elements of the selected keyword, along with help." + \
-                "       Use the 'enable' checkbox to enable the keyword and fill out the arguments." + \
-                "\n" + \
-                "2. "
+            message = "Ask Josh to hurry up and make some documentation!"
             about_dialog = wx.MessageDialog(self, message)
             about_dialog.ShowModal()
         elif id == self.id_save:

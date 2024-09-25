@@ -1,7 +1,6 @@
 import wx
 import wx.richtext
 from scigui.wx_extensions import *
-import darkdetect
 import scigui.input_errors as ie
 from scigui.input_types import *
 import scigui.structure_visualization as structure_visualization
