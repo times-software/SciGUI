@@ -166,6 +166,7 @@ class input_page():
                 self.current_key_ui.ShowItems(True)
             else:
                 # Show first keyword in required keys.
+                self.current_key_ui.ShowItems(False)
                 self.key_ui_dict[required_keys[0]].ShowItems(True)
                 self.current_key_ui = self.key_ui_dict[required_keys[0]]
                 self.current_key_ui.key_toggle.SetValue(True)
