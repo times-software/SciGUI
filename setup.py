@@ -1,4 +1,5 @@
 import setuptools 
+from platform import system
 #from os import walk
 
 setuptools.setup(name='scigui',
@@ -11,5 +12,5 @@ setuptools.setup(name='scigui',
       #scripts=['bin/run-corvus'],
       packages=setuptools.find_packages(),
       # J Kas - Moved corvus.conf to corvus/config since pip/setuptools don't like names that start with the module name?
-      install_requires=['wxpython>4.2.1','darkdetect'],
+      install_requires=['darkdetect'],
       )
