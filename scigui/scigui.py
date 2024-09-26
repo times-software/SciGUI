@@ -167,6 +167,8 @@ class Frame(wx.Frame):
         #print('Valid input: ', is_valid)
         #if is_valid: self.set_values(values_dict)
         self.Show()
+        wx.CallAfter(self.Raise)
+        self.SetFocus()
         #self.key_ui_dict['cell_struc_xyz_red'].set_values([['A',0,0,0],['B',1.0,1.0,1.0]])
 
         self.splitter_window0.SplitHorizontally(self.top_panel,self.main_notebook,int(screenHeight/7))
@@ -183,8 +185,8 @@ class Frame(wx.Frame):
         #wx.CallAfter(self.inp_page.show_keywords,['target_list'],[],[],highlight=True,set_current=True)
         #self.inp_page.panel1.SetBackgroundColour((0,0,0,255))
         #self.inp_page.panel1.SetBackgroundColour(wx.ColourDatabase().Find('DARK_SLATE_GREY'))
-        self.inp_page.show_keywords(['target_list'],[],[],highlight=True,set_current=True)
-        self.inp_page.current_key_ui.ShowItems(True)
+        self.inp_page.show_keywords(['target_list'],[],[],highlight=True,set_current=True,layout=False)
+        self.inp_page.current_key_ui.ShowItems(True,layout=False)
         self.inp_page.current_key_ui.enable_checkbox.SetValue(True)
         self.inp_page.current_key_ui.enable_keyword_elements(True)
         self.show_enabled_checkbox.SetValue(True)
@@ -206,7 +208,8 @@ class Frame(wx.Frame):
     def set_values(self,values_dict):
         for key,val in values_dict.items():
             self.inp_page.key_ui_dict[key].set_values(val)
-            self.inp_page.key_ui_dict[key].ShowItems(False)
+            #self.inp_page.key_ui_dict[key].ShowItems(False,layout=False)
+        #if layout: do_layout(self)
 
 
     def save_as(self):
@@ -499,7 +502,7 @@ class Frame(wx.Frame):
                 self.show_filtered(all_categories = all_categories, all_codes = all_codes)
                 #print('required inside show_all_required:')
                 #print(keys)
-                self.inp_page.show_only_keywords(keys)
+                self.inp_page.show_only_keywords(keys,layout=False)
                 do_layout((self.inp_page.panel1,self.inp_page.panel2))
                 #self.inp_page.panel1_sizer.Layout()
                 #self.inp_page.panel2.Layout()
@@ -613,7 +616,7 @@ class Frame(wx.Frame):
 
             key_ui.key_toggle.Show(show)
             key_ui.key_toggle_window.Show(show)
-            if key_ui.key_toggle.GetValue(): key_ui.ShowItems(show)
+            if key_ui.key_toggle.GetValue(): key_ui.ShowItems(show,layout=False)
 
             # panel1_sizer = key_ui.panel1_sizer
             # panel1_sizer.Layout()
@@ -622,7 +625,7 @@ class Frame(wx.Frame):
             # self.inp_page.panel1.FitInside()
             # self.inp_page.panel2.Layout()
             # self.inp_page.panel2.FitInside()
-            do_layout((self.inp_page.panel1,self.inp_page.panel2))
+        do_layout((self.inp_page.panel1,self.inp_page.panel2))
 
     #def validate_current_keyword(self,evt):
 
@@ -675,7 +678,10 @@ class Frame(wx.Frame):
                 # Set the filter and code to all, and set show only enabled.
                 
                 self.show_filtered(all_categories = True, all_codes = True, only_enabled=True)
-                self.inp_page.current_key_ui.ShowItems(True)
+                self.inp_page.current_key_ui.key_toggle.Show(True)
+                self.inp_page.current_key_ui.key_toggle_window.Show(True)
+                self.inp_page.current_key_ui.ShowItems(True,layout=False)
+                do_layout([self.inp_page.panel1,self.inp_page.panel2])
                 
 
                 

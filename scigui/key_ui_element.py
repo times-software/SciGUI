@@ -450,7 +450,7 @@ class key_ui_elem():
         if hasattr(self,"row_button"):
             self.row_button.Enable()
     
-    def ShowItems(self,val):
+    def ShowItems(self,val,layout=True):
         #self.help_text_ui.Wrap(int(self.panel2.GetSize().width - 10))
         self.help_text_ui.Show(val)
         self.key_sizer.ShowItems(val)
@@ -458,7 +458,7 @@ class key_ui_elem():
             for ui_elem in ui_elem_line:
                 ui_elem.Show(val)
         #self.panel2_sizer.Layout()
-        self.do_layout(self.panel2)
+        if layout: self.do_layout(self.panel2)
     
     def Highlight(self,col):
         self.key_toggle_window.SetOwnForegroundColour(col)
@@ -469,7 +469,7 @@ class key_ui_elem():
     #      EVENT PROCESSING FOR key_ui_elem class
     ################################################################################
              
-    def add_ui_column(self,evt=None):
+    def add_ui_column(self,evt=None,layout=True):
         # Insert a new field at the end of each line of ui_elements
         irow = 0
         while irow <= len(self.par_sizers)-1:
@@ -499,10 +499,10 @@ class key_ui_elem():
             irow += 1
         #self.panel2_sizer.Layout()
         self.panel2.SetVirtualSize(self.panel2_sizer.GetMinSize())
-        self.do_layout(self.panel2)
+        if layout: self.do_layout(self.panel2)
 
 
-    def add_ui_row(self,evt=None):
+    def add_ui_row(self,evt=None,layout=False):
         # Set the input handlers to use for this line of kinds (data types).
         kind_line = self.kinds[-1]
 
@@ -534,7 +534,7 @@ class key_ui_elem():
         self.ui_elems = self.ui_elems + [ui_elems]
         #self.panel2_sizer.Layout()
         self.panel2.SetVirtualSize(self.panel2_sizer.GetMinSize())
-        self.do_layout(self.panel2)
+        if layout: self.do_layout(self.panel2)
         
 
     # What to do when enable is checked/unchecked. Enable/disable all input fields 

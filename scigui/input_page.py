@@ -89,7 +89,7 @@ class input_page():
     #            #self.current_key_ui.help_text_ui.Wrap(int(self.panel2.GetSize().width - 10))
     #            do_layout(self.panel2)
 
-    def on_press_panel1_sizer(self,event):
+    def on_press_panel1_sizer(self,event=None,layout=True):
         # Get the toggle that was pressed.
         obj = event.GetEventObject()
         # Validate that the currently viewed key_ui is valid.
@@ -124,9 +124,9 @@ class input_page():
         # self.panel2.SetVirtualSize(self.current_key_ui.panel2_sizer.GetMinSize())
         # self.panel2.Layout()
         # self.panel2.FitInside()
-        self.do_layout((self.panel1,self.panel2))
+        if layout: self.do_layout((self.panel1,self.panel2))
 
-    def show_keywords(self,required_keys,useful_keys,associated_keys,highlight=False,set_current=True,colours=[wx.GREEN,wx.BLUE,wx.YELLOW]):
+    def show_keywords(self,required_keys,useful_keys,associated_keys,highlight=False,set_current=True,layout=True):
         # Shows a set of keywords, these will be highlighted 
         # if highlight = True.
         # If set_current, the currently selected keyword will be changed to the first
@@ -186,14 +186,14 @@ class input_page():
         #    print(self.key_ui_dict[key].key_toggle_window.GetBackgroundColour())
         #self.current_key_ui.key_toggle_window.SetBackgroundColour(col)
 
-        self.do_layout((self.panel1,self.panel2,self.splitter_window))
+        if layout: self.do_layout((self.panel1,self.panel2,self.splitter_window))
         #Oprint(self.current_key_ui.key_toggle_window.GetBackgroundColour())
         # Call highlighting after layout?
         #va = self.current_key_ui.key_toggle.GetClassDefaultAttributes()
         
 
 
-    def show_only_keywords(self,keys):
+    def show_only_keywords(self,keys,layout=True):
         # Shows a set of keywords, hiding all others
         # Calling this with an empty keys list will hide all
         # keywords.
@@ -223,7 +223,7 @@ class input_page():
         # self.panel1.Layout()
         # self.panel2.Layout()
         # self.splitter_window.Layout()
-        self.do_layout((self.panel1,self.panel2,self.splitter_window))
+        if layout: self.do_layout((self.panel1,self.panel2,self.splitter_window))
         return True
 
     def do_layout(self,windows):
