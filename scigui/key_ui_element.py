@@ -430,10 +430,10 @@ class key_ui_elem():
             ifield = 0
             if len(self.kinds)-1 < iline:
                 # Create a new line for these fields
-                self.add_ui_row()
+                self.add_ui_row(show=False)
             for value in value_line:
                 if len(self.kinds[iline])-1 < ifield:
-                    self.add_ui_column()
+                    self.add_ui_column(show=False)
                 
                 inp_type = type(self.ui_elems[iline][ifield].GetValue())
                 self.ui_elems[iline][ifield].SetValue(inp_type(value))
@@ -469,7 +469,7 @@ class key_ui_elem():
     #      EVENT PROCESSING FOR key_ui_elem class
     ################################################################################
              
-    def add_ui_column(self,evt=None,layout=True):
+    def add_ui_column(self,evt=None,layout=True,show=True):
         # Insert a new field at the end of each line of ui_elements
         irow = 0
         while irow <= len(self.par_sizers)-1:
@@ -494,6 +494,7 @@ class key_ui_elem():
             is_enabled = self.enable_checkbox.GetValue()
             inp_elem.Enable(is_enabled)
             self.par_sizers[irow].Add(inp_elem.sizer,0,wx.LEFT|wx.ALIGN_LEFT,10)
+            inp_elem.Show(show)
             self.ui_elems[irow] = self.ui_elems[irow] + [inp_elem]
             self.kinds[irow] = self.kinds[irow] + [kind]
             irow += 1
@@ -502,7 +503,7 @@ class key_ui_elem():
         if layout: self.do_layout(self.panel2)
 
 
-    def add_ui_row(self,evt=None,layout=False):
+    def add_ui_row(self,evt=None,layout=False,show=True):
         # Set the input handlers to use for this line of kinds (data types).
         kind_line = self.kinds[-1]
 
@@ -524,6 +525,7 @@ class key_ui_elem():
         par_sz,ui_elems = self.get_input_handler_row(kind_line,default_line,self.keyword,
                                                          ranges = range_line)
         
+        par_sz.ShowItems(show) 
         # Update the attributes and key dictionary.
         self.kinds = self.kinds + [kind_line]
         

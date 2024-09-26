@@ -205,9 +205,15 @@ class Frame(wx.Frame):
         for key,key_ui in self.inp_page.key_ui_dict.items():
             if key_ui.enable_checkbox.GetValue(): self.values_dict[key] = key_ui.get_values()
 
-    def set_values(self,values_dict):
+    def set_values(self,values_dict,set_current=False):
+        ckey = None
         for key,val in values_dict.items():
+            if ckey is None: ckey = key
             self.inp_page.key_ui_dict[key].set_values(val)
+       
+
+        if set_current: 
+                self.inp_page.current_key_ui = self.inp_page.key_ui_dict[ckey]
             #self.inp_page.key_ui_dict[key].ShowItems(False,layout=False)
         #if layout: do_layout(self)
 
@@ -674,12 +680,13 @@ class Frame(wx.Frame):
                     md.ShowModal()
                     return
 
-                self.set_values(self.values_dict)
+                self.set_values(self.values_dict,set_current=True)
                 # Set the filter and code to all, and set show only enabled.
                 
                 self.show_filtered(all_categories = True, all_codes = True, only_enabled=True)
                 self.inp_page.current_key_ui.key_toggle.Show(True)
                 self.inp_page.current_key_ui.key_toggle_window.Show(True)
+                self.inp_page.current_key_ui.key_toggle.SetFocus()
                 self.inp_page.current_key_ui.ShowItems(True,layout=False)
                 do_layout([self.inp_page.panel1,self.inp_page.panel2])
                 
