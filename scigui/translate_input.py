@@ -42,7 +42,8 @@ class input_dict(dict):
 # Reads a corvus input file and returns a dictionary: keyword -> list(list())
 def read_corvus_input(file):
    # Get the input_definition dictionary.
-   inp_def = input_definition.input_definition_dict('corvus')
+   inp_def = input_definition.input_definition_dict('corvus',)
+   #print(inp_def.inp_def_dict['target_list'])
    # Get full string of file text.
    with open(file) as f:
       lines = f.readlines()
@@ -63,7 +64,7 @@ def read_corvus_input(file):
    clean_str = '\n'.join(lines2)
    #print(clean_str)
    # Find keywords. First one at beginning, all others between } {
-   key_list = list(filter(None,re.split(r',|\{|\}',clean_str)[0:-1]))
+   key_list = [k.strip() for k in list(filter(None,re.split(r',|\{|\}',clean_str)[0:-1]))]
    #print(key_list)
    inp_dict = {}
    ik = 0
@@ -71,7 +72,7 @@ def read_corvus_input(file):
    is_valid = True
    message =  ''
    while ik < len(key_list):
-      key = key_list[ik].replace('\n','')
+      key = key_list[ik].replace('\n','').lower()
       #print(inp_def[key]['kinds'][0][0].__name__)
       if inp_def.inp_def_dict[key]['kinds'][0][0].__name__ == 'inp_paragraph':
          # If this is a paragraph type, we need a list of lists. Each inner list
@@ -88,8 +89,10 @@ def read_corvus_input(file):
          inp_dict[key],is_valid,message = cast_input_key_vals(inp_key_vals,key,inp_def.inp_def_dict)
       else:
          # This is not a paragraph, interpret each separate word as a field.
-         inp_key_vals = [v.split() for v in list(filter(None,key_list[ik+1].split('\n')))]
+         inp_key_vals = [[v2.strip() for v2 in v.split()] for v in list(filter(None,key_list[ik+1].split('\n')))]
+         #if key == 'feff.edge': print(key,inp_key_vals)
          inp_dict[key],is_valid,message = cast_input_key_vals(inp_key_vals,key,inp_def.inp_def_dict)
+         #print(is_valid,message)
 
       if not is_valid:
          return inp_dict, is_valid, message

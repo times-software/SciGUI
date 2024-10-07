@@ -669,12 +669,14 @@ class Frame(wx.Frame):
                     dir = pathlib.Path(pathname).parent
                     os.chdir(dir)
                     self.values_dict,is_valid,message = translate_input.read_corvus_input(pathname)
+                    #print("In try:", is_valid,message)
                     
                     
                 except IOError:
                     wx.LogError("Cannot open file '%s'." % newfile)
 
                 if not is_valid:
+                    #print("In menuhandler:",is_valid)
                     msg1 = 'Error in input file ' + pathname + ".\n" 
                     md = wx.MessageDialog(self, msg1 + message)
                     md.ShowModal()

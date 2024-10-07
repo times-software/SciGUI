@@ -102,14 +102,12 @@ class input_definition_dict():
                      ' 1. xanes,xes,rixs - calculate spectrum of a single site.', 
                      ' 2. cfavg - Calculate the configurational average over' + \
                      'sites in a crystal structure. Choose the property to average using cfavg_target keyword.']
-            kinds =  [
-               [ inp_choice ],[inp_choice],
-               ]
+            kinds =  [[ inp_choice ]]
             code =  'general'
             importance =  'essential'
             category =  'property'
-            field_labels =  [['property'],['code']]
-            ranges =  [['xanes,exafs,xes,rixs,cfavg'],['feff,siesta,ocean,vasp,abinit,orca,helper']]
+            field_labels =  [['property']]
+            ranges =  [['xanes,exafs,xes,rixs,cfavg']]
             defaults =  None
             field_types =  None
             fexpandable =  True
@@ -290,6 +288,7 @@ class input_definition_dict():
             importance = 'useful'
             category = 'structure'
             field_labels = [['apikey']]
+            ranges=None
             defaults = None
             fexpandable = False
             lexpandable = False
@@ -886,6 +885,7 @@ class input_definition_dict():
             importance =  'useful'
             category =  'structure'
             field_labels =  [['At. Sym.', 'x', 'y', 'z']]
+            ranges = None
             defaults =  None
             field_types =  None
             fexpandable =  False

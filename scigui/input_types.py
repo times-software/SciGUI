@@ -83,6 +83,7 @@ class inp_choice(str):
 
     def validate(self,range=None):
         ie.error = False
+        #print('Checking choice object:', self,self=='K')
         if self not in range.split(','):
             ie.error = True
             ie.error_message = 'Invalid option. Must be one of of the values: ' + range
