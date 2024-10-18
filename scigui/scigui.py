@@ -213,6 +213,8 @@ class Frame(wx.Frame):
        
 
         if set_current: 
+                self.inp_page.current_key_ui.key_toggle.SetValue(False)
+                self.inp_page.current_key_ui.ShowItems(False)
                 self.inp_page.current_key_ui = self.inp_page.key_ui_dict[ckey]
             #self.inp_page.key_ui_dict[key].ShowItems(False,layout=False)
         #if layout: do_layout(self)
@@ -659,12 +661,14 @@ class Frame(wx.Frame):
                 try:
                     # Proceed loading the file chosen by the user
                     pathname = fileDialog.GetPath()
-                    message = 'This will reset all previous input selections.\nContinue?'
+                    message = 'Would you like to reset all previous input selections?'
                     md = wx.MessageDialog(self,message,style=wx.YES_NO)
-                    if md.ShowModal() == wx.ID_NO:
+                    answer = md.ShowModal()
+                    if answer == wx.ID_YES:
+                        self.Reset()
+                    elif answer == wx.ID_CANCEL:
                         return
-                    
-                    self.Reset()
+
                     self.infile = str(pathname)
                     dir = pathlib.Path(pathname).parent
                     os.chdir(dir)
@@ -686,9 +690,11 @@ class Frame(wx.Frame):
                 # Set the filter and code to all, and set show only enabled.
                 
                 self.show_filtered(all_categories = True, all_codes = True, only_enabled=True)
+                print(self.inp_page.current_key_ui.keyword)
                 self.inp_page.current_key_ui.key_toggle.Show(True)
                 self.inp_page.current_key_ui.key_toggle_window.Show(True)
                 self.inp_page.current_key_ui.key_toggle.SetFocus()
+                self.inp_page.current_key_ui.key_toggle.SetValue(True)
                 self.inp_page.current_key_ui.ShowItems(True,layout=False)
                 do_layout([self.inp_page.panel1,self.inp_page.panel2])
                 
