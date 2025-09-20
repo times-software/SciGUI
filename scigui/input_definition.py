@@ -61,6 +61,21 @@ class input_definition_dict():
                                                     '_useful':['feff.fms','feff.scf','feff.ldos', \
                                                                'feff.exchange','feff.corehole','feff.mpse', \
                                                                'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
+                           'FEFF spectrum from vasprun.xml output': {'target_list':[['cfavg']], \
+                                                    '_required': ['cfavg_target','vasp_xml','absorbing_atom_type','feff.edge'], \
+                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
+                                                               'feff.exchange','feff.corehole','feff.mpse','vasp_outcar', \
+                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
+                           'FEFF spectrum from vasp XDATCAR output': {'target_list':[['cfavg']], \
+                                                    '_required': ['cfavg_target','vasp_xdatcar','absorbing_atom_type','feff.edge'], \
+                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
+                                                               'feff.exchange','feff.corehole','feff.mpse','vasp_outcar', \
+                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
+                           'FEFF spectrum from xyz file': {'target_list':[['cfavg']], \
+                                                    '_required': ['cfavg_target','xyz_input','absorbing_atom_type','feff.edge'], \
+                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
+                                                               'feff.exchange','feff.corehole','feff.mpse', \
+                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
                            'FEFF xanes of a single absorber': {'target_list':[['xanes']], \
                                                     '_required':['feff.edge','absorbing_atom','cluster'],\
                                                     '_useful':['feff.fms','feff.scf','feff.ldos', \
@@ -188,7 +203,27 @@ class input_definition_dict():
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
-
+            #  write_input_only
+            help =  ['Only write the input files. Do not run the scientific software, ' + \
+                     'i.e., FEFF10.']
+            kinds =  [
+               [ inp_bool ],
+               ]
+            code =  'general'
+            importance =  'useful'
+            category =  'computational'
+            field_labels =  [['Write input only']]
+            ranges =  None
+            defaults =  [['False']]
+            field_types =  None
+            fexpandable =  False
+            lexpandable =  False
+            req =  None
+      
+            if code in codes:
+                self.inp_def_dict["write_input_only"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
 
             #  multiprocessing_ncpu
             help =  ['Number of processors to use in multiprocessing. This ' + \
@@ -596,7 +631,112 @@ class input_definition_dict():
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
+            #  xyz_input
+            help =  ['xyz input file name.']
+            kinds =  [
+               [ inp_structure_file ],
+               ]
+            code =  'general'
+            importance =  'essential'
+            category =  'structure'
+            field_labels =  [['xyz file']]
+            ranges =  None
+            defaults =  None
+            field_types =  None
+            fexpandable =  False
+            lexpandable =  False
+            req =  None
 
+            if code in codes:
+                self.inp_def_dict["xyz_input"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  vasp_xml
+            help =  ['vasp xml file name to use for input.']
+            kinds =  [
+               [ inp_structure_file ],
+               ]
+            code =  'general'
+            importance =  'essential'
+            category =  'structure'
+            field_labels =  [['vasprun xml file']]
+            ranges =  None
+            defaults =  None
+            field_types =  None
+            fexpandable =  False
+            lexpandable =  False
+            req =  None
+
+            if code in codes:
+                self.inp_def_dict["vasp_xml"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  vasp_outcar
+            help =  ['vasp outcar file name to use for input.', 'This can be used with vasp xml or xdatcar','files to define magnetic structure for input to FEFF10.']
+            kinds =  [
+               [ inp_file_name ],
+               ]
+            code =  'general'
+            importance =  'essential'
+            category =  'structure'
+            field_labels =  [['vasp outcar file to use for input to corvus.']]
+            ranges =  None
+            defaults =  None
+            field_types =  None
+            fexpandable =  False
+            lexpandable =  False
+            req =  None
+
+            if code in codes:
+                self.inp_def_dict["vasp_outcar"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  vasp_xdatcar
+            help =  ['vasp xdatcar file name to use for input.','If vasp run was structural relaxation or MD,', 
+                     'use vasp_snapshot to chose which structure to use.','By default, the final structure will be used.']
+            kinds =  [
+               [ inp_structure_file ],
+               ]
+            code =  'general'
+            importance =  'essential'
+            category =  'structure'
+            field_labels =  [['vasp xdatcar file to use for input to corvus.']]
+            ranges =  None 
+            defaults =  None
+            field_types =  None
+            fexpandable =  False
+            lexpandable =  False
+            req =  None
+
+            if code in codes:
+                self.inp_def_dict["vasp_xdatcar"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  vasp_snapshot
+            help =  ['Used with vasp xdatcar input. Choose a snapshot to use for structural input.',
+            'By default the final structure will be used as input.']
+            kinds =  [
+               [ inp_int ],
+               ]
+            code =  'general'
+            importance =  'essential'
+            category =  'structure'
+            field_labels =  [['vasp xdatcar file to use for input to corvus.']]
+            ranges =  None 
+            defaults =  None
+            field_types =  None
+            fexpandable =  False
+            lexpandable =  False
+            req =  None
+
+            if code in codes:
+                self.inp_def_dict["vasp_snapshot"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
 
             #  supercell_dimensions
             help =  ['supercell dimensions (number of cells in each direction).']
@@ -943,7 +1083,28 @@ class input_definition_dict():
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
-
+            # absorbing_atom_by_label
+            help =  ['label (or starting strinng of labels) of atom or atoms you would like to calculate the XANES for',
+                     'in the CIF file denoted by cif_input.',
+                     'If more than one label is listed, will average over the sites denoted by these labels.'
+            ]
+            kinds =  [
+               [ inp_str ],
+               ]     
+            code =  'general'
+            importance =  'important'
+            category =  'spectrum'
+            field_labels =  [['label']]
+            ranges =  None
+            defaults =  None
+            field_types =  None
+            fexpandable =  True
+            lexpandable =  False
+            req =  None
+            if code in codes:
+                self.inp_def_dict["absorbing_atom_by_label"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
 
             #  charge
             help =  ['Net charge of the system.']
@@ -1058,6 +1219,52 @@ class input_definition_dict():
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
+
+            #  magmom_by_label
+            help =  ['Set spin moments by label in the cif file.', 'label spin_moment']
+            kinds =  [
+               [ inp_str, inp_float ],
+               ]
+            code =  'general'
+            importance =  'useful'
+            category =  'spin,magnetism'
+            field_labels =  [['atm sym.', 'mag. mom.']]
+            ranges =  None 
+            defaults =  None
+            field_types =  None
+            fexpandable =  False
+            lexpandable =  True
+            req =  None
+
+            if code in codes:
+                self.inp_def_dict["magmom_by_label"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            # polarization
+            help = ['Set any number of different polarization directions to calculate in cartesian coordinates.',
+                    'Example: calculate polarization in all 3 cartesian directions, i.e.,',
+                    '1.0 0.0 0.0','0.0 1.0 0.0','0.0 0.0 1.0',
+                    'If set to 0.0 0.0 0.0 (default) only polarization average will be calculated.'
+            ]
+            kinds =  [
+               [ inp_float, inp_float, inp_float ],
+               ]
+            code =  'general'
+            importance =  'useful'
+            category =  'spectrum'
+            field_labels =  [['x', 'y', 'z']]
+            ranges =  None
+            defaults =  None
+            field_types =  None
+            fexpandable =  False
+            lexpandable =  True
+            req =  None
+
+            if code in codes:
+                self.inp_def_dict["polarization"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
 
 
             #  xanes_file
