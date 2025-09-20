@@ -8,7 +8,7 @@ cfavg_target{
 xanes
 }
 cif_input{
-/Users/jjkas/Programs/SciGUI/example/cif_input/GeTe/GeTe.cif
+GeTe.cif
 }
 feff.edge{
 L3
