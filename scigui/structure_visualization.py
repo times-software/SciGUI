@@ -84,7 +84,7 @@ def run_viewer(file, vs='jmol'):
          if not jmol.is_file(): 
              print('jmol not found')
              return (True, 'jmol not found.')
-         jmol_args = [-jar, jmol, file]
+         jmol_args = ["-jar", jmol, file]
          jmol_cmd = [java] + jmol_args
          jmol = sp.Popen(jmol_cmd, shell=False,
            stdin=sp.PIPE,
