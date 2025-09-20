@@ -80,12 +80,12 @@ def run_viewer(file, vs='jmol'):
          if not java.is_file(): 
              print('java not found')
              return (True,'java not found.')
-         jmol = Path(jmol_path)
+         jmol = Path(jmol_path).parent / 'Jmol.jar'
          if not jmol.is_file(): 
              print('jmol not found')
              return (True, 'jmol not found.')
-         jmol_args = [file]
-         jmol_cmd = [jmol] + jmol_args
+         jmol_args = [-jar, jmol, file]
+         jmol_cmd = [java] + jmol_args
          jmol = sp.Popen(jmol_cmd, shell=False,
            stdin=sp.PIPE,
            bufsize=0,
