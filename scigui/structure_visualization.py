@@ -4,7 +4,35 @@ from pathlib import Path
 import configparser
 from shutil import which
 
+def read_ini(filename):
+    """
+    Attempts to read an INI file using various UTF encodings.
 
+    Args:
+        filename (str): The path to the INI file.
+
+    Returns:
+        configparser.ConfigParser or None: A populated ConfigParser object if successful,
+                                         None otherwise.
+    """
+    encodings_to_try = ['utf-8', 'utf-8-sig', 'utf-16', 'utf-16-le', 'utf-16-be']
+    config = configparser.ConfigParser()
+
+    for encoding in encodings_to_try:
+        try:
+            with open(filename, 'r', encoding=encoding) as f:
+                config.read_file(f)
+            print(f"Successfully read '{filename}' with encoding: {encoding}")
+            return config
+        except UnicodeDecodeError:
+            print(f"Failed to read '{filename}' with encoding: {encoding} (UnicodeDecodeError)")
+            continue
+        except Exception as e:
+            print(f"An unexpected error occurred while reading '{filename}' with encoding {encoding}: {e}")
+            continue
+
+    print(f"Could not read '{filename}' with any of the attempted UTF encodings.")
+    return None
 
 def run_viewer(file, vs='jmol'):
    if vs == 'jmol':
@@ -19,18 +47,18 @@ def run_viewer(file, vs='jmol'):
 
       # Get the path to jmol from the .ini file.
       print("Attempting to read configuration file.")
-      config = configparser.ConfigParser()
       try:
-         config.read(Path.home() / '.Corvus' / 'scigui.ini')
-         print("scigui.ini found.")
-         print(config)
-         try:
-            jmol_path = config['visualization']['jmol_path']
-            print("Jmol found: ", jmol_path)
-         except:
-            print("Jmol not found: aborting")
-            return (True, 'Jmol path not found in config file.')
-
+          config = read_ini(Path.home() / '.Corvus' / 'scigui.ini')
+      #   config.read(Path.home() / '.Corvus' / 'scigui.ini')
+          print("scigui.ini found.")
+      #   print(config)
+          try:
+             jmol_path = config['visualization']['jmol_path']
+             print("Jmol found: ", jmol_path)
+          except:
+             print("Jmol not found: aborting")
+             return (True, 'Jmol path not found in config file.')
+      #
       except:
          print("No scigui.ini config file found. Attempting to find jmol.")
          try:
