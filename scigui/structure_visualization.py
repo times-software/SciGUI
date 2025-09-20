@@ -62,7 +62,7 @@ def run_viewer(file, vs='jmol'):
       except:
          print("No scigui.ini config file found. Attempting to find jmol.")
          try:
-            jmol_path = Path(which("jmol"))
+            jmol_path = Path(which("jmol")).parent
             if not jmol_path.is_file(): return (True, 'jmol not found.')
             print("Jmol found: ", jmol_path)
          except:
@@ -75,6 +75,7 @@ def run_viewer(file, vs='jmol'):
 
       # The 'Windows' block ignores stdout and stderr in deference to Win10
       # hanging after one command received.  The Linux block works in Ubuntu.
+      print(osname())
       if osname() == 'Windows':
          java = Path(java_path)
          if not java.is_file(): 
@@ -93,11 +94,11 @@ def run_viewer(file, vs='jmol'):
            stdout=sp.DEVNULL,
            stderr=sp.DEVNULL)
       elif osname() == 'Darwin' or osname() == "Linux":
-         #java = Path(java_path) / Path('java')
-         #if not java.is_file(): return (True,'java not found.')
+         java = Path(java_path)
+         if not java.is_file(): return (True,'java not found.')
          jmol_args = [file]
          print(jmol_path)
-         jmol_cmd = [jmol_path] + [file]
+         jmol_cmd = [java, '-jar', jmol_path / Path('Jmol.jar')] + [file]
          jmol = sp.Popen(jmol_cmd, shell=False,
            bufsize=0,
            universal_newlines=True)
