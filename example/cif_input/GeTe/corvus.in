@@ -1,0 +1,15 @@
+target_list{
+cfavg
+}
+absorbing_atom_type{
+Ge
+}
+cfavg_target{
+xanes
+}
+cif_input{
+/Users/jjkas/Programs/SciGUI/example/cif_input/GeTe/GeTe.cif
+}
+feff.edge{
+L3
+}

@@ -1,0 +1,21 @@
+target_list{
+cfavg
+}
+absorbing_atom_type{
+Fe
+}
+cfavg_target{
+xanes
+}
+feff.edge{
+K
+}
+feff.spin{
+1 0 0 1
+}
+mp_apikey{
+efzElK0mY4Nk2QKwRooINZxeola2sGbg
+}
+mp_id{
+mp-583463
+}
