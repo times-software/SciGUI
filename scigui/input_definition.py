@@ -55,45 +55,45 @@ class input_definition_dict():
                                                     '_required': ['cfavg_target','cif_input','absorbing_atom_type','feff.edge'], \
                                                     '_useful':['feff.fms','feff.scf','feff.ldos', \
                                                                'feff.exchange','feff.corehole','feff.mpse', \
-                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
+                                                               'feff.equivalence','feff.equivalence_nmax','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
                            'FEFF spectrum from Mat. Proj. id': {'target_list':[['cfavg']], \
                                                     '_required': ['cfavg_target','mp_id','mp_apikey','absorbing_atom_type','feff.edge'], \
                                                     '_useful':['feff.fms','feff.scf','feff.ldos', \
                                                                'feff.exchange','feff.corehole','feff.mpse', \
-                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
+                                                               'feff.equivalence','feff.equivalence_nmax','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
                            'FEFF spectrum from vasprun.xml output': {'target_list':[['cfavg']], \
                                                     '_required': ['cfavg_target','vasp_xml','absorbing_atom_type','feff.edge'], \
                                                     '_useful':['feff.fms','feff.scf','feff.ldos', \
                                                                'feff.exchange','feff.corehole','feff.mpse','vasp_outcar', \
-                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
+                                                               'feff.equivalence','feff.equivalence_nmax','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
                            'FEFF spectrum from vasp XDATCAR output': {'target_list':[['cfavg']], \
                                                     '_required': ['cfavg_target','vasp_xdatcar','absorbing_atom_type','feff.edge'], \
                                                     '_useful':['feff.fms','feff.scf','feff.ldos', \
                                                                'feff.exchange','feff.corehole','feff.mpse','vasp_outcar', \
-                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
+                                                               'feff.equivalence','feff.equivalence_nmax','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
                            'FEFF spectrum from xyz file': {'target_list':[['cfavg']], \
                                                     '_required': ['cfavg_target','xyz_input','absorbing_atom_type','feff.edge'], \
                                                     '_useful':['feff.fms','feff.scf','feff.ldos', \
                                                                'feff.exchange','feff.corehole','feff.mpse', \
-                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
-                           'FEFF xanes of a single absorber': {'target_list':[['xanes']], \
-                                                    '_required':['feff.edge','absorbing_atom','cluster'],\
-                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
-                                                               'feff.exchange','feff.corehole','feff.mpse', \
-                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.egrid']}, \
-                           'FEFF EXAFS of a single absorber': {'target_list':[['exafs']], \
-                                                    '_required':['feff.edge','absorbing_atom','cluster'],\
-                                                    '_useful':['feff.rpath','feff.nleg','feff.debye','feff.dmdw']}, \
-                           'FEFF XES of a single absorber': {'target_list':[['xes']], \
-                                                    '_required':['feff.edge','absorbing_atom','cluster'], \
-                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
-                                                               'feff.exchange','feff.corehole','feff.mpse', \
-                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.egrid']}, \
-                           'FEFF RIXS of a single absorber':{'target_list':[['rixs']], \
-                                                    '_required':['feff.edge','absorbing_atom','cluster'], \
-                                                    '_useful':['feff.fms','feff.scf','feff.ldos', \
-                                                               'feff.exchange','feff.corehole','feff.mpse', \
-                                                               'feff.equivalence','feff.opcons','feff.eps0','feff.egrid']}
+                                                               'feff.equivalence','feff.equivalence_nmax','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
+                           #'FEFF xanes of a single absorber': {'target_list':[['xanes']], \
+                           #                         '_required':['feff.edge','absorbing_atom','cluster'],\
+                           #                         '_useful':['feff.fms','feff.scf','feff.ldos', \
+                           #                                    'feff.exchange','feff.corehole','feff.mpse', \
+                           #                                    'feff.equivalence','feff.opcons','feff.eps0','feff.egrid']}, \
+                           #'FEFF EXAFS of a single absorber': {'target_list':[['exafs']], \
+                           #                         '_required':['feff.edge','absorbing_atom','cluster'],\
+                           #                         '_useful':['feff.rpath','feff.nleg','feff.debye','feff.dmdw']}, \
+                           #'FEFF XES of a single absorber': {'target_list':[['xes']], \
+                           #                         '_required':['feff.edge','absorbing_atom','cluster'], \
+                           #                         '_useful':['feff.fms','feff.scf','feff.ldos', \
+                           #                                    'feff.exchange','feff.corehole','feff.mpse', \
+                           #                                    'feff.equivalence','feff.opcons','feff.eps0','feff.egrid']}, \
+                           #'FEFF RIXS of a single absorber':{'target_list':[['rixs']], \
+                           #                         '_required':['feff.edge','absorbing_atom','cluster'], \
+                           #                         '_useful':['feff.fms','feff.scf','feff.ldos', \
+                           #                                    'feff.exchange','feff.corehole','feff.mpse', \
+                           #                                    'feff.equivalence','feff.opcons','feff.eps0','feff.egrid']}
          }
 
 
