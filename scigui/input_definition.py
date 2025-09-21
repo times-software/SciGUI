@@ -4105,7 +4105,17 @@ class input_definition_dict():
 
 
             #  feff.equivalence
-            help =  ['feff.equivalence', 'This optional card is only active in combination with the CIF card. It tells feff how to', 'generate potential types from the list of atom positions in the ‘cif’ file.', 'If ieq = 1, the crystallographic equivalence as expressed in the ‘cif’ file is respected; that', 'is, every separate line containing a generating atom position will lead to a separate potential', 'type. This means that, e.g., in HOPG graphite, the two generating positions will give rise to', 'two independent C potentials. This is also the default behavior if the EQUIVALENCE card is', 'not specified.', 'If ieq = 2, unique potentials are assigned based on atomic number Z only. That is, all', 'C atoms will share a C potential and so on. This is how most feff calculations are run.', 'Whether it is sensible or not to do this depends on the system and on the property one wishes', 'to calculate. Keep in mind that feff is a muffin tin code, and may therefore be indifferent', 'to certain differences between crystallographically inequivalent sites. On the other hand, if', 'an element occurs in the crystal with different oxidation states, it may be necessary to assign', 'separate potentials to these different types in order to describe the crystal properly and get', 'accurate spectra.', 'If ieq = 3, unique potentials are assigned based on atomic number Z and the first shell.', 'This can be useful e.g. to treat larger systems with crystal defects, where only first neighbors', 'of the defect need to be treated differently from all more distant atoms of a certain Z. (To be', 'implemented.)', 'If ieq = 4, a hybrid of methods 1 and 2 is used. That is, if the number of unique crystallo-', 'graphic positions does not exceed a hard-coded limit (nphx=9 in the current version), they are', 'treated with the correct crystallographic equivalence. If the number of unique crystallographi-', 'cally inequivalent sites is larger, they get combined by atomic number Z. This ad hoc approach', 'is a practical way of simply limiting the number of unique potentials. This makes sense be-', 'cause, first of all, there are certain hardcoded limits that would require recompilation of the', 'code, requiring more RAM memory and more work than a user may want to do.']
+            help =  ['feff.equivalence', 'This optional card tells feff how to', 
+                     'generate potential types from the list of atom positions in the ‘cif’ file.', 
+                     'If ieq = 0, all atoms of the same element are represented by the same potential',
+                     'If ieq = 1, the crystallographic equivalence as expressed in the ‘cif’ file is respected; that', 
+                     'is, every separate line containing a generating atom position will lead to a separate potential', 
+                     'type. This means that, e.g., in HOPG graphite, the two generating positions will give rise to', 
+                     'two independent C potentials. This is also the default behavior if the EQUIVALENCE card is', 
+                     'not specified.', 'If ieq = 2, unique potentials areassigned based', 
+                     'on atomic Z as well as the local density of neighboring atoms.',
+                    'The number of these potentials is determined by feff.equivalence_nmax.']
+
             kinds =  [
                [ inp_int ],
                ]
