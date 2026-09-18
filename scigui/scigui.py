@@ -76,27 +76,80 @@ class Frame(wx.Frame):
         self.top_panel_sizer = wx.GridBagSizer()
         #self.top_panel_hsizer1 = wx.BoxSizer(wx.HORIZONTAL)
         self.runButton = wx.Button(self.top_panel,label="Run")
+        self.runButton.SetBackgroundColour(
+            wx.Colour(0,140,60)
+        )
+        self.runButton.SetForegroundColour(wx.BLACK)
+        
         #self.runButton.SetBackgroundColour((0, 230, 0, 100))
         #self.top_panel_sizer.Add(self.writeInputButton,1,wx.ALL,5)
-        self.top_panel_sizer.Add(self.runButton,(0,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        #self.top_panel_sizer.Add(self.runButton,(0,0),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.top_panel_sizer.Add(self.runButton,(0,0),flag=wx.ALL,border=5)
         self.runButton.Bind(wx.EVT_BUTTON,self.run)
         self.quick_start_choice = wx.Choice(self.top_panel,name = "quick_start", choices = ['Quick Start'] + list(self.inp_def.predefined.keys()))
         self.quick_start_choice.SetSelection(self.quick_start_choice.FindString('Quick Start'))
-        self.top_panel_sizer.Add(self.quick_start_choice,(0,1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.quick_start_choice.SetMinSize(
+            (180, -1)
+        )
+
+        self.quick_start_choice.SetMaxSize(
+            (180, -1)
+        )
+        #self.top_panel_sizer.Add(self.quick_start_choice,(0,1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.top_panel_sizer.Add(self.quick_start_choice,(0,1),flag=wx.ALL,border=5)
         self.quick_start_choice.Bind(wx.EVT_CHOICE,self.set_values_from_predefined)
-        self.show_enabled_checkbox = wx.CheckBox(self.top_panel,label='Show only enabled input')
+        self.show_enabled_checkbox = wx.CheckBox(self.top_panel)
+        self.show_enabled_checkbox.SetLabel("Only enabled")
+    
+        #label = self.show_enabled_checkbox.GetLabel()
+
+        #self.show_enabled_checkbox.SetLabel("")
+        #self.show_enabled_checkbox.SetLabel(label)
+        self.show_enabled_checkbox.SetMinSize(
+            self.show_enabled_checkbox.GetBestSize()
+        )
         #self.top_panel_sizer.Add(self.show_enabled_checkbox,1,wx.ALL,5)
-        filter_start = 15
-        self.top_panel_sizer.Add(self.show_enabled_checkbox,(0,filter_start + 2),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        filter_start = 3 #15
+        #self.top_panel_sizer.Add(self.show_enabled_checkbox,(0,filter_start + 3),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.top_panel_sizer.Add(self.show_enabled_checkbox,(0,6),span=(1,1),flag=wx.ALL,border=5)
         self.show_enabled_checkbox.Bind(wx.EVT_CHECKBOX,self.filter_keywords)
         self.category_choice = wx.Choice(self.top_panel,name = "category", choices = self.categories)
         self.category_choice.SetSelection(self.category_choice.FindString('property'))
-        #self.top_panel_sizer.Add(self.category_choice,1,wx.ALL,5)
-        self.top_panel_sizer.Add(self.category_choice,(0,filter_start),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.top_panel_sizer.Add(self.category_choice,(0,2),flag=wx.ALL,border=5)
+        #self.top_panel_sizer.Add(self.category_choice,(0,filter_start),flag=wx.TOP|wx.LEFT,border=top_panel_border)
         self.category_choice.Bind(wx.EVT_CHOICE,self.filter_keywords)
         self.code_choice = wx.Choice(self.top_panel,name = "code", choices = self.codes)
+        # Search box
+        self.search_ctrl = wx.SearchCtrl(
+            self.top_panel,
+            style=wx.TE_PROCESS_ENTER,
+            size=(200,-1)
+        )
+        self.search_ctrl.SetMinSize((120, -1))
+        self.search_ctrl.SetDescriptiveText(
+            "Search keywords..."
+        )
+
+        #self.top_panel_sizer.Add(
+        #    self.search_ctrl,
+        #    (0, filter_start + 2),
+        #        flag=wx.TOP | wx.LEFT,
+        #        border=top_panel_border
+        #)
+        self.top_panel_sizer.Add(
+            self.search_ctrl,
+            (0, 5),
+                flag=wx.ALL | wx.EXPAND,
+                border=5
+        )
+        self.search_ctrl.Bind(
+            wx.EVT_TEXT,
+            self.filter_keywords
+        )
+        self.top_panel_sizer.AddGrowableCol(5)
         self.code_choice.SetSelection(self.code_choice.FindString('general'))
-        self.top_panel_sizer.Add(self.code_choice,(0,filter_start+1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        #self.top_panel_sizer.Add(self.code_choice,(0,filter_start+1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.top_panel_sizer.Add(self.code_choice,(0,3),flag=wx.ALL,border=5)
         self.code_choice.Bind(wx.EVT_CHOICE,self.filter_keywords) 
         #col = wx.GREEN
         #col = (col[0],col[1],col[2],150)
@@ -150,10 +203,23 @@ class Frame(wx.Frame):
 
         # Plotting
         self.plotButton = wx.Button(self.top_panel,label="Plot")
-        #self.top_panel_sizer.Add(self.showNextButton,1,wx.ALL,5)
-        self.top_panel_sizer.Add(self.plotButton,(1,1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
-        self.plotButton.Bind(wx.EVT_BUTTON,self.on_plot_button)
+ 
+        self.plotButton.SetBackgroundColour(
+            wx.Colour(40,100,200)
+        )
+        self.plotButton.SetForegroundColour(wx.BLACK)
 
+        font = self.runButton.GetFont()
+        font.MakeBold()
+
+        self.runButton.SetFont(font)
+        self.plotButton.SetFont(font)
+
+        #self.top_panel_sizer.Add(self.showNextButton,1,wx.ALL,5)
+        #self.top_panel_sizer.Add(self.plotButton,(1,1),flag=wx.TOP|wx.LEFT,border=top_panel_border)
+        self.top_panel_sizer.Add(self.plotButton,(0,4),flag=wx.ALL,border=5)
+        self.plotButton.Bind(wx.EVT_BUTTON,self.on_plot_button)
+        
         #self.showAllRequired = wx.CheckBox(self.top_panel,label="Show all required")
         #self.top_panel_sizer.Add(self.showAllRequired,1,wx.ALL,5)
         #self.top_panel_sizer.Add(self.showAllRequired,(1,15),flag=wx.TOP|wx.LEFT,border=top_panel_border)
@@ -167,6 +233,16 @@ class Frame(wx.Frame):
         #print('Valid input: ', is_valid)
         #if is_valid: self.set_values(values_dict)
         self.Show()
+        wx.CallAfter(self.SendSizeEvent)
+        wx.CallAfter(
+            self.top_panel_sizer.Layout
+        )
+
+        wx.CallAfter(
+            self.top_panel.Layout
+        )
+        wx.CallAfter(self.show_enabled_checkbox.Refresh)
+        wx.CallAfter(self.show_enabled_checkbox.Update)
         wx.CallAfter(self.Raise)
         self.SetFocus()
         #self.key_ui_dict['cell_struc_xyz_red'].set_values([['A',0,0,0],['B',1.0,1.0,1.0]])
@@ -191,6 +267,10 @@ class Frame(wx.Frame):
         self.inp_page.current_key_ui.enable_keyword_elements(True)
         self.show_enabled_checkbox.SetValue(True)
         #self.inp_page.on_resize(None,True)
+        
+        self.top_panel_sizer.Layout()
+        self.top_panel.Layout()
+        self.top_panel.Fit()
         do_layout(self)
         self.run(None,True)
         
@@ -257,6 +337,11 @@ class Frame(wx.Frame):
         self.runButton.Enable(True)
         
     def run(self,evt=None,init=False):
+        for col in range(7):
+            print(
+                col,
+                self.top_panel_sizer.GetColWidths()[col]
+            )
         if self.input_type == 'corvus':
             import re
             import sys
@@ -603,6 +688,7 @@ class Frame(wx.Frame):
         show_only_enabled = self.show_enabled_checkbox.GetValue()
         category = self.category_choice.GetString(self.category_choice.GetSelection())
         code = self.code_choice.GetString(self.code_choice.GetSelection())
+        search_text = self.search_ctrl.GetValue().lower().strip()
         self.main_notebook.SetPageText(0,'category: ' + category + ', code: ' + code)
         
         
@@ -613,14 +699,20 @@ class Frame(wx.Frame):
             in_code = code in self.inpdict[key]['code'].lower() or (code == 'all')
             #print('show_only_enabled, enabled, in_category, in_code')
             #print(show_only_enabled, enabled, in_category, in_code)
+            
+            # Now filter by category and code.
+            matches_search = (
+                search_text == "" or
+                search_text in key.lower()
+            )
+
+            if in_category and in_code and matches_search:
+                show = True
+            else:
+                show = False
+
             if show_only_enabled and not enabled:
                 show = False
-            else:
-                # Now filter by category and code.
-                if in_category and in_code:
-                    show = True
-                else:
-                    show = False
 
             key_ui.key_toggle.Show(show)
             key_ui.key_toggle_window.Show(show)

@@ -422,23 +422,39 @@ class key_ui_elem():
         # Enable this keyword
         self.enable_checkbox.SetValue(True)
         self.enable_keyword_elements(True)
-
+        
         # Now go line by line, setting values, and adding new fields/lines as needed.
         iline = 0
+        is_par = False
         #print(self.kinds)
         for value_line in values:
             ifield = 0
+            #print("IN SET_VALUES: ", self.kinds[iline][ifield].__name__)
             if len(self.kinds)-1 < iline:
                 # Create a new line for these fields
                 self.add_ui_row(show=False)
             for value in value_line:
+                #print(value_line)
+                #if self.kinds[iline][0].__name__ == 'inp_paragraph':
+                #    is_par = True
+                #    break
                 if len(self.kinds[iline])-1 < ifield:
                     self.add_ui_column(show=False)
-                
+
                 inp_type = type(self.ui_elems[iline][ifield].GetValue())
                 self.ui_elems[iline][ifield].SetValue(inp_type(value))
                 ifield += 1
             iline += 1
+        if is_par:
+            self.add_ui_column(show=False)
+            #print(iline,self.ui_elems)
+            inp_type =  type(self.ui_elems[iline][0].GetValue())
+            value=''
+            for value_line in values[iline:]:
+                value = value + ' '.join(value_line) + '\n'
+
+            self.ui_elems[iline][0].SetValue(inp_type(value))
+            
 
     def enable_keyword_elements(self,val):
         for ui_line in self.ui_elems:

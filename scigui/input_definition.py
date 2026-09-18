@@ -71,11 +71,16 @@ class input_definition_dict():
                                                     '_useful':['feff.fms','feff.scf','feff.ldos', \
                                                                'feff.exchange','feff.corehole','feff.mpse','vasp_outcar', \
                                                                'feff.equivalence','feff.equivalence_nmax','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
-                           'FEFF spectrum from xyz file': {'target_list':[['cfavg']], \
+                           'FEFF spectrum from xyz file': {'target_list':[['cfavg']],'feff.equivalence':[[4]], \
                                                     '_required': ['cfavg_target','xyz_input','absorbing_atom_type','feff.edge'], \
                                                     '_useful':['feff.fms','feff.scf','feff.ldos', \
                                                                'feff.exchange','feff.corehole','feff.mpse', \
                                                                'feff.equivalence','feff.equivalence_nmax','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}, \
+                           'Loop over spectrum calculations': {'target_list':[['loop']],'loop_target':[['cfavg']],'cfavg_target':[['xanes']], \
+                                                               '_required':['cfavg_target','absorbing_atom_type','feff.edge','loop_parameter'], \
+                                                               '_useful':['loop_labels','feff.fms','feff.scf','feff.ldos', \
+                                                               'feff.exchange','feff.corehole','feff.mpse', \
+                                                               'feff.equivalence','feff.equivalence_nmax','feff.opcons','feff.eps0','feff.rpath','feff.egrid']}
                            #'FEFF xanes of a single absorber': {'target_list':[['xanes']], \
                            #                         '_required':['feff.edge','absorbing_atom','cluster'],\
                            #                         '_useful':['feff.fms','feff.scf','feff.ldos', \
@@ -122,7 +127,7 @@ class input_definition_dict():
             importance =  'essential'
             category =  'property'
             field_labels =  [['property']]
-            ranges =  [['xanes,exafs,xes,rixs,cfavg']]
+            ranges =  [['xanes,exafs,xes,rixs,cfavg,loop']]
             defaults =  None
             field_types =  None
             fexpandable =  True
@@ -247,33 +252,6 @@ class input_definition_dict():
                   code,importance,category,field_labels,ranges,defaults,
                   field_types,fexpandable,lexpandable,req)
 
-            # polarization
-            help = ['Set 3 different polarization directions to calculate in cartesian coordinates. ' + \
-                    'By default, these are set to x, y, z, i.e., ',
-                     '  polarization{',
-                     '     1.0 0.0 0.0',
-                     '     0.0 1.0 0.0',
-                     '     0.0 0.0 1.0',
-                     '     }']
-
-            kinds = [[inp_int, inp_int, inp_int],
-                     [inp_int, inp_int, inp_int],
-                     [inp_int, inp_int, inp_int]]
-
-            code = 'general'
-
-            importance = 'useful'
-            category = 'spectrum'
-            defaults = None
-            ranges = None
-            field_labels = [['x', 'y', 'z']]
-            fexpandable = False
-            lexpandable = True
-            req = None
-            if code in codes:
-                self.inp_def_dict["polarization"] = self._fill_key_info(help,kinds,
-                  code,importance,category,field_labels,ranges,defaults,
-                  field_types,fexpandable,lexpandable,req)
 
             # atomic_charge
             help = ['charge to be placed on each atoms of a given species.',
@@ -3320,7 +3298,7 @@ class input_definition_dict():
 
 
             #  feff.elnes
-            help =  ['This card is not implements yet.']
+            help =  ['This card is not implemented yet.']
             kinds =  [
                [ inp_float, inp_float, inp_float ],
                [ inp_str ],
@@ -8146,4 +8124,244 @@ class input_definition_dict():
                   field_types,fexpandable,lexpandable,req)
 
 
+            #  multiprocessing_level
+            help = ['Which level of the calculation do you want to use multiprocessing on.',
+                  'Can be "cfavg" or "loop".']
+            kinds = [
+               [ inp_choice ],
+               ]
+            code = 'general'
+            importance = 'useful'
+            category = 'computational'
+            field_labels = [['level']]
+            ranges = [['cfavg,loop']]
+            defaults = [['cfavg']]
+            field_types = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            if code in codes:
+               self.inp_def_dict["multiprocessing_level"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
 
+            #  mt_overlap
+            help = ['Set the muffin-tin overlap for different elements.',
+                  'Format:',
+                  'Element overlap']
+            kinds = [
+               [ inp_str, inp_float ],
+               ]
+            code = 'general'
+            importance = 'advanced'
+            category = 'structure'
+            field_labels = [['element', 'overlap']]
+            ranges = None
+            defaults = None
+            field_types = None
+            fexpandable = False
+            lexpandable = True
+            req = None
+            if code in codes:
+               self.inp_def_dict["mt_overlap"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  molecule_vacuum_margin
+            help = ['Added to the largest distance between two atoms in the molecule',
+                  'before constructing a unit cell.']
+            kinds = [
+               [ inp_float ],
+               ]
+            code = 'general'
+            importance = 'useful'
+            category = 'structure'
+            field_labels = [['vacuum margin']]
+            ranges = [['0.0,']]
+            defaults = None
+            field_types = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            if code in codes:
+               self.inp_def_dict["molecule_vacuum_margin"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  xyz_snapshot
+            help = ['For multiple-structure xyz files, use this snapshot.',
+                  'Counting starts from 1.']
+            kinds = [
+               [ inp_int ],
+               ]
+            code = 'general'
+            importance = 'useful'
+            category = 'structure'
+            field_labels = [['snapshot']]
+            ranges = [['1,']]
+            defaults = [[1]]
+            field_types = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            if code in codes:
+               self.inp_def_dict["xyz_snapshot"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  run_dmdw
+            help = ['Run standalone DMDW along with FEFF calculations.']
+            kinds = [
+               [ inp_bool ],
+               ]
+            code = 'general'
+            importance = 'useful'
+            category = 'phonons,spectrum'
+            field_labels = [['run dmdw']]
+            ranges = None
+            defaults = [['False']]
+            field_types = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            if code in codes:
+               self.inp_def_dict["run_dmdw"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  feff.tolscf
+            help = ['Set tolerances for SCF convergence.',
+                  'Format:',
+                  'fermi_tol charge_tol partial_charge_tol']
+            kinds = [
+               [ inp_float, inp_float, inp_float ],
+               ]
+            code = 'feff'
+            importance = 'useful'
+            category = 'scf,potentials'
+            field_labels = [['fermi tol', 'charge tol', 'partial charge tol']]
+            ranges = None
+            defaults = None
+            field_types = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            if code in codes:
+               self.inp_def_dict["feff.tolscf"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  loop_target
+            help = ['Set the target property to calculate during the loop.']
+            kinds = [
+               [ inp_str ],
+               ]
+            code = 'general'
+            importance = 'useful'
+            category = 'property'
+            field_labels = [['target']]
+            ranges = None
+            defaults = None
+            field_types = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            if code in codes:
+               self.inp_def_dict["loop_target"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  loop_parameter
+            help = ['Define a loop over a set of parameter values.',
+                  'First line contains the keyword to vary.',
+                  'Subsequent lines contain values used for each iteration.',
+                  'Only works with single-line keywords. For example',
+                  'Looping over all posibilities of core-hole approximnation:',
+                  'loop_parameter{',
+                  'feff.corehole',
+                  'NONE',
+                  'RPA',
+                  'FSR',
+                  '}']
+            kinds = [
+               [ inp_str ],
+               [ inp_paragraph ],
+               ]
+            code = 'general'
+            importance = 'useful'
+            category = 'workflow'
+            field_labels = [['keyword'], ['value']]
+            ranges = None
+            defaults = None
+            field_types = None
+            fexpandable = True
+            lexpandable = True
+            req = None
+            if code in codes:
+               self.inp_def_dict["loop_parameter"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  loop_labels
+            help = ['Define the labels used for loop directories.',
+                  'There should be one label for each loop iteration.',
+                  'defined in "loop_parameter"']
+            kinds = [
+               [ inp_str ],
+               ]
+            code = 'general'
+            importance = 'useful'
+            category = 'workflow'
+            field_labels = [['label']]
+            ranges = None
+            defaults = None
+            field_types = None
+            fexpandable = False
+            lexpandable = True
+            req = None
+            if code in codes:
+               self.inp_def_dict["loop_labels"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  cfavg_choose_random_absorbers
+            help = ['Choose absorbers randomly when performing configurational averaging.']
+            kinds = [
+               [ inp_bool ],
+               ]
+            code = 'general'
+            importance = 'useful'
+            category = 'property'
+            field_labels = [['random absorbers']]
+            ranges = None
+            defaults = [['False']]
+            field_types = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            if code in codes:
+               self.inp_def_dict["cfavg_choose_random_absorbers"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
+
+            #  cfavg_egrid
+            help = ['Choose energy grid type for configurational averaging of spectra.',
+                  '"regular" uses a regular energy grid.',
+                  '"first" uses the grid from the first calculation.']
+            kinds = [
+               [ inp_choice ],
+               ]
+            code = 'general'
+            importance = 'useful'
+            category = 'property'
+            field_labels = [['energy grid']]
+            ranges = [['first,regular']]
+            defaults = [['first']]
+            field_types = None
+            fexpandable = False
+            lexpandable = False
+            req = None
+            if code in codes:
+               self.inp_def_dict["cfavg_egrid"] = self._fill_key_info(help,kinds,
+                  code,importance,category,field_labels,ranges,defaults,
+                  field_types,fexpandable,lexpandable,req)
