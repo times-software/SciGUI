@@ -12,6 +12,7 @@ class MyApp(wx.App):
 
 #if __name__ == '__main__':
 def start():
+    print("Initializing ...",flush=True)
     app = MyApp(0)
     #frame = MyFrame()
     app.MainLoop()

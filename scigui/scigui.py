@@ -337,11 +337,11 @@ class Frame(wx.Frame):
         self.runButton.Enable(True)
         
     def run(self,evt=None,init=False):
-        for col in range(7):
-            print(
-                col,
-                self.top_panel_sizer.GetColWidths()[col]
-            )
+        #for col in range(7):
+        #    print(
+        #        col,
+        #        self.top_panel_sizer.GetColWidths()[col]
+        #    )
         if self.input_type == 'corvus':
             import re
             import sys
@@ -782,7 +782,7 @@ class Frame(wx.Frame):
                 # Set the filter and code to all, and set show only enabled.
                 
                 self.show_filtered(all_categories = True, all_codes = True, only_enabled=True)
-                print(self.inp_page.current_key_ui.keyword)
+                #print(self.inp_page.current_key_ui.keyword)
                 self.inp_page.current_key_ui.key_toggle.Show(True)
                 self.inp_page.current_key_ui.key_toggle_window.Show(True)
                 self.inp_page.current_key_ui.key_toggle.SetFocus()

@@ -73,10 +73,10 @@ def read_corvus_input(file):
    message =  ''
    while ik < len(key_list):
       key = key_list[ik].replace('\n','').lower()
-      print("KEYWORD:", key)
+      #print("KEYWORD:", key)
       #print(inp_def[key]['kinds'][0][0].__name__)
       if inp_def.inp_def_dict[key]['kinds'][0][0].__name__ == 'inp_paragraph':
-         print("FOUND INP_PARAGRAPH", key)
+         #print("FOUND INP_PARAGRAPH", key)
          # If this is a paragraph type, we need a list of lists. Each inner list
          # is a single string holding an entire line of text.
          is_valid = True
